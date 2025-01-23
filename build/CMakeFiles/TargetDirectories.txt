@@ -1,0 +1,2 @@
+/home/miha/Igrica/Igrica_sdl/build/CMakeFiles/edit_cache.dir
+/home/miha/Igrica/Igrica_sdl/build/CMakeFiles/rebuild_cache.dir
