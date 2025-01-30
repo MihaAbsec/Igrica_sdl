@@ -1,39 +1,72 @@
 #include <SDL2/SDL.h>
-#include <cstdlib>
-int main(int argc, char* argv[]) {
+#include <iostream>
 
-    SDL_Window *window;                    // Declare a pointer
+using namespace std;
 
-    SDL_Init(SDL_INIT_VIDEO);              // Initialize SDL2
-
-    // Create an application window with the following settings:
-    window = SDL_CreateWindow(
-        "An SDL2 window",                  // window title
-        SDL_WINDOWPOS_UNDEFINED,           // initial x position
-        SDL_WINDOWPOS_UNDEFINED,           // initial y position
-        640,                               // width, in pixels
-        480,                               // height, in pixels
-        SDL_WINDOW_OPENGL                  // flags - see below
-    );
-
-    // Check that the window was successfully created
-    if (window == NULL) {
-        // In the case that the window could not be made...
-        printf("Could not create window: %s\n", SDL_GetError());
-        return 1;
-    }
-    else {
-        printf("LALA");
+int main() {
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        cout << "Failed to initialize the SDL2 library\n";
+        return -1;
     }
 
-    // The window is open: could enter program loop here (see SDL_PollEvent())
+    SDL_Window *window = SDL_CreateWindow("SDL2 Window",
+                                          SDL_WINDOWPOS_CENTERED,
+                                          SDL_WINDOWPOS_CENTERED,
+                                          680, 480,
+                                          SDL_WINDOW_SHOWN);
 
-    SDL_Delay(3000);  // Pause execution for 3000 milliseconds, for example
+    if (!window) {
+        cout << "Failed to create window\n";
+        SDL_Quit();
+        return -1;
+    }
 
-    // Close and destroy the window
+    SDL_Surface *window_surface = SDL_GetWindowSurface(window);
+    if (!window_surface) {
+        cout << "Failed to get the surface from the window\n";
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return -1;
+    }
+
+    bool running = true;
+    SDL_Event event;
+
+    // Get initial position of the window
+    int x, y;
+    SDL_GetWindowPosition(window, &x, &y);
+
+    while (running) {
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_ESCAPE) {
+                    running = false;  // Close window when Escape is pressed
+                }
+                if (event.key.keysym.sym == SDLK_a) {
+                    x -= 20;  
+                    SDL_SetWindowPosition(window, x, y);
+                }
+                if (event.key.keysym.sym == SDLK_d) {
+                    x += 20;  
+                    SDL_SetWindowPosition(window, x, y);
+                }
+                if (event.key.keysym.sym == SDLK_w) {
+                    y -= 20;
+                    SDL_SetWindowPosition(window, x, y);
+                }
+                if (event.key.keysym.sym == SDLK_s) {
+                    y += 20;
+                    SDL_SetWindowPosition(window, x, y);
+                }
+            }
+        }
+
+        SDL_UpdateWindowSurface(window); // Update surface if needed
+    }
+
     SDL_DestroyWindow(window);
-
-    // Clean up
     SDL_Quit();
+
     return 0;
 }
+
