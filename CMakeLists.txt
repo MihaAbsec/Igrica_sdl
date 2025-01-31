@@ -1,38 +1,13 @@
+cmake_minimum_required(VERSION 3.10)
 project(mygame)
 
-cmake_minimum_required(VERSION 3.3)
+set(CMAKE_CXX_STANDARD 17)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
+find_package(SDL2 REQUIRED)
 
-add_executable(${PROJECT_NAME} src/main.cpp)
+# Add Square.cpp to the list of source files
+add_executable(mygame src/main.cpp src/Square.cpp)
 
-INCLUDE(FindPkgConfig)
-include(FetchContent)
-
-#---------------- SDL ----------------
-pkg_search_module(SDL2 REQUIRED sdl2)
-pkg_search_module(SDL2IMAGE REQUIRED SDL2_image>=2.0.0)
-
-#---------------- GLM ----------------
-FetchContent_Declare(
-    glm
-    GIT_REPOSITORY    https://github.com/g-truc/glm.git
-    GIT_TAG     bf71a834948186f4097caa076cd2663c69a10e1e #refs/tags/1.0.1
-)
-
-FetchContent_MakeAvailable(glm)
-
-INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS} ${SDL2IMAGE_INCLUDE_DIRS})
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} PRIVATE
-    ${SDL2_LIBRARIES}
-    ${SDL2IMAGE_LIBRARIES}
-    glm::glm
-
-    )
-set(ASSETS_DIR ${CMAKE_SOURCE_DIR}/assets)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
-
-add_custom_target(CopyAssets ALL
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${ASSETS_DIR} ${CMAKE_BINARY_DIR}/assets
-)
+# Specify the include directory for Square.h
+target_include_directories(mygame PRIVATE ${SDL2_INCLUDE_DIRS} include)
+target_link_libraries(mygame ${SDL2_LIBRARIES})

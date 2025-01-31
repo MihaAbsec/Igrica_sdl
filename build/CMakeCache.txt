@@ -28,7 +28,7 @@ CMAKE_BUILD_TYPE:STRING=
 CMAKE_COLOR_MAKEFILE:BOOL=ON
 
 //CXX compiler
-CMAKE_CXX_COMPILER:FILEPATH=/usr/bin/c++
+CMAKE_CXX_COMPILER:STRING=/usr/bin/c++
 
 //A wrapper around 'ar' adding the appropriate '--plugin' option
 // for the GCC compiler
@@ -54,7 +54,7 @@ CMAKE_CXX_FLAGS_RELEASE:STRING=-O3 -DNDEBUG
 CMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING=-O2 -g -DNDEBUG
 
 //C compiler
-CMAKE_C_COMPILER:FILEPATH=/usr/bin/cc
+CMAKE_C_COMPILER:STRING=/usr/bin/cc
 
 //A wrapper around 'ar' adding the appropriate '--plugin' option
 // for the GCC compiler
@@ -250,6 +250,33 @@ FETCHCONTENT_UPDATES_DISCONNECTED_GLM:BOOL=OFF
 //Git command line client
 GIT_EXECUTABLE:FILEPATH=/usr/bin/git
 
+//Value Computed by CMake
+MoveableSquare_BINARY_DIR:STATIC=/home/miha/Igrica/Igrica_sdl/build
+
+//Value Computed by CMake
+MoveableSquare_IS_TOP_LEVEL:STATIC=ON
+
+//Value Computed by CMake
+MoveableSquare_SOURCE_DIR:STATIC=/home/miha/Igrica/Igrica_sdl
+
+//Value Computed by CMake
+MyGame_BINARY_DIR:STATIC=/home/miha/Igrica/Igrica_sdl/build
+
+//Value Computed by CMake
+MyGame_IS_TOP_LEVEL:STATIC=ON
+
+//Value Computed by CMake
+MyGame_SOURCE_DIR:STATIC=/home/miha/Igrica/Igrica_sdl
+
+//Value Computed by CMake
+Mygame_BINARY_DIR:STATIC=/home/miha/Igrica/Igrica_sdl/build
+
+//Value Computed by CMake
+Mygame_IS_TOP_LEVEL:STATIC=ON
+
+//Value Computed by CMake
+Mygame_SOURCE_DIR:STATIC=/home/miha/Igrica/Igrica_sdl
+
 //Arguments to supply to pkg-config
 PKG_CONFIG_ARGN:STRING=
 
@@ -264,6 +291,9 @@ Project_IS_TOP_LEVEL:STATIC=ON
 
 //Value Computed by CMake
 Project_SOURCE_DIR:STATIC=/home/miha/Igrica/Igrica_sdl
+
+//The directory containing a CMake configuration file for SDL2.
+SDL2_DIR:PATH=/usr/local/lib/cmake/SDL2
 
 //Value Computed by CMake
 glm_BINARY_DIR:STATIC=/home/miha/Igrica/Igrica_sdl/build/_deps/glm-build
@@ -308,7 +338,7 @@ CMAKE_CACHE_MAJOR_VERSION:INTERNAL=3
 //Minor version of cmake used to create the current loaded cache
 CMAKE_CACHE_MINOR_VERSION:INTERNAL=31
 //Patch version of cmake used to create the current loaded cache
-CMAKE_CACHE_PATCH_VERSION:INTERNAL=4
+CMAKE_CACHE_PATCH_VERSION:INTERNAL=5
 //ADVANCED property for variable: CMAKE_COLOR_MAKEFILE
 CMAKE_COLOR_MAKEFILE-ADVANCED:INTERNAL=1
 //Path to CMake executable.
@@ -365,8 +395,6 @@ CMAKE_EXE_LINKER_FLAGS_MINSIZEREL-ADVANCED:INTERNAL=1
 CMAKE_EXE_LINKER_FLAGS_RELEASE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO
 CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_EXPORT_COMPILE_COMMANDS
-CMAKE_EXPORT_COMPILE_COMMANDS-ADVANCED:INTERNAL=1
 CMAKE_EXPORT_COMPILE_COMMANDS:INTERNAL=ON
 //Name of external makefile project generator.
 CMAKE_EXTRA_GENERATOR:INTERNAL=
@@ -400,7 +428,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=3
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

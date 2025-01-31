@@ -1,72 +1,67 @@
-#include <SDL2/SDL.h>
-#include <iostream>
+#include <SDL.h>
+#include <stdio.h>
+#include "include/Square.h"
 
-using namespace std;
+#define SCREEN_WIDTH 800
+#define SCREEN_HEIGHT 600
 
-int main() {
+int main(int argc, char* argv[]) {
+    // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        cout << "Failed to initialize the SDL2 library\n";
-        return -1;
+        printf("Error initializing SDL: %s\n", SDL_GetError());
+        return 1;
     }
 
-    SDL_Window *window = SDL_CreateWindow("SDL2 Window",
-                                          SDL_WINDOWPOS_CENTERED,
-                                          SDL_WINDOWPOS_CENTERED,
-                                          680, 480,
-                                          SDL_WINDOW_SHOWN);
-
-    if (!window) {
-        cout << "Failed to create window\n";
+    // Create a window
+    SDL_Window* window = SDL_CreateWindow("Smooth Movement", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
+    if (window == NULL) {
+        printf("Error creating window: %s\n", SDL_GetError());
         SDL_Quit();
-        return -1;
+        return 1;
     }
 
-    SDL_Surface *window_surface = SDL_GetWindowSurface(window);
-    if (!window_surface) {
-        cout << "Failed to get the surface from the window\n";
+    // Create a renderer
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (renderer == NULL) {
+        printf("Error creating renderer: %s\n", SDL_GetError());
         SDL_DestroyWindow(window);
         SDL_Quit();
-        return -1;
+        return 1;
     }
 
-    bool running = true;
+    // Create a Square object
+    Square square((SCREEN_WIDTH - 50) / 2, (SCREEN_HEIGHT - 50) / 2, 100, 5);
+    // Main loop
+    int running = 1;
     SDL_Event event;
-
-    // Get initial position of the window
-    int x, y;
-    SDL_GetWindowPosition(window, &x, &y);
-
     while (running) {
+        // Handle events (e.g., window close)
         while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == SDLK_ESCAPE) {
-                    running = false;  // Close window when Escape is pressed
-                }
-                if (event.key.keysym.sym == SDLK_a) {
-                    x -= 20;  
-                    SDL_SetWindowPosition(window, x, y);
-                }
-                if (event.key.keysym.sym == SDLK_d) {
-                    x += 20;  
-                    SDL_SetWindowPosition(window, x, y);
-                }
-                if (event.key.keysym.sym == SDLK_w) {
-                    y -= 20;
-                    SDL_SetWindowPosition(window, x, y);
-                }
-                if (event.key.keysym.sym == SDLK_s) {
-                    y += 20;
-                    SDL_SetWindowPosition(window, x, y);
-                }
+            if (event.type == SDL_QUIT) {
+                running = 0;
             }
         }
+        
+        square.handleInput(event);
 
-        SDL_UpdateWindowSurface(window); // Update surface if needed
+        // Clear screen
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Black background
+        SDL_RenderClear(renderer);
+
+        // Render the square
+        square.render(renderer);
+
+        // Update screen
+        SDL_RenderPresent(renderer);
+
+        // Cap the frame rate
+        SDL_Delay(16); // ~60 FPS
     }
 
+    // Clean up
+    SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
 
     return 0;
 }
-

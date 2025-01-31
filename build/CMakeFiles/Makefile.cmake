@@ -8,11 +8,11 @@ set(CMAKE_DEPENDS_GENERATOR "Unix Makefiles")
 set(CMAKE_MAKEFILE_DEPENDS
   "CMakeCache.txt"
   "/home/miha/Igrica/Igrica_sdl/CMakeLists.txt"
-  "CMakeFiles/3.31.4/CMakeCCompiler.cmake"
-  "CMakeFiles/3.31.4/CMakeCXXCompiler.cmake"
-  "CMakeFiles/3.31.4/CMakeSystem.cmake"
-  "_deps/glm-src/CMakeLists.txt"
-  "_deps/glm-src/glm/CMakeLists.txt"
+  "CMakeFiles/3.31.5/CMakeCCompiler.cmake"
+  "CMakeFiles/3.31.5/CMakeCXXCompiler.cmake"
+  "CMakeFiles/3.31.5/CMakeSystem.cmake"
+  "/usr/local/lib/cmake/SDL2/sdl2-config-version.cmake"
+  "/usr/local/lib/cmake/SDL2/sdl2-config.cmake"
   "/usr/share/cmake/Modules/CMakeCInformation.cmake"
   "/usr/share/cmake/Modules/CMakeCXXInformation.cmake"
   "/usr/share/cmake/Modules/CMakeCommonLanguageInclude.cmake"
@@ -25,13 +25,7 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/usr/share/cmake/Modules/Compiler/GNU-C.cmake"
   "/usr/share/cmake/Modules/Compiler/GNU-CXX.cmake"
   "/usr/share/cmake/Modules/Compiler/GNU.cmake"
-  "/usr/share/cmake/Modules/ExternalProject/shared_internal_commands.cmake"
-  "/usr/share/cmake/Modules/FetchContent.cmake"
-  "/usr/share/cmake/Modules/FetchContent/CMakeLists.cmake.in"
-  "/usr/share/cmake/Modules/FindGit.cmake"
-  "/usr/share/cmake/Modules/FindPackageHandleStandardArgs.cmake"
-  "/usr/share/cmake/Modules/FindPackageMessage.cmake"
-  "/usr/share/cmake/Modules/FindPkgConfig.cmake"
+  "/usr/share/cmake/Modules/FeatureSummary.cmake"
   "/usr/share/cmake/Modules/Internal/CMakeCLinkerInformation.cmake"
   "/usr/share/cmake/Modules/Internal/CMakeCXXLinkerInformation.cmake"
   "/usr/share/cmake/Modules/Internal/CMakeCommonLinkerInformation.cmake"
@@ -58,14 +52,10 @@ set(CMAKE_MAKEFILE_OUTPUTS
 
 # Byproducts of CMake generate step:
 set(CMAKE_MAKEFILE_PRODUCTS
-  "_deps/glm-subbuild/CMakeLists.txt"
   "CMakeFiles/CMakeDirectoryInformation.cmake"
-  "_deps/glm-build/CMakeFiles/CMakeDirectoryInformation.cmake"
-  "_deps/glm-build/glm/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/mygame.dir/DependInfo.cmake"
-  "CMakeFiles/CopyAssets.dir/DependInfo.cmake"
   )

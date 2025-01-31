@@ -64,63 +64,19 @@ CMAKE_BINARY_DIR = /home/miha/Igrica/Igrica_sdl/build
 
 # The main recursive "all" target.
 all: CMakeFiles/mygame.dir/all
-all: CMakeFiles/CopyAssets.dir/all
-all: _deps/glm-build/all
 .PHONY : all
 
 # The main recursive "codegen" target.
 codegen: CMakeFiles/mygame.dir/codegen
-codegen: CMakeFiles/CopyAssets.dir/codegen
-codegen: _deps/glm-build/codegen
 .PHONY : codegen
 
 # The main recursive "preinstall" target.
-preinstall: _deps/glm-build/preinstall
+preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
 clean: CMakeFiles/mygame.dir/clean
-clean: CMakeFiles/CopyAssets.dir/clean
-clean: _deps/glm-build/clean
 .PHONY : clean
-
-#=============================================================================
-# Directory level rules for directory _deps/glm-build
-
-# Recursive "all" directory target.
-_deps/glm-build/all: _deps/glm-build/glm/all
-.PHONY : _deps/glm-build/all
-
-# Recursive "codegen" directory target.
-_deps/glm-build/codegen: _deps/glm-build/glm/codegen
-.PHONY : _deps/glm-build/codegen
-
-# Recursive "preinstall" directory target.
-_deps/glm-build/preinstall: _deps/glm-build/glm/preinstall
-.PHONY : _deps/glm-build/preinstall
-
-# Recursive "clean" directory target.
-_deps/glm-build/clean: _deps/glm-build/glm/clean
-.PHONY : _deps/glm-build/clean
-
-#=============================================================================
-# Directory level rules for directory _deps/glm-build/glm
-
-# Recursive "all" directory target.
-_deps/glm-build/glm/all:
-.PHONY : _deps/glm-build/glm/all
-
-# Recursive "codegen" directory target.
-_deps/glm-build/glm/codegen:
-.PHONY : _deps/glm-build/glm/codegen
-
-# Recursive "preinstall" directory target.
-_deps/glm-build/glm/preinstall:
-.PHONY : _deps/glm-build/glm/preinstall
-
-# Recursive "clean" directory target.
-_deps/glm-build/glm/clean:
-.PHONY : _deps/glm-build/glm/clean
 
 #=============================================================================
 # Target rules for target CMakeFiles/mygame.dir
@@ -129,12 +85,12 @@ _deps/glm-build/glm/clean:
 CMakeFiles/mygame.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/miha/Igrica/Igrica_sdl/build/CMakeFiles --progress-num=1,2 "Built target mygame"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/miha/Igrica/Igrica_sdl/build/CMakeFiles --progress-num=1,2,3 "Built target mygame"
 .PHONY : CMakeFiles/mygame.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/mygame.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/miha/Igrica/Igrica_sdl/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/miha/Igrica/Igrica_sdl/build/CMakeFiles 3
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/mygame.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/miha/Igrica/Igrica_sdl/build/CMakeFiles 0
 .PHONY : CMakeFiles/mygame.dir/rule
@@ -146,45 +102,13 @@ mygame: CMakeFiles/mygame.dir/rule
 # codegen rule for target.
 CMakeFiles/mygame.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/miha/Igrica/Igrica_sdl/build/CMakeFiles --progress-num=1,2 "Finished codegen for target mygame"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/miha/Igrica/Igrica_sdl/build/CMakeFiles --progress-num=1,2,3 "Finished codegen for target mygame"
 .PHONY : CMakeFiles/mygame.dir/codegen
 
 # clean rule for target.
 CMakeFiles/mygame.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/clean
 .PHONY : CMakeFiles/mygame.dir/clean
-
-#=============================================================================
-# Target rules for target CMakeFiles/CopyAssets.dir
-
-# All Build rule for target.
-CMakeFiles/CopyAssets.dir/all:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/CopyAssets.dir/build.make CMakeFiles/CopyAssets.dir/depend
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/CopyAssets.dir/build.make CMakeFiles/CopyAssets.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/miha/Igrica/Igrica_sdl/build/CMakeFiles --progress-num= "Built target CopyAssets"
-.PHONY : CMakeFiles/CopyAssets.dir/all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/CopyAssets.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/miha/Igrica/Igrica_sdl/build/CMakeFiles 0
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/CopyAssets.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/miha/Igrica/Igrica_sdl/build/CMakeFiles 0
-.PHONY : CMakeFiles/CopyAssets.dir/rule
-
-# Convenience name for target.
-CopyAssets: CMakeFiles/CopyAssets.dir/rule
-.PHONY : CopyAssets
-
-# codegen rule for target.
-CMakeFiles/CopyAssets.dir/codegen:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/CopyAssets.dir/build.make CMakeFiles/CopyAssets.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/miha/Igrica/Igrica_sdl/build/CMakeFiles --progress-num= "Finished codegen for target CopyAssets"
-.PHONY : CMakeFiles/CopyAssets.dir/codegen
-
-# clean rule for target.
-CMakeFiles/CopyAssets.dir/clean:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/CopyAssets.dir/build.make CMakeFiles/CopyAssets.dir/clean
-.PHONY : CMakeFiles/CopyAssets.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

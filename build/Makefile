@@ -129,18 +129,29 @@ mygame/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/build
 .PHONY : mygame/fast
 
-#=============================================================================
-# Target rules for targets named CopyAssets
+src/Square.o: src/Square.cpp.o
+.PHONY : src/Square.o
 
-# Build rule for target.
-CopyAssets: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CopyAssets
-.PHONY : CopyAssets
+# target to build an object file
+src/Square.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Square.cpp.o
+.PHONY : src/Square.cpp.o
 
-# fast build rule for target.
-CopyAssets/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/CopyAssets.dir/build.make CMakeFiles/CopyAssets.dir/build
-.PHONY : CopyAssets/fast
+src/Square.i: src/Square.cpp.i
+.PHONY : src/Square.i
+
+# target to preprocess a source file
+src/Square.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Square.cpp.i
+.PHONY : src/Square.cpp.i
+
+src/Square.s: src/Square.cpp.s
+.PHONY : src/Square.s
+
+# target to generate assembly for a file
+src/Square.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Square.cpp.s
+.PHONY : src/Square.cpp.s
 
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
@@ -174,8 +185,10 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... CopyAssets"
 	@echo "... mygame"
+	@echo "... src/Square.o"
+	@echo "... src/Square.i"
+	@echo "... src/Square.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
