@@ -129,6 +129,30 @@ mygame/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/build
 .PHONY : mygame/fast
 
+src/Line.o: src/Line.cpp.o
+.PHONY : src/Line.o
+
+# target to build an object file
+src/Line.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Line.cpp.o
+.PHONY : src/Line.cpp.o
+
+src/Line.i: src/Line.cpp.i
+.PHONY : src/Line.i
+
+# target to preprocess a source file
+src/Line.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Line.cpp.i
+.PHONY : src/Line.cpp.i
+
+src/Line.s: src/Line.cpp.s
+.PHONY : src/Line.s
+
+# target to generate assembly for a file
+src/Line.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Line.cpp.s
+.PHONY : src/Line.cpp.s
+
 src/Square.o: src/Square.cpp.o
 .PHONY : src/Square.o
 
@@ -186,6 +210,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... mygame"
+	@echo "... src/Line.o"
+	@echo "... src/Line.i"
+	@echo "... src/Line.s"
 	@echo "... src/Square.o"
 	@echo "... src/Square.i"
 	@echo "... src/Square.s"

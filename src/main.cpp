@@ -1,6 +1,8 @@
 #include <SDL.h>
+#include <SDL_keycode.h>
 #include <stdio.h>
 #include "include/Square.h"
+#include "include/Line.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -30,7 +32,11 @@ int main(int argc, char* argv[]) {
     }
 
     // Create a Square object
-    Square square((SCREEN_WIDTH - 50) / 2, (SCREEN_HEIGHT - 50) / 2, 100, 5);
+    Square square((SCREEN_WIDTH - 50) / 2, (SCREEN_HEIGHT - 50) / 2, 50, 5);
+    
+    Line line((SCREEN_WIDTH - 400) / 2, (SCREEN_HEIGHT) / 2, 400, 5);
+
+
     // Main loop
     int running = 1;
     SDL_Event event;
@@ -40,6 +46,9 @@ int main(int argc, char* argv[]) {
             if (event.type == SDL_QUIT) {
                 running = 0;
             }
+            if(event.type == SDL_KEYDOWN)
+                if(event.key.keysym.sym == SDLK_ESCAPE)
+                    running = 0;
         }
         
         square.handleInput(event);
@@ -50,6 +59,7 @@ int main(int argc, char* argv[]) {
 
         // Render the square
         square.render(renderer);
+        line.render(renderer);
 
         // Update screen
         SDL_RenderPresent(renderer);

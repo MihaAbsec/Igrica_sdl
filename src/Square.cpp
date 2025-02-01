@@ -3,11 +3,10 @@
 #include <SDL_keyboard.h>
 #include <SDL_scancode.h>
 #include <SDL_stdinc.h>
-#include <iostream>
 #include <SDL2/SDL.h>
 #include <cmath>
 
-// Constructoor
+// Constructor
 Square::Square(float x, float y, int size, float speed){
     Square::x = x;
     Square::y = y;
@@ -37,8 +36,8 @@ void Square::handleInput(SDL_Event& event) {
 }
 
 // Update square position (if needed)
-void Square::update() {
-    // You can add additional logic here if needed
+void Square::line_detection() {
+
 }
 
 // Render the square
