@@ -6,6 +6,7 @@
 #include <SDL_keycode.h>
 #include <iostream>
 #include <stdio.h>
+#include <unistd.h>
 using namespace std;
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -40,7 +41,9 @@ int main(int argc, char *argv[]) {
   // Create a Square object
   Square square((SCREEN_WIDTH - 50) / 2, (SCREEN_HEIGHT - 50) / 2, 50, 5);
 
-  Line line((SCREEN_WIDTH - 400) / 2, (SCREEN_HEIGHT + 400) / 2, 400, 1);
+  Line line((SCREEN_WIDTH - 400) / 2, (SCREEN_HEIGHT) / 2, 1, 200);
+  Line line1((SCREEN_WIDTH - 400) / 2, (SCREEN_HEIGHT) / 2, 200, 1);
+  Line line2((SCREEN_WIDTH) / 2, (SCREEN_HEIGHT-400) / 2, 1, 200);
 
   Detection *detection;
 
@@ -59,7 +62,7 @@ int main(int argc, char *argv[]) {
     }
 
     square.handleInput(event);
-    //detection->contact(square, line);
+    // detection->contact(square, line);
 
     // Clear screen
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Black background
@@ -67,8 +70,15 @@ int main(int argc, char *argv[]) {
 
     // Render the square
     square.update(line);
+    square.update(line1);
+    square.update(line2);
     square.render(renderer);
     line.render(renderer);
+    line1.render(renderer);
+    line2.render(renderer);
+    //cout << "OLD: " << square.getoldX() << " " << square.getoldY() << endl;
+    cout << square.getX() << " " << square.getY() << '\r';
+    cout.flush();
     // Update screen
     SDL_RenderPresent(renderer);
 

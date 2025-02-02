@@ -12,6 +12,8 @@ public:
   void render(SDL_Renderer *renderer);
   float getX() const { return x; }
   float getY() const { return y; }
+  int getH() const { return height; }
+  int getW() const { return width; }
 };
 
 #endif
