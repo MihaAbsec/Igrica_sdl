@@ -5,7 +5,8 @@
 #include <SDL_stdinc.h>
 #include <SDL2/SDL.h>
 #include <cmath>
-
+#include <iostream>
+using namespace std;
 // Constructor
 Square::Square(float x, float y, int size, float speed){
     Square::x = x;
@@ -35,13 +36,16 @@ void Square::handleInput(SDL_Event& event) {
 
 }
 
-// Update square position (if needed)
-void Square::line_detection() {
-
+void Square::update(Line line){
+    if(y+size > line.getY()){
+        if(!(x+size < line.getX() || x > line.getX()+400))
+            y = line.getY()-size;
+    }
 }
 
 // Render the square
 void Square::render(SDL_Renderer* renderer) {
+    cout << this->x << " " << this->y << endl;
     SDL_Rect rect = { static_cast<int>(x), static_cast<int>(y), size, size };
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // White color
     SDL_RenderFillRect(renderer, &rect);

@@ -4,12 +4,14 @@
 #include <SDL2/SDL.h>
 
 class Line {
-    float x, y;
-    int height, width;
+  float x, y;
+  int height, width;
+
 public:
-    Line(float, float, int, int);
-    void render(SDL_Renderer* renderer);
+  Line(float, float, int, int);
+  void render(SDL_Renderer *renderer);
+  float getX() const { return x; }
+  float getY() const { return y; }
 };
 
 #endif
-

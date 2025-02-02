@@ -129,6 +129,30 @@ mygame/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/build
 .PHONY : mygame/fast
 
+src/Detection.o: src/Detection.cpp.o
+.PHONY : src/Detection.o
+
+# target to build an object file
+src/Detection.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Detection.cpp.o
+.PHONY : src/Detection.cpp.o
+
+src/Detection.i: src/Detection.cpp.i
+.PHONY : src/Detection.i
+
+# target to preprocess a source file
+src/Detection.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Detection.cpp.i
+.PHONY : src/Detection.cpp.i
+
+src/Detection.s: src/Detection.cpp.s
+.PHONY : src/Detection.s
+
+# target to generate assembly for a file
+src/Detection.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Detection.cpp.s
+.PHONY : src/Detection.cpp.s
+
 src/Line.o: src/Line.cpp.o
 .PHONY : src/Line.o
 
@@ -210,6 +234,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... mygame"
+	@echo "... src/Detection.o"
+	@echo "... src/Detection.i"
+	@echo "... src/Detection.s"
 	@echo "... src/Line.o"
 	@echo "... src/Line.i"
 	@echo "... src/Line.s"
