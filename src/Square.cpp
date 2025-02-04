@@ -11,8 +11,8 @@
 #include <iterator>
 using namespace std;
 // Constructor
-Square::Square(float x, float y, int size, float speed)
-	: x(x), y(y), size(size), speed(speed) {}
+Square::Square(float x, float y, int sizeWidth, int sizeHeight, float speed)
+	: x(x), y(y), sizeWidth(sizeWidth), sizeHeight(sizeHeight), speed(speed) {}
 
 // Handle keyboard input
 void Square::handleInput(SDL_Event &event) {
@@ -44,26 +44,26 @@ void Square::handleInput(SDL_Event &event) {
 
 void Square::update(Line line) {
     //zgornja plast
-	if (y + size > line.getY() && !(oldY + size > line.getY()))
-		if (!(x + size < line.getX() || x > line.getX() + line.getW()))
-			y = line.getY() - size;
+	if (y + sizeHeight > line.getY() && !(oldY + sizeHeight > line.getY()))
+		if (!(x + sizeWidth < line.getX() || x > line.getX() + line.getW()))
+			y = line.getY() - sizeHeight;
     //spodnja plast
 	if (y < line.getY() + line.getH() && !(oldY < line.getY() + line.getH()))
-		if (!(x + size < line.getX() || x > line.getX() + line.getW()))
+		if (!(x + sizeWidth < line.getX() || x > line.getX() + line.getW()))
 			y = line.getY() + line.getH();
     //leva plast
-	if (x + size > line.getX() && !(oldX + size > line.getX()))
-		if (!(y + size < line.getY() || y > line.getY() + line.getH()))
-			x = line.getX() - size;
+	if (x + sizeWidth > line.getX() && !(oldX + sizeWidth > line.getX()))
+		if (!(y + sizeHeight < line.getY() || y > line.getY() + line.getH()))
+			x = line.getX() - sizeWidth;
     //desna plast
 	if (x < line.getX() + line.getW() && !(oldX < line.getX() + line.getW()))
-		if (!(y + size < line.getY() || y > line.getY() + line.getH()))
+		if (!(y + sizeHeight < line.getY() || y > line.getY() + line.getH()))
 			x = line.getX() + line.getW();
 }
 
 // Render the square
 void Square::render(SDL_Renderer *renderer) {
-	SDL_Rect rect = {static_cast<int>(x), static_cast<int>(y), size, size};
+	SDL_Rect rect = {static_cast<int>(x), static_cast<int>(y), sizeWidth, sizeHeight};
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);  // White color
 	SDL_RenderFillRect(renderer, &rect);
 }

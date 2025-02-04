@@ -295,6 +295,9 @@ Project_SOURCE_DIR:STATIC=/home/miha/Igrica/Igrica_sdl
 //The directory containing a CMake configuration file for SDL2.
 SDL2_DIR:PATH=/usr/local/lib/cmake/SDL2
 
+//The directory containing a CMake configuration file for SDL2_image.
+SDL2_image_DIR:PATH=/usr/lib/cmake/SDL2_image
+
 //Value Computed by CMake
 glm_BINARY_DIR:STATIC=/home/miha/Igrica/Igrica_sdl/build/_deps/glm-build
 

@@ -6,12 +6,12 @@
 
 class Square {
   float x, y;
-  int size;
+  int sizeHeight, sizeWidth;
   float speed;
   float oldX = 0, oldY = 0;
 
 public:
-  Square(float, float, int, float);   // Constructor
+  Square(float, float, int, int, float);   // Constructor
   void handleInput(SDL_Event &event); // Handle keyboard input
   void render(SDL_Renderer *renderer);
   void update(Line);

@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	// Create a Square object
-	Square square((SCREEN_WIDTH - 50) / 2, (SCREEN_HEIGHT - 50) / 2, 50, 5);
+	Square square((SCREEN_WIDTH - 50) / 2, (SCREEN_HEIGHT - 50) / 2, 30, 50, 5);
     std::vector<Line> lines = {
         Line(0, 0, 0, SCREEN_HEIGHT),
         Line(SCREEN_WIDTH, 0, 0, SCREEN_HEIGHT),
