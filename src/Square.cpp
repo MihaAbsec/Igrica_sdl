@@ -13,11 +13,11 @@
 using namespace std;
 // Constructor
 Square::Square(float x, float y, int sizeWidth, int sizeHeight, float speed)
-	: speed(speed) {
-        this->x = x;
+	: GameObject(x,y,sizeWidth, sizeHeight),speed(speed) {
+        /*this->x = x;
         this->y = y;
         this->sizeWidth = sizeWidth;
-        this->sizeHeight = sizeHeight;
+        this->sizeHeight = sizeHeight;*/
     }
 
 // Handle keyboard input

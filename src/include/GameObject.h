@@ -10,11 +10,14 @@ class GameObject {
 	float oldX = 0, oldY = 0;
 
    public:
-	void render(SDL_Renderer *renderer) {
-	SDL_Rect rect = {static_cast<int>(x), static_cast<int>(y), sizeWidth, sizeHeight};
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);  // White color
-	SDL_RenderFillRect(renderer, &rect);
-}	virtual void giveXY(int dx, int dy) {
+	GameObject(float x, float y, int sizeWidth, int sizeHeight)
+		: x(x), y(y), sizeWidth(sizeWidth), sizeHeight(sizeHeight){}
+	void render(SDL_Renderer* renderer) {
+		SDL_Rect rect = {static_cast<int>(x), static_cast<int>(y), sizeWidth, sizeHeight};
+		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);  // White color
+		SDL_RenderFillRect(renderer, &rect);
+	}
+	virtual void giveXY(int dx, int dy) {
 		x = dx;
 		y = dy;
 	}
