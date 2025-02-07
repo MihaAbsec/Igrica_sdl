@@ -5,6 +5,7 @@
 #include <SDL_keyboard.h>
 #include <SDL_scancode.h>
 #include <SDL_stdinc.h>
+#include "include/GameObject.h"
 
 #include <cmath>
 #include <iostream>
@@ -12,7 +13,12 @@
 using namespace std;
 // Constructor
 Square::Square(float x, float y, int sizeWidth, int sizeHeight, float speed)
-	: x(x), y(y), sizeWidth(sizeWidth), sizeHeight(sizeHeight), speed(speed) {}
+	: speed(speed) {
+        this->x = x;
+        this->y = y;
+        this->sizeWidth = sizeWidth;
+        this->sizeHeight = sizeHeight;
+    }
 
 // Handle keyboard input
 void Square::handleInput(SDL_Event &event) {
@@ -62,8 +68,4 @@ void Square::update(Line line) {
 }
 
 // Render the square
-void Square::render(SDL_Renderer *renderer) {
-	SDL_Rect rect = {static_cast<int>(x), static_cast<int>(y), sizeWidth, sizeHeight};
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);  // White color
-	SDL_RenderFillRect(renderer, &rect);
-}
+

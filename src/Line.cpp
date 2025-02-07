@@ -2,14 +2,9 @@
 #include <SDL2/SDL.h>
 
 Line::Line(float x, float y, int width, int height){
-    Line::x = x;
-    Line::y = y;
-    Line::height = height;
-    Line::width = width;
+    this->x = x;
+    this->y = y;
+    this->sizeHeight = height;
+    this->sizeWidth = width;
 }
 
-void Line::render(SDL_Renderer* renderer) {
-    SDL_Rect rect = { static_cast<int>(x), static_cast<int>(y), width, height};
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // White color
-    SDL_RenderFillRect(renderer, &rect);
-}

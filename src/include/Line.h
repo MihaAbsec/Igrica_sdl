@@ -2,18 +2,12 @@
 #define LINE_H
 
 #include <SDL2/SDL.h>
+#include "GameObject.h"
 
-class Line {
-  float x, y;
-  int height, width;
+class Line:public GameObject {
 
 public:
   Line(float, float, int, int);
-  void render(SDL_Renderer *renderer);
-  float getX() const { return x; }
-  float getY() const { return y; }
-  int getH() const { return height; }
-  int getW() const { return width; }
 };
 
 #endif
