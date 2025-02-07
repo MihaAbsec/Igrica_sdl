@@ -22,7 +22,7 @@ public:
     void update();       // Update game logic
     
     SDL_Renderer* renderer;
-private:
+protected:
 
     SDL_Window* window;
 

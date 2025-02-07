@@ -5,6 +5,7 @@
 
 #include "include/Line.h"
 #include "include/Square.h"
+#include "include/Collision.h"
 
 // Constructor
 Game::Game(int SCREEN_WIDTH, int SCREEN_HEIGHT)
@@ -58,10 +59,6 @@ bool Game::innit() {
 	return true;
 }
 
-// Run the game loop
-void Game::run() {
-}
-
 // Handle SDL events (e.g., keyboard input)
 void Game::handleEvents() {
 	SDL_Event event;
@@ -82,7 +79,8 @@ void Game::handleEvents() {
 // Update game logic
 void Game::update() {
 	for (Line& line : lines) {
-		square.update(line);
+		collision(square, line);
+        square.update(line);
 	}
 }
 

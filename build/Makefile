@@ -129,29 +129,29 @@ mygame/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/build
 .PHONY : mygame/fast
 
-src/Detection.o: src/Detection.cpp.o
-.PHONY : src/Detection.o
+src/Collision.o: src/Collision.cpp.o
+.PHONY : src/Collision.o
 
 # target to build an object file
-src/Detection.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Detection.cpp.o
-.PHONY : src/Detection.cpp.o
+src/Collision.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Collision.cpp.o
+.PHONY : src/Collision.cpp.o
 
-src/Detection.i: src/Detection.cpp.i
-.PHONY : src/Detection.i
+src/Collision.i: src/Collision.cpp.i
+.PHONY : src/Collision.i
 
 # target to preprocess a source file
-src/Detection.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Detection.cpp.i
-.PHONY : src/Detection.cpp.i
+src/Collision.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Collision.cpp.i
+.PHONY : src/Collision.cpp.i
 
-src/Detection.s: src/Detection.cpp.s
-.PHONY : src/Detection.s
+src/Collision.s: src/Collision.cpp.s
+.PHONY : src/Collision.s
 
 # target to generate assembly for a file
-src/Detection.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Detection.cpp.s
-.PHONY : src/Detection.cpp.s
+src/Collision.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Collision.cpp.s
+.PHONY : src/Collision.cpp.s
 
 src/Game.o: src/Game.cpp.o
 .PHONY : src/Game.o
@@ -258,9 +258,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... mygame"
-	@echo "... src/Detection.o"
-	@echo "... src/Detection.i"
-	@echo "... src/Detection.s"
+	@echo "... src/Collision.o"
+	@echo "... src/Collision.i"
+	@echo "... src/Collision.s"
 	@echo "... src/Game.o"
 	@echo "... src/Game.i"
 	@echo "... src/Game.s"
