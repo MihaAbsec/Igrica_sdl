@@ -80,7 +80,7 @@ void Game::handleEvents() {
 void Game::update() {
 	for (Line& line : lines) {
 		collision(square, line);
-        square.update(line);
+        //square.update(line);
 	}
 }
 

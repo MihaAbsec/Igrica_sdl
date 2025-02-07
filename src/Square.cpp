@@ -43,19 +43,19 @@ void Square::handleInput(SDL_Event &event) {
 }
 
 void Square::update(Line line) {
-    //zgornja plast
+	// zgornja plast
 	if (y + sizeHeight > line.getY() && !(oldY + sizeHeight > line.getY()))
 		if (!(x + sizeWidth < line.getX() || x > line.getX() + line.getW()))
 			y = line.getY() - sizeHeight;
-    //spodnja plast
+	// spodnja plast
 	if (y < line.getY() + line.getH() && !(oldY < line.getY() + line.getH()))
 		if (!(x + sizeWidth < line.getX() || x > line.getX() + line.getW()))
 			y = line.getY() + line.getH();
-    //leva plast
+	// leva plast
 	if (x + sizeWidth > line.getX() && !(oldX + sizeWidth > line.getX()))
 		if (!(y + sizeHeight < line.getY() || y > line.getY() + line.getH()))
 			x = line.getX() - sizeWidth;
-    //desna plast
+	// desna plast
 	if (x < line.getX() + line.getW() && !(oldX < line.getX() + line.getW()))
 		if (!(y + sizeHeight < line.getY() || y > line.getY() + line.getH()))
 			x = line.getX() + line.getW();
