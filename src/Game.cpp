@@ -3,13 +3,14 @@
 #include <iostream>
 #include <vector>
 
+#include "include/Clock.h"
+#include "include/Collision.h"
 #include "include/Line.h"
 #include "include/Square.h"
-#include "include/Collision.h"
 
 // Constructor
 Game::Game(int SCREEN_WIDTH, int SCREEN_HEIGHT)
-	: SCREEN_WIDTH(SCREEN_WIDTH), SCREEN_HEIGHT(SCREEN_HEIGHT), window(nullptr), renderer(nullptr), square((SCREEN_WIDTH - 50) / 2, (SCREEN_HEIGHT - 50) / 2, 30, 50, 5), running(true) {
+	: SCREEN_WIDTH(SCREEN_WIDTH), SCREEN_HEIGHT(SCREEN_HEIGHT), window(nullptr), renderer(nullptr), square((SCREEN_WIDTH - 50) / 2, (SCREEN_HEIGHT - 50) / 2, 30, 50, 1), running(true) {
 	// Initialize lines
 	lines = {
 		Line(0, 0, 0, SCREEN_HEIGHT),										// Left wall
@@ -60,9 +61,9 @@ bool Game::innit() {
 }
 
 // Handle SDL events (e.g., keyboard input)
-void Game::handleEvents() {
+void Game::handleEvents(Clock* clock) {
 	SDL_Event event;
-	square.handleInput(event);
+	square.handleInput(event, clock);
 
 	while (SDL_PollEvent(&event)) {
 		if (event.type == SDL_QUIT) {
@@ -80,7 +81,7 @@ void Game::handleEvents() {
 void Game::update() {
 	for (Line& line : lines) {
 		collision(square, line);
-        //square.update(line);
+		//square.update(line);
 	}
 }
 

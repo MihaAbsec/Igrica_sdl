@@ -17,7 +17,7 @@ class GameObject {
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);  // White color
 		SDL_RenderFillRect(renderer, &rect);
 	}
-	virtual void giveXY(int dx, int dy) {
+	virtual void giveXY(float dx, float dy) {
 		x = dx;
 		y = dy;
 	}

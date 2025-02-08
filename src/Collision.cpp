@@ -1,30 +1,25 @@
 #include "include/Collision.h"
 
-#include <iostream>
-
-#include "include/Game.h"
 #include "include/Line.h"
 #include "include/Square.h"
 
-template <class T>
-void collision(T& obj, Line line) {
+template <class T, class V>
+void collision(T& obj1, const V& obj2) {
 	// zgornja plast
-	if (obj.getY() + obj.getH() > line.getY() && !(obj.getoldY() + obj.getH() > line.getY()))
-		if (!(obj.getX() + obj.getW() < line.getX() || obj.getX() > line.getX() + line.getW())) 
-			obj.giveXY(obj.getX(), line.getY() - obj.getH());
+	if (obj1.getY() + obj1.getH() > obj2.getY() && !(obj1.getoldY() + obj1.getH() > obj2.getY()))
+		if (!(obj1.getX() + obj1.getW() <= obj2.getX() || obj1.getX() >= obj2.getX() + obj2.getW()))
+			obj1.giveXY(obj1.getX(), obj2.getY() - obj1.getH());
 	// spodnja plast
-	if (obj.getY() < line.getY() + line.getH() && !(obj.getoldY() < line.getY() + line.getH()))
-		if (!(obj.getX() + obj.getW() < line.getX() || obj.getX() > line.getX() + line.getW())) 
-			obj.giveXY(obj.getX(), line.getY() + line.getH());
+	if (obj1.getY() < obj2.getY() + obj2.getH() && !(obj1.getoldY() < obj2.getY() + obj2.getH()))
+		if (!(obj1.getX() + obj1.getW() <= obj2.getX() || obj1.getX() >= obj2.getX() + obj2.getW()))
+			obj1.giveXY(obj1.getX(), obj2.getY() + obj2.getH());
 	// leva plast
-	if (obj.getX() + obj.getW() > line.getX() && !(obj.getoldX() + obj.getW() > line.getX()))
-		if (!(obj.getY() + obj.getH() < line.getY() || obj.getY() > line.getY() + line.getH())) 
-			obj.giveXY(line.getX() - obj.getW(), obj.getY());
+	if (obj1.getX() + obj1.getW() > obj2.getX() && !(obj1.getoldX() + obj1.getW() > obj2.getX()))
+		if (!(obj1.getY() + obj1.getH() <= obj2.getY() || obj1.getY() >= obj2.getY() + obj2.getH()))
+			obj1.giveXY(obj2.getX() - obj1.getW(), obj1.getY());
 	// desna plast
-	if (obj.getX() < line.getX() + line.getW() && !(obj.getoldX() < line.getX() + line.getW()))
-		if (!(obj.getY() + obj.getH() < line.getY() || obj.getY() > line.getY() + line.getH())) 
-			obj.giveXY(line.getX() + line.getW(), obj.getY());
+	if (obj1.getX() < obj2.getX() + obj2.getW() && !(obj1.getoldX() < obj2.getX() + obj2.getW()))
+		if (!(obj1.getY() + obj1.getH() <= obj2.getY() || obj1.getY() >= obj2.getY() + obj2.getH()))
+			obj1.giveXY(obj2.getX() + obj2.getW(), obj1.getY());
 }
-
-template void collision<Square>(Square&, Line);
-
+template void collision<Square, Line>(Square&, const Line&);

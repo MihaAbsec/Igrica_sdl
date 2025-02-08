@@ -5,13 +5,14 @@
 
 #include "GameObject.h"
 #include "Line.h"
+#include "Clock.h"
 
 class Square : public GameObject {
 	float speed;
 
    public:
 	Square(float, float, int, int, float);
-	void handleInput(SDL_Event &event);	
+	void handleInput(SDL_Event &event, Clock *clock);	
 	void update(Line);
 };
 

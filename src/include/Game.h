@@ -6,6 +6,7 @@
 #include <vector>
 #include "Square.h"
 #include "Line.h"
+#include "Clock.h"
 
 class Game {
 public:
@@ -18,7 +19,7 @@ public:
     bool running;
 
     void render();       // Render the game
-    void handleEvents(); // Handle SDL events (e.g., keyboard input)
+    void handleEvents(Clock*); // Handle SDL events (e.g., keyboard input)
     void update();       // Update game logic
     
     SDL_Renderer* renderer;
