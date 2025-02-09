@@ -1,8 +1,10 @@
 #include "include/Game.h"
 
+#include <ctime>
 #include <iostream>
 #include <vector>
 
+#include "include/Bullet.h"
 #include "include/Clock.h"
 #include "include/Collision.h"
 #include "include/Line.h"
@@ -10,7 +12,7 @@
 
 // Constructor
 Game::Game(int SCREEN_WIDTH, int SCREEN_HEIGHT)
-	: SCREEN_WIDTH(SCREEN_WIDTH), SCREEN_HEIGHT(SCREEN_HEIGHT), window(nullptr), renderer(nullptr), square((SCREEN_WIDTH - 50) / 2, (SCREEN_HEIGHT - 50) / 2, 30, 50, 1), running(true) {
+	: SCREEN_WIDTH(SCREEN_WIDTH), SCREEN_HEIGHT(SCREEN_HEIGHT), window(nullptr), renderer(nullptr), player((SCREEN_WIDTH - 50) / 2, (SCREEN_HEIGHT - 50) / 2, 30, 50, 1), running(true) {
 	// Initialize lines
 	lines = {
 		Line(0, 0, 0, SCREEN_HEIGHT),										// Left wall
@@ -29,7 +31,6 @@ Game::~Game() {
 	cleanup();
 }
 
-// Initialize SDL, window, renderer, etc.
 bool Game::innit() {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		std::cout << "Error initializing SDL: %s\n", SDL_GetError();
@@ -60,10 +61,9 @@ bool Game::innit() {
 	return true;
 }
 
-// Handle SDL events (e.g., keyboard input)
 void Game::handleEvents(Clock* clock) {
 	SDL_Event event;
-	square.handleInput(event, clock);
+	player.handleInput(event, clock);
 
 	while (SDL_PollEvent(&event)) {
 		if (event.type == SDL_QUIT) {
@@ -74,17 +74,35 @@ void Game::handleEvents(Clock* clock) {
 				running = false;
 			}
 		}
+		mouse.update(event);
 	}
 }
 
 // Update game logic
-void Game::update() {
+void Game::update(Clock* clock) {
 	for (Line& line : lines) {
-		collision(square, line);
-		//square.update(line);
+		collision(player, line);
+		int n = 0;
+		for (Bullet& bullet : bullets) {
+			if (collision(bullet, line)) {
+				bullets.erase(bullets.begin() + n);
+			}
+			n++;
+		}
 	}
+    
+	static bool wasMousePressed = false;
+	if (mouse.getButtons() == 1 ) {
+		if ( !wasMousePressed && clock->last_tick_time - clock->last_shot_time >= 300) {
+			bullets.push_back(Bullet(player.getX() + player.getW() / 2, player.getY() + player.getH() / 2, 5, 5, 1, mouse.getX(), mouse.getY()));
+			clock->last_shot_time = clock->last_tick_time;
+		}
+		wasMousePressed = true;
+	} else
+		wasMousePressed = false;
+	for (Bullet& bullets : bullets)
+		bullets.update(clock->delta);
 }
-
 // Render the game
 void Game::render() {
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);	 // Black background
@@ -93,7 +111,10 @@ void Game::render() {
 	for (Line& line : lines) {
 		line.render(renderer);
 	}
-	square.render(renderer);
+	for (Bullet& bullets : bullets) {
+		bullets.render(renderer);
+	}
+	player.render(renderer);
 
 	SDL_RenderPresent(renderer);
 }

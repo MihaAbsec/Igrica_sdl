@@ -3,34 +3,41 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+
+#include <list>
 #include <vector>
-#include "Square.h"
-#include "Line.h"
+
+#include "Bullet.h"
 #include "Clock.h"
+#include "Line.h"
+#include "Mouse.h"
+#include "Square.h"
 
 class Game {
-public:
-    Game(int, int);  // Constructor
-    ~Game(); // Destructor
+   public:
+	Game(int, int);
+	~Game();
 
-    bool innit(); // Initialize SDL, window, renderer, etc.
-    void run();        // Run the game loop
-    void cleanup();    // Clean up resources
-    bool running;
+	bool innit();
+	void run();
+	void cleanup();
+	bool running;
 
-    void render();       // Render the game
-    void handleEvents(Clock*); // Handle SDL events (e.g., keyboard input)
-    void update();       // Update game logic
-    
-    SDL_Renderer* renderer;
-protected:
+	void render();
+	void handleEvents(Clock*);
+	void update(Clock*);
 
-    SDL_Window* window;
+	SDL_Renderer* renderer;
 
-    Square square;
-    std::vector<Line> lines;
-    
-    int SCREEN_WIDTH, SCREEN_HEIGHT;
+   protected:
+	SDL_Window* window;
+
+	Square player;
+	Mouse mouse;
+	std::vector<Bullet> bullets;
+	std::vector<Line> lines;
+
+	int SCREEN_WIDTH, SCREEN_HEIGHT;
 };
 
-#endif // GAME_H
+#endif	// GAME_H

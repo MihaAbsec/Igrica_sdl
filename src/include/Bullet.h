@@ -3,13 +3,19 @@
 
 #include <SDL2/SDL.h>
 
+#include <cmath>  // For sqrt
+
 #include "GameObject.h"
 
 class Bullet : public GameObject {
-    float speed;
+   private:
+	float dirX, dirY;
+	float speed;
+
    public:
-	Bullet(float, float, int, int, float);
+	Bullet(float x, float y, int width, int height, float speed, int targetX, int targetY);
+
+	void update(float deltaTime);
 };
 
 #endif
-

@@ -129,6 +129,30 @@ mygame/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/build
 .PHONY : mygame/fast
 
+src/Bullet.o: src/Bullet.cpp.o
+.PHONY : src/Bullet.o
+
+# target to build an object file
+src/Bullet.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Bullet.cpp.o
+.PHONY : src/Bullet.cpp.o
+
+src/Bullet.i: src/Bullet.cpp.i
+.PHONY : src/Bullet.i
+
+# target to preprocess a source file
+src/Bullet.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Bullet.cpp.i
+.PHONY : src/Bullet.cpp.i
+
+src/Bullet.s: src/Bullet.cpp.s
+.PHONY : src/Bullet.s
+
+# target to generate assembly for a file
+src/Bullet.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Bullet.cpp.s
+.PHONY : src/Bullet.cpp.s
+
 src/Collision.o: src/Collision.cpp.o
 .PHONY : src/Collision.o
 
@@ -176,6 +200,30 @@ src/Game.s: src/Game.cpp.s
 src/Game.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Game.cpp.s
 .PHONY : src/Game.cpp.s
+
+src/Mouse.o: src/Mouse.cpp.o
+.PHONY : src/Mouse.o
+
+# target to build an object file
+src/Mouse.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Mouse.cpp.o
+.PHONY : src/Mouse.cpp.o
+
+src/Mouse.i: src/Mouse.cpp.i
+.PHONY : src/Mouse.i
+
+# target to preprocess a source file
+src/Mouse.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Mouse.cpp.i
+.PHONY : src/Mouse.cpp.i
+
+src/Mouse.s: src/Mouse.cpp.s
+.PHONY : src/Mouse.s
+
+# target to generate assembly for a file
+src/Mouse.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Mouse.cpp.s
+.PHONY : src/Mouse.cpp.s
 
 src/Square.o: src/Square.cpp.o
 .PHONY : src/Square.o
@@ -234,12 +282,18 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... mygame"
+	@echo "... src/Bullet.o"
+	@echo "... src/Bullet.i"
+	@echo "... src/Bullet.s"
 	@echo "... src/Collision.o"
 	@echo "... src/Collision.i"
 	@echo "... src/Collision.s"
 	@echo "... src/Game.o"
 	@echo "... src/Game.i"
 	@echo "... src/Game.s"
+	@echo "... src/Mouse.o"
+	@echo "... src/Mouse.i"
+	@echo "... src/Mouse.s"
 	@echo "... src/Square.o"
 	@echo "... src/Square.i"
 	@echo "... src/Square.s"

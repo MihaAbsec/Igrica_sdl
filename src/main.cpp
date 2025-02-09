@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
 	while (game->running) {
         clock->tick();
 		game->handleEvents(clock);
-		game->update();
+		game->update(clock);
 		game->render();
 	}
 
