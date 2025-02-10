@@ -1,4 +1,4 @@
-#include "include/Square.h"
+#include "include/Player.h"
 
 #include <SDL2/SDL.h>
 #include <SDL_joystick.h>
@@ -9,13 +9,11 @@
 #include <cmath>
 #include <glm/glm.hpp>
 #include <glm/vec2.hpp>
-#include <iostream>
-#include <iterator>
 
 #include "include/GameObject.h"
 using namespace std;
 // Constructor
-Square::Square(float x, float y, int sizeWidth, int sizeHeight, float speed)
+Player::Player(float x, float y, int sizeWidth, int sizeHeight, float speed)
 	: GameObject(x, y, sizeWidth, sizeHeight), speed(speed) {
 	/*this->x = x;
 	this->y = y;
@@ -24,7 +22,7 @@ Square::Square(float x, float y, int sizeWidth, int sizeHeight, float speed)
 }
 
 // Handle keyboard input
-void Square::handleInput(SDL_Event &event, Clock *clock) {
+void Player::handleInput(SDL_Event &event, Clock *clock) {
 	const Uint8 *state = SDL_GetKeyboardState(NULL);
 	glm::vec2 movement(0.0f, 0.0f);
 
@@ -57,7 +55,7 @@ void Square::handleInput(SDL_Event &event, Clock *clock) {
 	}
 }
 
-void Square::update(Line line) {
+void Player::update(Line line) {
 	// zgornja plast
 	if (y + sizeHeight > line.getY() && !(oldY + sizeHeight > line.getY()))
 		if (!(x + sizeWidth <= line.getX() || x >= line.getX() + line.getW()))

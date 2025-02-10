@@ -4,14 +4,14 @@
 #include <SDL.h>
 #include <SDL_image.h>
 
-#include <list>
 #include <vector>
 
 #include "Bullet.h"
 #include "Clock.h"
 #include "Line.h"
 #include "Mouse.h"
-#include "Square.h"
+#include "Player.h"
+#include "Layout1.h"
 
 class Game {
    public:
@@ -31,12 +31,12 @@ class Game {
 
    protected:
 	SDL_Window* window;
-
-	Square player;
+    
+    //Layout1 layout1;
+	Player player;
 	Mouse mouse;
 	std::vector<Bullet> bullets;
-	std::vector<Line> lines;
-
+    Layout1 *layout1;
 	int SCREEN_WIDTH, SCREEN_HEIGHT;
 };
 

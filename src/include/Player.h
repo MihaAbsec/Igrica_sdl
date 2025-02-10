@@ -7,11 +7,11 @@
 #include "Line.h"
 #include "Clock.h"
 
-class Square : public GameObject {
+class Player : public GameObject {
 	float speed;
 
    public:
-	Square(float, float, int, int, float);
+	Player(float, float, int, int, float);
 	void handleInput(SDL_Event &event, Clock *clock);	
 	void update(Line);
 };

@@ -1,11 +1,10 @@
 #include "include/Collision.h"
 
-#include <iostream>
 
 #include "include/Line.h"
-#include "include/Square.h"
+#include "include/Player.h"
 
-void collision(Square& obj1, const Line& obj2) {
+void collision(Player& obj1, const Line& obj2) {
 	// zgornja plast
 	if (obj1.getY() + obj1.getH() > obj2.getY() && !(obj1.getoldY() + obj1.getH() > obj2.getY()))
 		if (!(obj1.getX() + obj1.getW() <= obj2.getX() || obj1.getX() >= obj2.getX() + obj2.getW()))

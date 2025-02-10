@@ -201,6 +201,30 @@ src/Game.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Game.cpp.s
 .PHONY : src/Game.cpp.s
 
+src/Layout1.o: src/Layout1.cpp.o
+.PHONY : src/Layout1.o
+
+# target to build an object file
+src/Layout1.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Layout1.cpp.o
+.PHONY : src/Layout1.cpp.o
+
+src/Layout1.i: src/Layout1.cpp.i
+.PHONY : src/Layout1.i
+
+# target to preprocess a source file
+src/Layout1.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Layout1.cpp.i
+.PHONY : src/Layout1.cpp.i
+
+src/Layout1.s: src/Layout1.cpp.s
+.PHONY : src/Layout1.s
+
+# target to generate assembly for a file
+src/Layout1.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Layout1.cpp.s
+.PHONY : src/Layout1.cpp.s
+
 src/Mouse.o: src/Mouse.cpp.o
 .PHONY : src/Mouse.o
 
@@ -225,29 +249,29 @@ src/Mouse.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Mouse.cpp.s
 .PHONY : src/Mouse.cpp.s
 
-src/Square.o: src/Square.cpp.o
-.PHONY : src/Square.o
+src/Player.o: src/Player.cpp.o
+.PHONY : src/Player.o
 
 # target to build an object file
-src/Square.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Square.cpp.o
-.PHONY : src/Square.cpp.o
+src/Player.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Player.cpp.o
+.PHONY : src/Player.cpp.o
 
-src/Square.i: src/Square.cpp.i
-.PHONY : src/Square.i
+src/Player.i: src/Player.cpp.i
+.PHONY : src/Player.i
 
 # target to preprocess a source file
-src/Square.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Square.cpp.i
-.PHONY : src/Square.cpp.i
+src/Player.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Player.cpp.i
+.PHONY : src/Player.cpp.i
 
-src/Square.s: src/Square.cpp.s
-.PHONY : src/Square.s
+src/Player.s: src/Player.cpp.s
+.PHONY : src/Player.s
 
 # target to generate assembly for a file
-src/Square.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Square.cpp.s
-.PHONY : src/Square.cpp.s
+src/Player.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Player.cpp.s
+.PHONY : src/Player.cpp.s
 
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
@@ -291,12 +315,15 @@ help:
 	@echo "... src/Game.o"
 	@echo "... src/Game.i"
 	@echo "... src/Game.s"
+	@echo "... src/Layout1.o"
+	@echo "... src/Layout1.i"
+	@echo "... src/Layout1.s"
 	@echo "... src/Mouse.o"
 	@echo "... src/Mouse.i"
 	@echo "... src/Mouse.s"
-	@echo "... src/Square.o"
-	@echo "... src/Square.i"
-	@echo "... src/Square.s"
+	@echo "... src/Player.o"
+	@echo "... src/Player.i"
+	@echo "... src/Player.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

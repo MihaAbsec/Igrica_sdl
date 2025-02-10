@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 find_package(SDL2 REQUIRED)
 
 # cpp 'fajli'
-add_executable(mygame src/main.cpp src/Square.cpp src/Game.cpp src/Collision.cpp src/Mouse.cpp src/Bullet.cpp)
+add_executable(mygame src/main.cpp src/Player.cpp src/Game.cpp src/Collision.cpp src/Bullet.cpp src/Mouse.cpp src/Layout1.cpp)
 
 # Specify the include directory for Square.h
 target_include_directories(mygame PRIVATE ${SDL2_INCLUDE_DIRS} include)
