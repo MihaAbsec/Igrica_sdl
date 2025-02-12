@@ -13,7 +13,9 @@
 
 // Constructor
 Game::Game(int SCREEN_WIDTH, int SCREEN_HEIGHT)
-	: SCREEN_WIDTH(SCREEN_WIDTH), SCREEN_HEIGHT(SCREEN_HEIGHT), window(nullptr), renderer(nullptr), player((SCREEN_WIDTH - 50) / 2, (SCREEN_HEIGHT - 50) / 2, 30, 50, 1), running(true) {
+	: SCREEN_WIDTH(SCREEN_WIDTH), SCREEN_HEIGHT(SCREEN_HEIGHT), window(nullptr), renderer(nullptr), 
+    player((SCREEN_WIDTH - 50) / 2, (SCREEN_HEIGHT - 50) / 2, 30, 50, 1), running(true),
+    npc(SCREEN_WIDTH - 60, 10, 50, 50, 0.5){
 	// Initialize lines
 	layout1 = new Layout1(SCREEN_WIDTH, SCREEN_HEIGHT);
 }
@@ -82,10 +84,10 @@ void Game::update(Clock* clock) {
 			n++;
 		}
 	}
-
+    npc.movement(clock, layout1);
 	static bool wasMousePressed = false;
 	if (mouse.getButtons() == 1) {
-		if (!wasMousePressed && clock->last_tick_time - clock->last_shot_time >= 300) {
+		if (!wasMousePressed && clock->last_tick_time - clock->last_shot_time >= 250) {
 			bullets.push_back(Bullet(player.getX() + player.getW() / 2, player.getY() + player.getH() / 2, 5, 5, 1, mouse.getX(), mouse.getY()));
 			clock->last_shot_time = clock->last_tick_time;
 		}
@@ -105,6 +107,7 @@ void Game::render() {
 	for (Bullet& bullets : bullets) {
 		bullets.render(renderer);
 	}
+    npc.render(renderer);
 	player.render(renderer);
 
 	SDL_RenderPresent(renderer);

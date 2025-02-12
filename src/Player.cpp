@@ -14,12 +14,7 @@
 using namespace std;
 // Constructor
 Player::Player(float x, float y, int sizeWidth, int sizeHeight, float speed)
-	: GameObject(x, y, sizeWidth, sizeHeight), speed(speed) {
-	/*this->x = x;
-	this->y = y;
-	this->sizeWidth = sizeWidth;
-	this->sizeHeight = sizeHeight;*/
-}
+	: GameObject(x, y, sizeWidth, sizeHeight), speed(speed) {}
 
 // Handle keyboard input
 void Player::handleInput(SDL_Event &event, Clock *clock) {

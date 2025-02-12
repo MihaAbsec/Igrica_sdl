@@ -12,6 +12,7 @@
 #include "Mouse.h"
 #include "Player.h"
 #include "Layout1.h"
+#include "Npc.h"
 
 class Game {
    public:
@@ -34,6 +35,7 @@ class Game {
     
     //Layout1 layout1;
 	Player player;
+    Npc npc;
 	Mouse mouse;
 	std::vector<Bullet> bullets;
     Layout1 *layout1;
