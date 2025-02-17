@@ -8,11 +8,12 @@
 
 #include "Bullet.h"
 #include "Clock.h"
+#include "Key.h"
+#include "Layout1.h"
 #include "Line.h"
 #include "Mouse.h"
-#include "Player.h"
-#include "Layout1.h"
 #include "Npc.h"
+#include "Player.h"
 
 class Game {
    public:
@@ -32,13 +33,14 @@ class Game {
 
    protected:
 	SDL_Window* window;
-    
-    //Layout1 layout1;
+
+	// Layout1 layout1;
 	Player player;
-    Npc npc;
+	Key* key;
+	Npc npc;
 	Mouse mouse;
 	std::vector<Bullet> bullets;
-    Layout1 *layout1;
+	Layout1* layout1;
 	int SCREEN_WIDTH, SCREEN_HEIGHT;
 };
 

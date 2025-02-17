@@ -3,6 +3,7 @@
 #include "include/Line.h"
 #include "include/Player.h"
 
+// PLAYER
 void collision(Player& obj1, const Line& obj2) {
 	// zgornja plast
 	if (obj1.getY() + obj1.getH() > obj2.getY() && !(obj1.getoldY() + obj1.getH() > obj2.getY()))
@@ -21,26 +22,7 @@ void collision(Player& obj1, const Line& obj2) {
 		if (!(obj1.getY() + obj1.getH() <= obj2.getY() || obj1.getY() >= obj2.getY() + obj2.getH()))
 			obj1.giveXY(obj2.getX() + obj2.getW(), obj1.getY());
 }
-/*bool collision(Npc* obj1, const Line& obj2) {
-	// zgornja plast
-	if (obj1->getY() + obj1->getH() > obj2.getY() && !(obj1->getoldY() + obj1->getH() > obj2.getY()))
-		if (!(obj1->getX() + obj1->getW() <= obj2.getX() || obj1->getX() >= obj2.getX() + obj2.getW()))
-			return 1;
-	// spodnja plast
-	if (obj1->getY() < obj2.getY() + obj2.getH() && !(obj1->getoldY() < obj2.getY() + obj2.getH()))
-		if (!(obj1->getX() + obj1->getW() <= obj2.getX() || obj1->getX() >= obj2.getX() + obj2.getW()))
-			return 1;
-	// leva plast
-	if (obj1->getX() + obj1->getW() > obj2.getX() && !(obj1->getoldX() + obj1->getW() > obj2.getX()))
-		if (!(obj1->getY() + obj1->getH() <= obj2.getY() || obj1->getY() >= obj2.getY() + obj2.getH()))
-			return 1;
-	// desna plast
-	if (obj1->getX() < obj2.getX() + obj2.getW() && !(obj1->getoldX() < obj2.getX() + obj2.getW()))
-		if (!(obj1->getY() + obj1->getH() <= obj2.getY() || obj1->getY() >= obj2.getY() + obj2.getH()))
-			return 1;
-	return 0;
-}*/
-// AI
+// NPC
 bool collision(Npc* obj1, const Line& obj2) {
 	const int padding = 10;	 // Expand collision area by 10 pixels
 
@@ -64,26 +46,7 @@ bool collision(Npc* obj1, const Line& obj2) {
 
 	return false;
 }
-bool collision1(Npc* obj1, const Line& obj2) {
-	// zgornja plast
-	if (obj1->getY() + obj1->getH() > obj2.getY() && !(obj1->getoldY() + obj1->getH() > obj2.getY()))
-		if (!(obj1->getX() + obj1->getW() <= obj2.getX() || obj1->getX() >= obj2.getX() + obj2.getW()))
-			return 1;
-	// spodnja plast
-	if (obj1->getY() < obj2.getY() + obj2.getH() && !(obj1->getoldY() < obj2.getY() + obj2.getH()))
-		if (!(obj1->getX() + obj1->getW() <= obj2.getX() || obj1->getX() >= obj2.getX() + obj2.getW()))
-			return 1;
-	// leva plast
-	if (obj1->getX() + obj1->getW() > obj2.getX() && !(obj1->getoldX() + obj1->getW() > obj2.getX()))
-		if (!(obj1->getY() + obj1->getH() <= obj2.getY() || obj1->getY() >= obj2.getY() + obj2.getH()))
-			return 1;
-	// desna plast
-	if (obj1->getX() < obj2.getX() + obj2.getW() && !(obj1->getoldX() < obj2.getX() + obj2.getW()))
-		if (!(obj1->getY() + obj1->getH() <= obj2.getY() || obj1->getY() >= obj2.getY() + obj2.getH()))
-			return 1;
-	return 0;
-}
-
+// BULLET
 bool collision(Bullet& obj1, const Line& obj2) {
 	// zgornja plast
 	if (obj1.getY() + obj1.getH() > obj2.getY() && !(obj1.getoldY() + obj1.getH() > obj2.getY()))
@@ -110,4 +73,46 @@ bool collision(Bullet& obj1, const Line& obj2) {
 			return 1;
 		}
 	return 0;
+}
+
+// KEY SPAWN
+bool collision(const Key* obj1, const Line& obj2) {
+	float keyLeft = obj1->getX();
+	float keyRight = obj1->getX() + obj1->getW();
+	float keyTop = obj1->getY();
+	float keyBottom = obj1->getY() + obj1->getH();
+
+	float lineLeft = obj2.getX();
+	float lineRight = obj2.getX() + obj2.getW();
+	float lineTop = obj2.getY();
+	float lineBottom = obj2.getY() + obj2.getH();
+
+	if (keyRight <= lineLeft ||
+		keyLeft >= lineRight ||
+		keyBottom <= lineTop ||
+		keyTop >= lineBottom) {
+		return false;
+	}
+
+	return true;
+}
+//KEY-PLAYER
+bool collision(Player& obj1, const Key* obj2) {
+	// zgornja plast
+	if (obj1.getY() + obj1.getH() > obj2->getY() && !(obj1.getoldY() + obj1.getH() > obj2->getY()))
+		if (!(obj1.getX() + obj1.getW() <= obj2->getX() || obj1.getX() >= obj2->getX() + obj2->getW()))
+            return true;
+	// spodnja plast
+	if (obj1.getY() < obj2->getY() + obj2->getH() && !(obj1.getoldY() < obj2->getY() + obj2->getH()))
+		if (!(obj1.getX() + obj1.getW() <= obj2->getX() || obj1.getX() >= obj2->getX() + obj2->getW()))
+            return true;
+	// leva plast
+	if (obj1.getX() + obj1.getW() > obj2->getX() && !(obj1.getoldX() + obj1.getW() > obj2->getX()))
+		if (!(obj1.getY() + obj1.getH() <= obj2->getY() || obj1.getY() >= obj2->getY() + obj2->getH()))
+            return true;
+	// desna plast
+	if (obj1.getX() < obj2->getX() + obj2->getW() && !(obj1.getoldX() < obj2->getX() + obj2->getW()))
+		if (!(obj1.getY() + obj1.getH() <= obj2->getY() || obj1.getY() >= obj2->getY() + obj2->getH()))
+            return true;
+    return false;
 }

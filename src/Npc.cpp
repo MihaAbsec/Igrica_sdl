@@ -25,14 +25,14 @@ Npc::Npc(float x, float y, int sizeWidth, int sizeHeight, float speed)
 void Npc::movement(Clock* clock, Layout1* layout) {
 	srand(time(NULL));
 	glm::vec2 movement(0.0f, 0.0f);
-	int timeOut = 1000;
-	if (clock->last_tick_time - clock->last_npc_time >= timeOut) {
+	int timeOut = 1500;
+	/*if (clock->last_tick_time - clock->last_npc_time >= timeOut) {
 		headDirection = rand() % 4;
 		clock->last_npc_time = clock->last_tick_time;
-	}
+	}*/
 	bool hit = NpcCollision(layout);
 	// IF SHI
-	if (hit) {
+	if (hit || clock->last_tick_time - clock->last_npc_time >= timeOut) {
 		while (1) {
 			headDirection = rand() % 4;
 			switch (headDirection) {

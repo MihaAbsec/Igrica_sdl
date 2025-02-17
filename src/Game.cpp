@@ -7,17 +7,17 @@
 #include "include/Bullet.h"
 #include "include/Clock.h"
 #include "include/Collision.h"
+#include "include/Key.h"
 #include "include/Layout1.h"
 #include "include/Line.h"
 #include "include/Player.h"
 
 // Constructor
 Game::Game(int SCREEN_WIDTH, int SCREEN_HEIGHT)
-	: SCREEN_WIDTH(SCREEN_WIDTH), SCREEN_HEIGHT(SCREEN_HEIGHT), window(nullptr), renderer(nullptr), 
-    player((SCREEN_WIDTH - 50) / 2, (SCREEN_HEIGHT - 50) / 2, 30, 50, 1), running(true),
-    npc(SCREEN_WIDTH - 60, 10, 50, 50, 0.5){
+	: SCREEN_WIDTH(SCREEN_WIDTH), SCREEN_HEIGHT(SCREEN_HEIGHT), window(nullptr), renderer(nullptr), player((SCREEN_WIDTH - 50) / 2, (SCREEN_HEIGHT - 50) / 2, 32, 64, 1), running(true), npc(SCREEN_WIDTH - 60, 10, 50, 50, 0.3) {
 	// Initialize lines
 	layout1 = new Layout1(SCREEN_WIDTH, SCREEN_HEIGHT);
+	key = new Key(SCREEN_WIDTH, SCREEN_HEIGHT, layout1);
 }
 
 // Destructor
@@ -76,20 +76,26 @@ void Game::handleEvents(Clock* clock) {
 void Game::update(Clock* clock) {
 	for (Line& line : layout1->lines) {
 		collision(player, line);
-		int n = 0;
-		for (Bullet& bullet : bullets) {
-			if (collision(bullet, line)) {
-				bullets.erase(bullets.begin() + n);
+		for (auto it = bullets.begin(); it != bullets.end();) {
+			if (collision(*it, line)) {
+				it = bullets.erase(it);
+			} else {
+				++it;
 			}
-			n++;
 		}
+        if(collision(player, key)) {
+            delete key;
+            key = new Key(SCREEN_WIDTH, SCREEN_HEIGHT, layout1);
+        }
 	}
-    npc.movement(clock, layout1);
+    player.update(clock);
+	npc.movement(clock, layout1);
 	static bool wasMousePressed = false;
+	static unsigned int last_shot_time = 0;
 	if (mouse.getButtons() == 1) {
-		if (!wasMousePressed && clock->last_tick_time - clock->last_shot_time >= 250) {
+		if (!wasMousePressed && clock->last_tick_time - last_shot_time >= 250) {
 			bullets.push_back(Bullet(player.getX() + player.getW() / 2, player.getY() + player.getH() / 2, 5, 5, 1, mouse.getX(), mouse.getY()));
-			clock->last_shot_time = clock->last_tick_time;
+			last_shot_time = clock->last_tick_time;
 		}
 		wasMousePressed = true;
 	} else
@@ -102,13 +108,14 @@ void Game::render() {
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);	 // Black background
 	SDL_RenderClear(renderer);
 
-	for (Line& line : layout1->lines) 
+	for (Line& line : layout1->lines)
 		line.render(renderer);
 	for (Bullet& bullets : bullets) {
 		bullets.render(renderer);
 	}
-    npc.render(renderer);
+	npc.render(renderer);
 	player.render(renderer);
+	key->render(renderer);
 
 	SDL_RenderPresent(renderer);
 }

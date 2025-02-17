@@ -201,6 +201,30 @@ src/Game.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Game.cpp.s
 .PHONY : src/Game.cpp.s
 
+src/Key.o: src/Key.cpp.o
+.PHONY : src/Key.o
+
+# target to build an object file
+src/Key.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Key.cpp.o
+.PHONY : src/Key.cpp.o
+
+src/Key.i: src/Key.cpp.i
+.PHONY : src/Key.i
+
+# target to preprocess a source file
+src/Key.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Key.cpp.i
+.PHONY : src/Key.cpp.i
+
+src/Key.s: src/Key.cpp.s
+.PHONY : src/Key.s
+
+# target to generate assembly for a file
+src/Key.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Key.cpp.s
+.PHONY : src/Key.cpp.s
+
 src/Layout1.o: src/Layout1.cpp.o
 .PHONY : src/Layout1.o
 
@@ -339,6 +363,9 @@ help:
 	@echo "... src/Game.o"
 	@echo "... src/Game.i"
 	@echo "... src/Game.s"
+	@echo "... src/Key.o"
+	@echo "... src/Key.i"
+	@echo "... src/Key.s"
 	@echo "... src/Layout1.o"
 	@echo "... src/Layout1.i"
 	@echo "... src/Layout1.s"
