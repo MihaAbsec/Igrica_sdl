@@ -14,7 +14,7 @@
 
 // Constructor
 Game::Game(int SCREEN_WIDTH, int SCREEN_HEIGHT)
-	: SCREEN_WIDTH(SCREEN_WIDTH), SCREEN_HEIGHT(SCREEN_HEIGHT), window(nullptr), renderer(nullptr), player((SCREEN_WIDTH - 50) / 2, (SCREEN_HEIGHT - 50) / 2, 32, 64, 1), running(true), npc(SCREEN_WIDTH - 60, 10, 50, 50, 0.3) {
+	: SCREEN_WIDTH(SCREEN_WIDTH), SCREEN_HEIGHT(SCREEN_HEIGHT), window(nullptr), renderer(nullptr), player((SCREEN_WIDTH - 50) / 2, (SCREEN_HEIGHT - 50) / 2, 25, 75, 1), running(true), npc(SCREEN_WIDTH - 60, 10, 50, 50, 0.3) {
 	// Initialize lines
 	layout1 = new Layout1(SCREEN_WIDTH, SCREEN_HEIGHT);
 	key = new Key(SCREEN_WIDTH, SCREEN_HEIGHT, layout1);
@@ -83,29 +83,36 @@ void Game::update(Clock* clock) {
 				++it;
 			}
 		}
-        if(collision(player, key)) {
-            delete key;
-            key = new Key(SCREEN_WIDTH, SCREEN_HEIGHT, layout1);
-        }
+		if (collision(player, key)) {
+			delete key;
+			key = new Key(SCREEN_WIDTH, SCREEN_HEIGHT, layout1);
+		}
 	}
-    player.update(clock);
+	player.update(clock);
 	npc.movement(clock, layout1);
+	// BULLETS
 	static bool wasMousePressed = false;
 	static unsigned int last_shot_time = 0;
-	if (mouse.getButtons() == 1) {
+	if (mouse.getButtons() == 4)
+		player.shooting(1);
+	if (mouse.getButtons() == 1 || mouse.getButtons() == 5) {
 		if (!wasMousePressed && clock->last_tick_time - last_shot_time >= 250) {
-			bullets.push_back(Bullet(player.getX() + player.getW() / 2, player.getY() + player.getH() / 2, 5, 5, 1, mouse.getX(), mouse.getY()));
+			bullets.push_back(Bullet(player.getGunX(), player.getGunY(), 5, 5, 1, mouse.getX(), mouse.getY()));
 			last_shot_time = clock->last_tick_time;
 		}
+		player.shooting(1);
 		wasMousePressed = true;
-	} else
+	} else {
+		if (clock->last_tick_time - last_shot_time >= 350)
+			player.shooting(0);
 		wasMousePressed = false;
+	}
 	for (Bullet& bullets : bullets)
 		bullets.update(clock->delta);
 }
 // Render the game
 void Game::render() {
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);	 // Black background
+	SDL_SetRenderDrawColor(renderer, 0, 166, 152, 151);	 // background
 	SDL_RenderClear(renderer);
 
 	for (Line& line : layout1->lines)
@@ -114,7 +121,7 @@ void Game::render() {
 		bullets.render(renderer);
 	}
 	npc.render(renderer);
-	player.render(renderer);
+	player.render(renderer, mouse);
 	key->render(renderer);
 
 	SDL_RenderPresent(renderer);

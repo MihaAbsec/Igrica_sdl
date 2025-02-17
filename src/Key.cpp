@@ -7,7 +7,7 @@
 #include "include/GameObject.h"
 
 Key::Key(int width, int height, Layout1* layout)
-	: GameObject(0, 0, 40, 25), texture(nullptr) {
+	: GameObject(0, 0, 32,16), texture(nullptr) {
 	srand(time(NULL));
 	do {
 		x = rand() % ((width - 50) - 50) + 50;
