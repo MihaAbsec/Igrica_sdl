@@ -96,11 +96,12 @@ void Game::update(Clock* clock) {
 	if (mouse.getButtons() == 4)
 		player.shooting(1);
 	if (mouse.getButtons() == 1 || mouse.getButtons() == 5) {
+		player.shooting(1);
 		if (!wasMousePressed && clock->last_tick_time - last_shot_time >= 250) {
+            player.bulletSpawnFix(mouse);
 			bullets.push_back(Bullet(player.getGunX(), player.getGunY(), 5, 5, 1, mouse.getX(), mouse.getY()));
 			last_shot_time = clock->last_tick_time;
 		}
-		player.shooting(1);
 		wasMousePressed = true;
 	} else {
 		if (clock->last_tick_time - last_shot_time >= 350)

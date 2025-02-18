@@ -13,7 +13,7 @@
 class Player : public GameObject {
 	// GUN
 	float gunX, gunY;
-	
+
 	float speed;
 	const float prevSpeed = speed;
 	bool turn = 0;
@@ -42,6 +42,7 @@ class Player : public GameObject {
 	float getGunY() const {
 		return gunY;
 	}
+    void bulletSpawnFix(Mouse);
 };
 
 #endif	// SQUARE_H

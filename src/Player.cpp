@@ -66,9 +66,9 @@ void Player::handleInput(SDL_Event &event, Clock *clock) {
 		x += movement.x;
 		y += movement.y;
 		move = 1;
+		gunY = y + (float)sizeHeight / 2 - 14;
 	} else
 		move = 0;
-	gunY = y + (float)sizeHeight / 2 - 14;
 }
 void Player::shooting(bool shot) {
 	if (shot) {
@@ -79,6 +79,13 @@ void Player::shooting(bool shot) {
 		if (speed > prevSpeed)
 			speed = prevSpeed;
 	}
+}
+
+void Player::bulletSpawnFix(Mouse mouse) {
+	if (mouse.getX() < x)
+		gunX = x - 18;
+	else
+		gunX = x + sizeWidth + 14;
 }
 
 void Player::update(Clock *clock) {
@@ -93,44 +100,28 @@ void Player::render(SDL_Renderer *renderer, Mouse mouse) {
 	if (!agent) {
 		createSprite(agent, renderer);
 	}
-	if (agent && speed != prevSpeed && !move) {
-		SDL_Rect destRect = {static_cast<int>(x) - 28, static_cast<int>(y) - 5, 80, 80};
-		SDL_Rect hitBox = {static_cast<int>(x), static_cast<int>(y), sizeWidth, sizeHeight};
-		// SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);  // White color
-		// SDL_RenderFillRect(renderer, &hitBox);
-		if (mouse.getX() < x) {
-			gunX = x - 18;
+	SDL_Rect destRect = {static_cast<int>(x) - 28, static_cast<int>(y) - 5, 80, 80};
+	SDL_Rect hitBox = {static_cast<int>(x), static_cast<int>(y), sizeWidth, sizeHeight};
+	// SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);  // White color
+	// SDL_RenderFillRect(renderer, &hitBox);
+	if (speed != prevSpeed && !move) {
+		if (mouse.getX() < x)
 			SDL_RenderCopyEx(renderer, agent, &shootFrame, &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
-		} else {
-			gunX = x + sizeWidth + 14;
+		else
 			SDL_RenderCopy(renderer, agent, &shootFrame, &destRect);
-		}
-	} else if (agent && speed != prevSpeed && move) {
-		SDL_Rect destRect = {static_cast<int>(x) - 28, static_cast<int>(y) - 5, 80, 80};
-		SDL_Rect hitBox = {static_cast<int>(x), static_cast<int>(y), sizeWidth, sizeHeight};
-		// SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);  // White color
-		// SDL_RenderFillRect(renderer, &hitBox);
-		if (mouse.getX() < x) {
-			gunX = x - 18;
+
+	} else if (speed != prevSpeed && move) {
+		if (mouse.getX() < x)
 			SDL_RenderCopyEx(renderer, agent, &shootFrames[currentFrameShoot], &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
-		} else {
-			gunX = x + sizeWidth + 14;
+		else
 			SDL_RenderCopy(renderer, agent, &shootFrames[currentFrameShoot], &destRect);
-		}
-	} else if (agent && !move) {
-		SDL_Rect destRect = {static_cast<int>(x) - 28, static_cast<int>(y) - 5, 80, 80};
-		SDL_Rect hitBox = {static_cast<int>(x), static_cast<int>(y), sizeWidth, sizeHeight};
-		// SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);  // White color
-		// SDL_RenderFillRect(renderer, &hitBox);
+
+	} else if (!move) {
 		if (turn)
 			SDL_RenderCopyEx(renderer, agent, &idleFrame, &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
 		if (!turn)
 			SDL_RenderCopy(renderer, agent, &idleFrame, &destRect);
-	} else if (agent && move) {
-		SDL_Rect destRect = {static_cast<int>(x) - 28, static_cast<int>(y) - 5, 80, 80};
-		SDL_Rect hitBox = {static_cast<int>(x), static_cast<int>(y), sizeWidth, sizeHeight};
-		// SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);  // White color
-		// SDL_RenderFillRect(renderer, &hitBox);
+	} else if (move) {
 		if (turn)
 			SDL_RenderCopyEx(renderer, agent, &runFrames[currentFrameRun], &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
 		if (!turn)
