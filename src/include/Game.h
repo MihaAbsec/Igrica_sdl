@@ -10,7 +10,6 @@
 #include "Clock.h"
 #include "Key.h"
 #include "Layout1.h"
-#include "Line.h"
 #include "Mouse.h"
 #include "Npc.h"
 #include "Player.h"
@@ -38,10 +37,9 @@ class Game {
    protected:
 	SDL_Window* window;
 
-	// Layout1 layout1;
 	Player player;
 	Key* key;
-	Npc npc;
+    std::vector<Npc> npc;
 	Mouse mouse;
 	std::vector<Bullet> bullets;
 	Layout1* layout1;

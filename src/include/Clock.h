@@ -4,7 +4,6 @@
 struct Clock {
 	unsigned int last_tick_time = 0;
 	unsigned int delta = 0;
-    unsigned int last_npc_time = 0;
 
 	void tick() {
         unsigned int tick_time = SDL_GetTicks();

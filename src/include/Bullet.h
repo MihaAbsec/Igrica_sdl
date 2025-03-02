@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 
-#include <cmath>  // For sqrt
+#include <cmath>  
 
 #include "GameObject.h"
 

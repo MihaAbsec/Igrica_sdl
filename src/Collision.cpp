@@ -194,7 +194,7 @@ bool collision(const Player* obj1, const NpcFov* obj2) {
 
 	return false;
 }
-// Function to check if a line intersects any wall in the layout
+// ČE JE MED PLAYERJEM IN NPC STENA (line-of-sight)
 bool lineIntersectsWall(float x1, float y1, float x2, float y2, Layout1* layout) {
 	for (const Line& wall : layout->lines) {
 		if (lineIntersectsRectangle(x1, y1, x2, y2, wall)) {
@@ -204,21 +204,18 @@ bool lineIntersectsWall(float x1, float y1, float x2, float y2, Layout1* layout)
 	return false;
 }
 
-// Check if a line (x1, y1) → (x2, y2) intersects a rectangle (wall)
 bool lineIntersectsRectangle(float x1, float y1, float x2, float y2, const Line& wall) {
 	float wx1 = wall.getX();
 	float wy1 = wall.getY();
 	float wx2 = wx1 + wall.getW();
 	float wy2 = wy1 + wall.getH();
 
-	// Check intersection with all four edges of the rectangle
 	return (checkLineIntersection(x1, y1, x2, y2, wx1, wy1, wx2, wy1) ||  // Top edge
 			checkLineIntersection(x1, y1, x2, y2, wx1, wy1, wx1, wy2) ||  // Left edge
 			checkLineIntersection(x1, y1, x2, y2, wx2, wy1, wx2, wy2) ||  // Right edge
 			checkLineIntersection(x1, y1, x2, y2, wx1, wy2, wx2, wy2));	  // Bottom edge
 }
 
-// Check if two line segments intersect
 bool checkLineIntersection(float x1, float y1, float x2, float y2,
 						   float x3, float y3, float x4, float y4) {
 	float den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);

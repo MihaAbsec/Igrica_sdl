@@ -5,18 +5,18 @@
 
 #include <cmath>
 
+#include "Camera.h"
 #include "Clock.h"
 #include "GameObject.h"
 #include "Layout1.h"
 #include "NpcFov.h"
-#include "Camera.h"
 
 class Npc : public GameObject {
    private:
 	// FOR SPRITES
 	float gunX, gunY;
 	int move;
-	bool turn;
+	bool turn = 0;
 	SDL_Texture* officer;
 	SDL_Rect idleFrame;
 	std::vector<SDL_Rect> walkFrames;
@@ -27,6 +27,7 @@ class Npc : public GameObject {
 	int currentFrameWalk;
 	Uint32 lastFrameTime;
 
+	int last_npc_time = 0;
 	int headDirection = 2;
 	bool hit = false;
 	float speed;
@@ -41,7 +42,7 @@ class Npc : public GameObject {
 	int getDir() const {
 		return headDirection;
 	}
-	Npc(float, float, int, int, float);
+	Npc(int, int, int, int, float, Layout1*);
 	void movement(Clock*, Layout1*, Player*);
 	bool NpcCollision(Layout1*);
 };

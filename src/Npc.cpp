@@ -13,14 +13,20 @@
 #include <glm/glm.hpp>
 #include <glm/vec2.hpp>
 #include <iostream>
+#include <random>
 
 #include "include/Collision.h"
 #include "include/GameObject.h"
 #include "include/Layout1.h"
 #include "include/NpcFov.h"
 // Constructor
-Npc::Npc(float x, float y, int sizeWidth, int sizeHeight, float speed)
-	: GameObject(x, y, sizeWidth, sizeHeight), speed(speed) {
+Npc::Npc(int worldW, int worldH, int sizeWidth, int sizeHeight, float speed, Layout1 *layout)
+	: GameObject(0, 0, sizeWidth, sizeHeight), speed(speed) {
+	do {
+		x = std::rand() % ((worldW - sizeWidth) - sizeWidth) + sizeWidth;
+		y = std::rand() % worldH;
+	} while (NpcCollision(layout));
+    last_npc_time = std::rand() % 1999;
 	fov = new NpcFov;
 	createSprite();
 }
@@ -46,22 +52,21 @@ void Npc::update(Clock *clock, Layout1 *layout) {
 	}
 }
 
-// NPC movement logic
+// NPC movement
 void Npc::movement(Clock *clock, Layout1 *layout, Player *player) {
-	srand(time(NULL));
+	const Uint32 directionChangeInterval = 2000;
+	const float movementThreshold = 0.001;
 	if (fov->contact) {
 		fov->isContact(this, player, clock, layout);
 		for (Line line : layout->lines)
 			moveCollision(this, &line);
 	}
 	if (!fov->contact || fov->access) {
-		const Uint32 directionChangeInterval = 2000;
 		static int count = 0;
-		const float movementThreshold = 0.001;	// Adjust this value as needed
 
-		if (clock->last_tick_time - clock->last_npc_time >= directionChangeInterval || NpcCollision(layout)) {
+		if (clock->last_tick_time - last_npc_time >= directionChangeInterval || NpcCollision(layout)) {
 			headDirection = std::rand() % 4;
-			clock->last_npc_time = clock->last_tick_time;
+			last_npc_time = clock->last_tick_time;
 		}
 
 		glm::vec2 movement(0.0f, 0.0f);
@@ -100,7 +105,6 @@ void Npc::movement(Clock *clock, Layout1 *layout, Player *player) {
 			}
 		}
 
-		// Check if the NPC has moved significantly
 		float dx = abs(x - oldX);
 		float dy = abs(y - oldY);
 		if (dx == 0.00f && dy == 0.00f)
@@ -122,7 +126,7 @@ bool Npc::NpcCollision(Layout1 *layout) {
 	return false;
 }
 void Npc::render(SDL_Renderer *renderer, Camera *camera) {
-	//fov->render(renderer, camera);
+	// fov->render(renderer, camera);
 	if (!officer) {
 		createSprite(officer, renderer);
 	}

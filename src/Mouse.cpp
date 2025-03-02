@@ -15,28 +15,23 @@ void Mouse::update(SDL_Event& event, Camera* camera) {
 	lastButtons = buttons;
 
 	if (event.type == SDL_MOUSEMOTION) {
-		// Get mouse position in screen coordinates
 		x = event.motion.x;
 		y = event.motion.y;
 
-		// Convert screen coordinates to world coordinates
 		worldX = x + camera->x;
 		worldY = y + camera->y;
 
-		// Get relative motion (dx and dy are in screen coordinates)
 		dx = event.motion.xrel;
 		dy = event.motion.yrel;
 	}
 
 	if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP) {
-		// Get mouse state in screen coordinates
 		buttons = SDL_GetMouseState(&x, &y);
 
-		// Convert screen coordinates to world coordinates
 		worldX = x + camera->x;
 		worldY = y + camera->y;
 	}
-	std::cout << x << " " << y << " " << buttons << " " << lastButtons << " " << '\r';
+	std::cout << worldX << " " << worldY << " " << buttons << " " << lastButtons << " " << '\r';
 	std::cout << std::flush;
 }
 

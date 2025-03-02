@@ -34,7 +34,6 @@ void Key::render(SDL_Renderer* renderer, Camera* camera) {
 		}
 	}
 
-	// Render the texture
 	SDL_Rect destRect = {static_cast<int>(x - camera->x), static_cast<int>(y - camera->y), sizeWidth, sizeHeight};
 	SDL_RenderCopy(renderer, texture, nullptr, &destRect);
 }

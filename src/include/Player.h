@@ -19,14 +19,14 @@ class Player : public GameObject {
 	bool turn = 0;
 	bool move = 0;
 	// sprites
-	SDL_Texture* agent;	 // Sprite sheet texture
-	SDL_Rect idleFrame;	 // Animation frames
+	SDL_Texture* agent;
+	SDL_Rect idleFrame;
 	SDL_Rect shootFrame;
-	std::vector<SDL_Rect> runFrames;  // Animation frames
+	std::vector<SDL_Rect> runFrames;
 	std::vector<SDL_Rect> shootFrames;
-	int currentFrameRun;	// Current frame of the animation
-	int currentFrameShoot;	// Current frame of the animation
-	Uint32 lastFrameTime;	// Time of the last frame update
+	int currentFrameRun;	
+	int currentFrameShoot;	
+	Uint32 lastFrameTime;	
 
    public:
 	void createSprite();
@@ -42,7 +42,7 @@ class Player : public GameObject {
 	float getGunY() const {
 		return gunY;
 	}
-    void bulletSpawnFix(Mouse);
+	void bulletSpawnFix(Mouse);
 };
 
 #endif	// SQUARE_H

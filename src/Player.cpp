@@ -85,9 +85,9 @@ void Player::shooting(bool shot) {
 void Player::bulletSpawnFix(Mouse mouse) {
 	gunY = y + (float)sizeHeight / 2 - 14;
 	if (mouse.getWorldX() < x) {
-		gunX = x - 18;	
+		gunX = x - 18;
 	} else {
-		gunX = x + sizeWidth + 14;	
+		gunX = x + sizeWidth + 14;
 	}
 }
 

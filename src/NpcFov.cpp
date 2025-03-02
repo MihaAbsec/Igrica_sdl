@@ -22,13 +22,11 @@ void NpcFov::update(Npc* npc, Layout1* layout) {
 		FovLineCollision(this, &line);*/
 }
 void NpcFov::isContact(Npc* npc, Player* player, Clock* clock, Layout1* layout) {
-	// Check if a wall blocks NPC's view of the player
 	if (lineIntersectsWall(npc->x, npc->y, player->x + 5, player->y + 5, layout)) {
 		contact = 0;
-		return;	 // Player is hidden behind a wall, NPC does not detect them
+		return;	 
 	}
 	access = 0;
-	// Normal movement towards the player
 	npc->move = 2;
 	float speed = npc->speed * 1.3;
 
