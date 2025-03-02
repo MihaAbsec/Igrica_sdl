@@ -1,6 +1,7 @@
 #include "include/Game.h"
 
 #include <ctime>
+#include <filesystem>
 #include <iostream>
 #include <vector>
 
@@ -12,18 +13,16 @@
 #include "include/Line.h"
 #include "include/Player.h"
 
-// Constructor
 Game::Game(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 	: SCREEN_WIDTH(SCREEN_WIDTH), SCREEN_HEIGHT(SCREEN_HEIGHT), window(nullptr), renderer(nullptr), player((SCREEN_WIDTH - 50) / 2, (SCREEN_HEIGHT - 50) / 2, 25, 75, 1), running(true) {
-	// Initialize lines
 	layout1 = new Layout1(WORLD_WIDTH, WORLD_HEIGHT);
 	key = new Key(SCREEN_WIDTH, SCREEN_HEIGHT, layout1);
 	camera = new Camera(player.getX(), player.getY());
 	for (int i = 0; i < 7; ++i)
 		npc.push_back(Npc(WORLD_WIDTH, WORLD_HEIGHT, 25, 75, 0.2, layout1));
+	map = new Map("assets/block.png", WORLD_WIDTH, WORLD_HEIGHT, 32);
 }
 
-// Destructor
 Game::~Game() {
 	cleanup();
 }
@@ -123,6 +122,7 @@ void Game::update(Clock* clock) {
 void Game::render() {
 	SDL_SetRenderDrawColor(renderer, 0, 166, 152, 151);	 // background
 	SDL_RenderClear(renderer);
+	map->render(renderer, camera);
 	float cameraX = camera->x;
 	float cameraY = camera->y;
 	for (Line& line : layout1->lines)
@@ -138,7 +138,7 @@ void Game::render() {
 	SDL_RenderPresent(renderer);
 }
 
-//cleanup
+// cleanup
 void Game::cleanup() {
 	if (renderer) {
 		SDL_DestroyRenderer(renderer);

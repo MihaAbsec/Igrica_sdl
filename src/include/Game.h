@@ -14,6 +14,7 @@
 #include "Npc.h"
 #include "Player.h"
 #include "Camera.h"
+#include "Map.h"
 
 class Game {
    public:
@@ -32,7 +33,7 @@ class Game {
 	SDL_Renderer* renderer;
     
 	const int SCREEN_WIDTH, SCREEN_HEIGHT;
-    const float WORLD_WIDTH = 2000, WORLD_HEIGHT = 2000;
+    const float WORLD_WIDTH = 1920, WORLD_HEIGHT = 1920;
 
    protected:
 	SDL_Window* window;
@@ -44,6 +45,7 @@ class Game {
 	std::vector<Bullet> bullets;
 	Layout1* layout1;
     Camera* camera;
-};
+    Map* map;
+};                 
 
 #endif	// GAME_H
