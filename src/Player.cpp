@@ -65,8 +65,9 @@ void Player::handleInput(SDL_Event &event, Clock *clock) {
 		// Update position
 		x += movement.x;
 		y += movement.y;
+		// x -= sizeWidth/2;
+		// y -= sizeHeight/2;
 		move = 1;
-		gunY = y + (float)sizeHeight / 2 - 14;
 	} else
 		move = 0;
 }
@@ -82,36 +83,40 @@ void Player::shooting(bool shot) {
 }
 
 void Player::bulletSpawnFix(Mouse mouse) {
-	if (mouse.getX() < x)
-		gunX = x - 18;
-	else
-		gunX = x + sizeWidth + 14;
+	gunY = y + (float)sizeHeight / 2 - 14;
+	if (mouse.getWorldX() < x) {
+		gunX = x - 18;	
+	} else {
+		gunX = x + sizeWidth + 14;	
+	}
 }
 
 void Player::update(Clock *clock) {
 	if (clock->last_tick_time - lastFrameTime > 150) {
-		currentFrameRun = (currentFrameRun + 1) % runFrames.size();		   // Cycle through idleFrames
-		currentFrameShoot = (currentFrameShoot + 1) % shootFrames.size();  // Cycle through idleFrames
+		currentFrameRun = (currentFrameRun + 1) % runFrames.size();
+		currentFrameShoot = (currentFrameShoot + 1) % shootFrames.size();
 		lastFrameTime = clock->last_tick_time;
 	}
 }
 // RENDERER
-void Player::render(SDL_Renderer *renderer, Mouse mouse) {
+void Player::render(SDL_Renderer *renderer, Mouse mouse, int centerX, int centerY) {
+	// std::cout << (int)x << " " << (int)y << '\r';
+	// std::cout << std::flush;
 	if (!agent) {
 		createSprite(agent, renderer);
 	}
-	SDL_Rect destRect = {static_cast<int>(x) - 28, static_cast<int>(y) - 5, 80, 80};
-	SDL_Rect hitBox = {static_cast<int>(x), static_cast<int>(y), sizeWidth, sizeHeight};
+	SDL_Rect destRect = {centerX - 28, centerY - 5, 80, 80};
+	// SDL_Rect hitBox = {centerX - sizeWidth / 2, centerY - sizeHeight / 2, sizeWidth, sizeHeight};
 	// SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);  // White color
 	// SDL_RenderFillRect(renderer, &hitBox);
 	if (speed != prevSpeed && !move) {
-		if (mouse.getX() < x)
+		if (mouse.getWorldX() < x)
 			SDL_RenderCopyEx(renderer, agent, &shootFrame, &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
 		else
 			SDL_RenderCopy(renderer, agent, &shootFrame, &destRect);
 
 	} else if (speed != prevSpeed && move) {
-		if (mouse.getX() < x)
+		if (mouse.getWorldX() < x)
 			SDL_RenderCopyEx(renderer, agent, &shootFrames[currentFrameShoot], &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
 		else
 			SDL_RenderCopy(renderer, agent, &shootFrames[currentFrameShoot], &destRect);

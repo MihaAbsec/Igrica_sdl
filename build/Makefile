@@ -153,6 +153,30 @@ src/Bullet.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Bullet.cpp.s
 .PHONY : src/Bullet.cpp.s
 
+src/Camera.o: src/Camera.cpp.o
+.PHONY : src/Camera.o
+
+# target to build an object file
+src/Camera.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Camera.cpp.o
+.PHONY : src/Camera.cpp.o
+
+src/Camera.i: src/Camera.cpp.i
+.PHONY : src/Camera.i
+
+# target to preprocess a source file
+src/Camera.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Camera.cpp.i
+.PHONY : src/Camera.cpp.i
+
+src/Camera.s: src/Camera.cpp.s
+.PHONY : src/Camera.s
+
+# target to generate assembly for a file
+src/Camera.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Camera.cpp.s
+.PHONY : src/Camera.cpp.s
+
 src/Collision.o: src/Collision.cpp.o
 .PHONY : src/Collision.o
 
@@ -297,6 +321,30 @@ src/Npc.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Npc.cpp.s
 .PHONY : src/Npc.cpp.s
 
+src/NpcFov.o: src/NpcFov.cpp.o
+.PHONY : src/NpcFov.o
+
+# target to build an object file
+src/NpcFov.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/NpcFov.cpp.o
+.PHONY : src/NpcFov.cpp.o
+
+src/NpcFov.i: src/NpcFov.cpp.i
+.PHONY : src/NpcFov.i
+
+# target to preprocess a source file
+src/NpcFov.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/NpcFov.cpp.i
+.PHONY : src/NpcFov.cpp.i
+
+src/NpcFov.s: src/NpcFov.cpp.s
+.PHONY : src/NpcFov.s
+
+# target to generate assembly for a file
+src/NpcFov.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/NpcFov.cpp.s
+.PHONY : src/NpcFov.cpp.s
+
 src/Player.o: src/Player.cpp.o
 .PHONY : src/Player.o
 
@@ -357,6 +405,9 @@ help:
 	@echo "... src/Bullet.o"
 	@echo "... src/Bullet.i"
 	@echo "... src/Bullet.s"
+	@echo "... src/Camera.o"
+	@echo "... src/Camera.i"
+	@echo "... src/Camera.s"
 	@echo "... src/Collision.o"
 	@echo "... src/Collision.i"
 	@echo "... src/Collision.s"
@@ -375,6 +426,9 @@ help:
 	@echo "... src/Npc.o"
 	@echo "... src/Npc.i"
 	@echo "... src/Npc.s"
+	@echo "... src/NpcFov.o"
+	@echo "... src/NpcFov.i"
+	@echo "... src/NpcFov.s"
 	@echo "... src/Player.o"
 	@echo "... src/Player.i"
 	@echo "... src/Player.s"

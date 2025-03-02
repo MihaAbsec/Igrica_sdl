@@ -35,7 +35,7 @@ class Player : public GameObject {
 	Player(float, float, int, int, float);
 	void handleInput(SDL_Event& event, Clock* clock);
 	void update(Clock*);
-	void render(SDL_Renderer* renderer, Mouse);
+	void render(SDL_Renderer* renderer, Mouse, int, int);
 	float getGunX() const {
 		return gunX;
 	}

@@ -14,6 +14,7 @@
 #include "Mouse.h"
 #include "Npc.h"
 #include "Player.h"
+#include "Camera.h"
 
 class Game {
    public:
@@ -30,6 +31,9 @@ class Game {
 	void update(Clock*);
 
 	SDL_Renderer* renderer;
+    
+	const int SCREEN_WIDTH, SCREEN_HEIGHT;
+    const float WORLD_WIDTH = 2000, WORLD_HEIGHT = 2000;
 
    protected:
 	SDL_Window* window;
@@ -41,7 +45,7 @@ class Game {
 	Mouse mouse;
 	std::vector<Bullet> bullets;
 	Layout1* layout1;
-	int SCREEN_WIDTH, SCREEN_HEIGHT;
+    Camera* camera;
 };
 
 #endif	// GAME_H

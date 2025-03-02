@@ -23,7 +23,7 @@ bool Key::KeyCollision(Layout1* layout) {
 	return false;
 }
 
-void Key::render(SDL_Renderer* renderer) {
+void Key::render(SDL_Renderer* renderer, Camera* camera) {
 	if (!texture) {
 		SDL_Surface* surface = IMG_Load("assets/key.png");
 				texture = SDL_CreateTextureFromSurface(renderer, surface);
@@ -35,7 +35,7 @@ void Key::render(SDL_Renderer* renderer) {
 	}
 
 	// Render the texture
-	SDL_Rect destRect = {static_cast<int>(x), static_cast<int>(y), sizeWidth, sizeHeight};
+	SDL_Rect destRect = {static_cast<int>(x - camera->x), static_cast<int>(y - camera->y), sizeWidth, sizeHeight};
 	SDL_RenderCopy(renderer, texture, nullptr, &destRect);
 }
 

@@ -3,6 +3,8 @@
 
 #include <SDL2/SDL.h>
 
+#include "NpcFov.h"
+
 class GameObject {
    protected:
 	float x, y;
@@ -10,12 +12,13 @@ class GameObject {
 	float oldX = 0, oldY = 0;
 
    public:
+	friend NpcFov;
 	GameObject();
 	GameObject(float x, float y, int sizeWidth, int sizeHeight)
 		: x(x), y(y), sizeWidth(sizeWidth), sizeHeight(sizeHeight) {}
 
-	virtual void render(SDL_Renderer* renderer) {
-		SDL_Rect rect = {static_cast<int>(x), static_cast<int>(y), sizeWidth, sizeHeight};
+	virtual void render(SDL_Renderer* renderer, float cameraX, float cameraY) {
+		SDL_Rect rect = {static_cast<int>(x - cameraX), static_cast<int>(y - cameraY), sizeWidth, sizeHeight};
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);  // White color
 		SDL_RenderFillRect(renderer, &rect);
 	}

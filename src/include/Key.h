@@ -7,13 +7,14 @@
 
 #include "GameObject.h"
 #include "Layout1.h"
+#include "Camera.h"
 class Key : public GameObject {
 	SDL_Texture* texture;
    public:
     ~Key();
 	Key(int width, int height, Layout1*);
 	bool KeyCollision(Layout1*);
-	void render(SDL_Renderer* renderer);
+	void render(SDL_Renderer* renderer, Camera* camera);
 };
 
 #endif

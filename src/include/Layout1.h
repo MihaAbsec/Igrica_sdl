@@ -6,13 +6,13 @@
 #include <vector>
 
 #include "Line.h"
+class Game;
 
 class Layout1 {
    public:
-	int SCREEN_WIDTH, SCREEN_HEIGHT;
 	std::vector<Line> lines;
 
-	Layout1(int, int);
+	Layout1(float, float);
 };
 
 #endif

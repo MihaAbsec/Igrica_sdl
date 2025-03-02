@@ -14,10 +14,11 @@
 
 // Constructor
 Game::Game(int SCREEN_WIDTH, int SCREEN_HEIGHT)
-	: SCREEN_WIDTH(SCREEN_WIDTH), SCREEN_HEIGHT(SCREEN_HEIGHT), window(nullptr), renderer(nullptr), player((SCREEN_WIDTH - 50) / 2, (SCREEN_HEIGHT - 50) / 2, 25, 75, 1), running(true), npc(SCREEN_WIDTH - 60, 10, 50, 50, 0.3) {
+	: SCREEN_WIDTH(SCREEN_WIDTH), SCREEN_HEIGHT(SCREEN_HEIGHT), window(nullptr), renderer(nullptr), player((SCREEN_WIDTH - 50) / 2, (SCREEN_HEIGHT - 50) / 2, 25, 75, 1), running(true), npc(SCREEN_WIDTH - 60, 10, 25, 75, 0.2) {
 	// Initialize lines
-	layout1 = new Layout1(SCREEN_WIDTH, SCREEN_HEIGHT);
+	layout1 = new Layout1(WORLD_WIDTH, WORLD_HEIGHT);
 	key = new Key(SCREEN_WIDTH, SCREEN_HEIGHT, layout1);
+	camera = new Camera(player.getX(), player.getY());
 }
 
 // Destructor
@@ -68,7 +69,7 @@ void Game::handleEvents(Clock* clock) {
 				running = false;
 			}
 		}
-		mouse.update(event);
+		mouse.update(event, camera);
 	}
 }
 
@@ -85,11 +86,14 @@ void Game::update(Clock* clock) {
 		}
 		if (collision(player, key)) {
 			delete key;
-			key = new Key(SCREEN_WIDTH, SCREEN_HEIGHT, layout1);
+			key = new Key(WORLD_WIDTH, WORLD_HEIGHT, layout1);
 		}
 	}
 	player.update(clock);
-	npc.movement(clock, layout1);
+	npc.movement(clock, layout1, &player);
+	npc.update(clock, layout1);
+	npc.fov->contact = collision(&player, npc.fov);
+	camera->update(&player, WORLD_WIDTH, WORLD_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT);
 	// BULLETS
 	static bool wasMousePressed = false;
 	static unsigned int last_shot_time = 0;
@@ -98,8 +102,8 @@ void Game::update(Clock* clock) {
 	if (mouse.getButtons() == 1 || mouse.getButtons() == 5) {
 		player.shooting(1);
 		if (!wasMousePressed && clock->last_tick_time - last_shot_time >= 250) {
-            player.bulletSpawnFix(mouse);
-			bullets.push_back(Bullet(player.getGunX(), player.getGunY(), 5, 5, 1, mouse.getX(), mouse.getY()));
+			player.bulletSpawnFix(mouse);
+			bullets.push_back(Bullet(player.getGunX(), player.getGunY(), 5, 5, 1, mouse.getWorldX(), mouse.getWorldY()));
 			last_shot_time = clock->last_tick_time;
 		}
 		wasMousePressed = true;
@@ -115,15 +119,16 @@ void Game::update(Clock* clock) {
 void Game::render() {
 	SDL_SetRenderDrawColor(renderer, 0, 166, 152, 151);	 // background
 	SDL_RenderClear(renderer);
-
+	float cameraX = camera->x;
+	float cameraY = camera->y;
 	for (Line& line : layout1->lines)
-		line.render(renderer);
+		line.render(renderer, cameraX, cameraY);
 	for (Bullet& bullets : bullets) {
-		bullets.render(renderer);
+		bullets.render(renderer, cameraX, cameraY);
 	}
-	npc.render(renderer);
-	player.render(renderer, mouse);
-	key->render(renderer);
+	npc.render(renderer, camera);
+	player.render(renderer, mouse, SCREEN_WIDTH/2.0, SCREEN_HEIGHT/2.0);
+	key->render(renderer, camera);
 
 	SDL_RenderPresent(renderer);
 }
