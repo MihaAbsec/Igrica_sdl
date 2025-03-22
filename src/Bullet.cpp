@@ -5,6 +5,9 @@
 #include <cmath>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
+#include <iostream>
+
+#include "include/Collision.h"
 
 Bullet::Bullet(float x, float y, int width, int height, float speed, int targetX, int targetY)
 	: GameObject(x, y, width, height), speed(speed) {

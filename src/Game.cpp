@@ -14,10 +14,11 @@
 #include "include/Player.h"
 
 Game::Game(int SCREEN_WIDTH, int SCREEN_HEIGHT)
-	: SCREEN_WIDTH(SCREEN_WIDTH), SCREEN_HEIGHT(SCREEN_HEIGHT), window(nullptr), renderer(nullptr), player((SCREEN_WIDTH - 50) / 2, (SCREEN_HEIGHT - 50) / 2, 25, 75, 1), running(true) {
+	: SCREEN_WIDTH(SCREEN_WIDTH), SCREEN_HEIGHT(SCREEN_HEIGHT), window(nullptr), renderer(nullptr), running(true) {
+	player = new Player((SCREEN_WIDTH - 50) / 2, (SCREEN_HEIGHT - 50) / 2, 25, 75, 1);
 	layout1 = new Layout1(WORLD_WIDTH, WORLD_HEIGHT);
 	key = new Key(SCREEN_WIDTH, SCREEN_HEIGHT, layout1);
-	camera = new Camera(player.getX(), player.getY());
+	camera = new Camera(player->getX(), player->getY());
 	for (int i = 0; i < 7; ++i)
 		npc.push_back(Npc(WORLD_WIDTH, WORLD_HEIGHT, 25, 75, 0.2, layout1));
 	map = new Map("assets/block.png", WORLD_WIDTH, WORLD_HEIGHT, 32);
@@ -59,7 +60,7 @@ bool Game::innit() {
 
 void Game::handleEvents(Clock* clock) {
 	SDL_Event event;
-	player.handleInput(event, clock);
+	player->handleInput(event, clock);
 
 	while (SDL_PollEvent(&event)) {
 		if (event.type == SDL_QUIT) {
@@ -77,42 +78,60 @@ void Game::handleEvents(Clock* clock) {
 // Update game logic
 void Game::update(Clock* clock) {
 	for (Line& line : layout1->lines) {
-		collision(player, line);
+		collision(*player, line);
 		for (auto it = bullets.begin(); it != bullets.end();) {
-			if (collision(*it, line)) {
+			if (collision(&(*it), &line)) {
 				it = bullets.erase(it);
 			} else {
 				++it;
 			}
 		}
-		if (collision(player, key)) {
-			delete key;
-			key = new Key(WORLD_WIDTH, WORLD_HEIGHT, layout1);
+	}
+	auto itB = bullets.begin();
+	while (itB != bullets.end()) {
+		bool bulletErased = false;
+		auto it = npc.begin();
+		while (it != npc.end()) {
+			if (collision(&(*itB), &(*it))) {
+				it = npc.erase(it);
+				itB = bullets.erase(itB);
+				bulletErased = true;
+				break;
+			} else {
+				++it;
+			}
+		}
+		if (!bulletErased) {
+			++itB;
 		}
 	}
-	player.update(clock);
-	for (Npc& npc : npc) {
-		npc.movement(clock, layout1, &player);
-		npc.update(clock, layout1);
-		npc.fov->contact = collision(&player, npc.fov);
+	if (collision(player, key)) {
+		delete key;
+		key = new Key(WORLD_WIDTH, WORLD_HEIGHT, layout1);
 	}
-	camera->update(&player, WORLD_WIDTH, WORLD_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT);
+	player->update(clock);
+	for (Npc& npc : npc) {
+		npc.movement(clock, layout1, player);
+		npc.update(clock, layout1);
+		npc.fov->contact = collision(player, npc.fov);
+	}
+	camera->update(player, WORLD_WIDTH, WORLD_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT);
 	// BULLETS
 	static bool wasMousePressed = false;
 	static unsigned int last_shot_time = 0;
 	if (mouse.getButtons() == 4)
-		player.shooting(1);
+		player->shooting(1);
 	if (mouse.getButtons() == 1 || mouse.getButtons() == 5) {
-		player.shooting(1);
+		player->shooting(1);
 		if (!wasMousePressed && clock->last_tick_time - last_shot_time >= 250) {
-			player.bulletSpawnFix(mouse);
-			bullets.push_back(Bullet(player.getGunX(), player.getGunY(), 5, 5, 1, mouse.getWorldX(), mouse.getWorldY()));
+			player->bulletSpawnFix(mouse);
+			bullets.push_back(Bullet(player->getGunX(), player->getGunY(), 5, 5, 1, mouse.getWorldX(), mouse.getWorldY()));
 			last_shot_time = clock->last_tick_time;
 		}
 		wasMousePressed = true;
 	} else {
 		if (clock->last_tick_time - last_shot_time >= 350)
-			player.shooting(0);
+			player->shooting(0);
 		wasMousePressed = false;
 	}
 	for (Bullet& bullets : bullets)
@@ -132,7 +151,7 @@ void Game::render() {
 	}
 	for (Npc& npc : npc)
 		npc.render(renderer, camera);
-	player.render(renderer, mouse, SCREEN_WIDTH / 2.0, SCREEN_HEIGHT / 2.0);
+	player->render(renderer, mouse, SCREEN_WIDTH / 2.0, SCREEN_HEIGHT / 2.0);
 	key->render(renderer, camera);
 
 	SDL_RenderPresent(renderer);

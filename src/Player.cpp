@@ -98,54 +98,54 @@ void Player::update(Clock *clock) {
 		lastFrameTime = clock->last_tick_time;
 	}
 }
-// RENDERER
-void Player::render(SDL_Renderer *renderer, Mouse mouse, int centerX, int centerY) {
-	// std::cout << (int)x << " " << (int)y << '\r';
-	// std::cout << std::flush;
-	if (!agent) {
-		createSprite(agent, renderer);
-	}
-	SDL_Rect destRect = {centerX - 28, centerY - 5, 80, 80};
-	// SDL_Rect hitBox = {centerX - sizeWidth / 2, centerY - sizeHeight / 2, sizeWidth, sizeHeight};
-	// SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);  // White color
-	// SDL_RenderFillRect(renderer, &hitBox);
-	if (speed != prevSpeed && !move) {
-		if (mouse.getWorldX() < x)
-			SDL_RenderCopyEx(renderer, agent, &shootFrame, &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
-		else
-			SDL_RenderCopy(renderer, agent, &shootFrame, &destRect);
+	// RENDERER
+	void Player::render(SDL_Renderer * renderer, Mouse mouse, int centerX, int centerY) {
+		// std::cout << (int)x << " " << (int)y << '\r';
+		// std::cout << std::flush;
+		if (!agent) {
+			createSprite(agent, renderer);
+		}
+		SDL_Rect destRect = {centerX - 28, centerY - 5, 80, 80};
+		// SDL_Rect hitBox = {centerX - sizeWidth / 2, centerY - sizeHeight / 2, sizeWidth, sizeHeight};
+		// SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);  // White color
+		// SDL_RenderFillRect(renderer, &hitBox);
+		if (speed != prevSpeed && !move) {
+			if (mouse.getWorldX() < x)
+				SDL_RenderCopyEx(renderer, agent, &shootFrame, &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
+			else
+				SDL_RenderCopy(renderer, agent, &shootFrame, &destRect);
 
-	} else if (speed != prevSpeed && move) {
-		if (mouse.getWorldX() < x)
-			SDL_RenderCopyEx(renderer, agent, &shootFrames[currentFrameShoot], &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
-		else
-			SDL_RenderCopy(renderer, agent, &shootFrames[currentFrameShoot], &destRect);
+		} else if (speed != prevSpeed && move) {
+			if (mouse.getWorldX() < x)
+				SDL_RenderCopyEx(renderer, agent, &shootFrames[currentFrameShoot], &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
+			else
+				SDL_RenderCopy(renderer, agent, &shootFrames[currentFrameShoot], &destRect);
 
-	} else if (!move) {
-		if (turn)
-			SDL_RenderCopyEx(renderer, agent, &idleFrame, &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
-		if (!turn)
-			SDL_RenderCopy(renderer, agent, &idleFrame, &destRect);
-	} else if (move) {
-		if (turn)
-			SDL_RenderCopyEx(renderer, agent, &runFrames[currentFrameRun], &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
-		if (!turn)
-			SDL_RenderCopy(renderer, agent, &runFrames[currentFrameRun], &destRect);
-	}
-}
-
-void Player::createSprite(SDL_Texture *&t, SDL_Renderer *renderer) {
-	SDL_Surface *surface = IMG_Load("assets/agent.png");
-	if (!surface) {
-		std::cerr << "Failed to load sprite sheet: " << IMG_GetError() << "\n";
-		return;
+		} else if (!move) {
+			if (turn)
+				SDL_RenderCopyEx(renderer, agent, &idleFrame, &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
+			if (!turn)
+				SDL_RenderCopy(renderer, agent, &idleFrame, &destRect);
+		} else if (move) {
+			if (turn)
+				SDL_RenderCopyEx(renderer, agent, &runFrames[currentFrameRun], &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
+			if (!turn)
+				SDL_RenderCopy(renderer, agent, &runFrames[currentFrameRun], &destRect);
+		}
 	}
 
-	SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-	SDL_FreeSurface(surface);
+	void Player::createSprite(SDL_Texture * &t, SDL_Renderer * renderer) {
+		SDL_Surface *surface = IMG_Load("assets/agent.png");
+		if (!surface) {
+			std::cerr << "Failed to load sprite sheet: " << IMG_GetError() << "\n";
+			return;
+		}
 
-	if (!texture) {
-		std::cerr << "Failed to create texture from sprite sheet: " << SDL_GetError() << "\n";
+		SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+		SDL_FreeSurface(surface);
+
+		if (!texture) {
+			std::cerr << "Failed to create texture from sprite sheet: " << SDL_GetError() << "\n";
+		}
+		t = texture;
 	}
-	t = texture;
-}

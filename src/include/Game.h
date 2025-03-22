@@ -38,7 +38,7 @@ class Game {
    protected:
 	SDL_Window* window;
 
-	Player player;
+	Player* player;
 	Key* key;
     std::vector<Npc> npc;
 	Mouse mouse;

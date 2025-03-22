@@ -3,9 +3,10 @@
 
 #include <SDL2/SDL.h>
 
-#include <cmath>  
+#include <cmath>
 
 #include "GameObject.h"
+#include "Line.h"
 
 class Bullet : public GameObject {
    private:
@@ -14,7 +15,6 @@ class Bullet : public GameObject {
 
    public:
 	Bullet(float x, float y, int width, int height, float speed, int targetX, int targetY);
-
 	void update(float deltaTime);
 };
 

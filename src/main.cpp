@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
 		game->update(clock);
 		game->render();
 	}
-
+    
 	game->cleanup();
 
 	return 0;

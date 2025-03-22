@@ -30,4 +30,4 @@ file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
 #SDL2_IMAGE
 include_directories(/usr/include/SDL2)
 target_link_libraries(mygame -lSDL2 -lSDL2_image)
-#lala
+#la

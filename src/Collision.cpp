@@ -90,8 +90,8 @@ void moveCollision(Npc* obj1, const Line* obj2) {
 		}
 }
 // BULLET
-bool collision(Bullet& obj1, const Line& obj2) {
-	// zgornja plast
+bool collision(Bullet* obj1, const Line* obj2) {
+	/*// zgornja plast
 	if (obj1.getY() + obj1.getH() > obj2.getY() && !(obj1.getoldY() + obj1.getH() > obj2.getY()))
 		if (!(obj1.getX() + obj1.getW() <= obj2.getX() || obj1.getX() >= obj2.getX() + obj2.getW())) {
 			// std::cout << "LALA\n";
@@ -115,7 +115,21 @@ bool collision(Bullet& obj1, const Line& obj2) {
 			// std::cout << "LALA\n";
 			return 1;
 		}
-	return 0;
+	return 0;*/
+	SDL_Rect bulletRect = {
+		static_cast<int>(obj1->getX()),
+		static_cast<int>(obj1->getY()),
+		obj1->getW(),
+		obj1->getH()};
+	SDL_Rect fovRect = {
+		static_cast<int>(obj2->getX()),
+		static_cast<int>(obj2->getY()),
+		obj2->getW(),
+		obj2->getH()};
+	if (SDL_HasIntersection(&bulletRect, &fovRect))
+		return true;
+
+	return false;
 }
 
 // KEY SPAWN
@@ -140,22 +154,22 @@ bool collision(const Key* obj1, const Line& obj2) {
 	return true;
 }
 // KEY-PLAYER
-bool collision(Player& obj1, const Key* obj2) {
+bool collision(Player* obj1, const Key* obj2) {
 	// zgornja plast
-	if (obj1.getY() + obj1.getH() > obj2->getY() && !(obj1.getoldY() + obj1.getH() > obj2->getY()))
-		if (!(obj1.getX() + obj1.getW() <= obj2->getX() || obj1.getX() >= obj2->getX() + obj2->getW()))
+	if (obj1->getY() + obj1->getH() > obj2->getY() && !(obj1->getoldY() + obj1->getH() > obj2->getY()))
+		if (!(obj1->getX() + obj1->getW() <= obj2->getX() || obj1->getX() >= obj2->getX() + obj2->getW()))
 			return true;
 	// spodnja plast
-	if (obj1.getY() < obj2->getY() + obj2->getH() && !(obj1.getoldY() < obj2->getY() + obj2->getH()))
-		if (!(obj1.getX() + obj1.getW() <= obj2->getX() || obj1.getX() >= obj2->getX() + obj2->getW()))
+	if (obj1->getY() < obj2->getY() + obj2->getH() && !(obj1->getoldY() < obj2->getY() + obj2->getH()))
+		if (!(obj1->getX() + obj1->getW() <= obj2->getX() || obj1->getX() >= obj2->getX() + obj2->getW()))
 			return true;
 	// leva plast
-	if (obj1.getX() + obj1.getW() > obj2->getX() && !(obj1.getoldX() + obj1.getW() > obj2->getX()))
-		if (!(obj1.getY() + obj1.getH() <= obj2->getY() || obj1.getY() >= obj2->getY() + obj2->getH()))
+	if (obj1->getX() + obj1->getW() > obj2->getX() && !(obj1->getoldX() + obj1->getW() > obj2->getX()))
+		if (!(obj1->getY() + obj1->getH() <= obj2->getY() || obj1->getY() >= obj2->getY() + obj2->getH()))
 			return true;
 	// desna plast
-	if (obj1.getX() < obj2->getX() + obj2->getW() && !(obj1.getoldX() < obj2->getX() + obj2->getW()))
-		if (!(obj1.getY() + obj1.getH() <= obj2->getY() || obj1.getY() >= obj2->getY() + obj2->getH()))
+	if (obj1->getX() < obj2->getX() + obj2->getW() && !(obj1->getoldX() < obj2->getX() + obj2->getW()))
+		if (!(obj1->getY() + obj1->getH() <= obj2->getY() || obj1->getY() >= obj2->getY() + obj2->getH()))
 			return true;
 	return false;
 }
@@ -225,4 +239,21 @@ bool checkLineIntersection(float x1, float y1, float x2, float y2,
 	float u = ((x1 - x3) * (y1 - y2) - (y1 - y3) * (x1 - x2)) / den;
 
 	return (t >= 0 && t <= 1 && u >= 0 && u <= 1);
+}
+
+bool collision(Bullet* obj1, const Npc* obj2) {
+	SDL_Rect playerRect = {
+		static_cast<int>(obj1->getX()),
+		static_cast<int>(obj1->getY()),
+		obj1->getW(),
+		obj1->getH()};
+	SDL_Rect fovRect = {
+		static_cast<int>(obj2->getX()),
+		static_cast<int>(obj2->getY()),
+		obj2->getW(),
+		obj2->getH()};
+	if (SDL_HasIntersection(&playerRect, &fovRect))
+		return true;
+
+	return false;
 }
