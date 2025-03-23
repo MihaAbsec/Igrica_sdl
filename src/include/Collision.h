@@ -8,6 +8,8 @@
 #include "Player.h"
 //player-wall
 void collision(Player& obj1, const Line& obj2);
+//npc-npc
+void collision(Npc* obj1, Npc* obj2);
 //npc-wall
 bool collision(Npc* obj1, const Line& obj2);
 void moveCollision(Npc* obj1, const Line* obj2);

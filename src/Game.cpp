@@ -12,9 +12,12 @@
 #include "include/Layout1.h"
 #include "include/Line.h"
 #include "include/Player.h"
-
+float Game::scale_x = 1.0f;
+float Game::scale_y = 1.0f;
 Game::Game(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 	: SCREEN_WIDTH(SCREEN_WIDTH), SCREEN_HEIGHT(SCREEN_HEIGHT), window(nullptr), renderer(nullptr), running(true) {
+	original_height = SCREEN_HEIGHT;
+	original_width = SCREEN_WIDTH;
 	player = new Player((SCREEN_WIDTH - 50) / 2, (SCREEN_HEIGHT - 50) / 2, 25, 75, 1);
 	layout1 = new Layout1(WORLD_WIDTH, WORLD_HEIGHT);
 	key = new Key(SCREEN_WIDTH, SCREEN_HEIGHT, layout1);
@@ -40,7 +43,7 @@ bool Game::innit() {
 		return false;
 	}
 
-	window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
+	window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_RESIZABLE);
 	if (!window) {
 		std::cout << "Error creating window: %s\n", SDL_GetError();
 		SDL_Quit();
@@ -54,6 +57,9 @@ bool Game::innit() {
 		SDL_Quit();
 		return false;
 	}
+
+	// Odstranite to vrstico
+	// SDL_RenderSetLogicalSize(renderer, original_width, original_height);
 
 	return true;
 }
@@ -71,11 +77,34 @@ void Game::handleEvents(Clock* clock) {
 				running = false;
 			}
 		}
+		if (event.type == SDL_WINDOWEVENT) {
+			if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+				// Posodobi velikost okna
+				SCREEN_WIDTH = event.window.data1;
+				SCREEN_HEIGHT = event.window.data2;
+
+				// Izračunaj želeno višino glede na širino (ohrani razmerje stranic 16:9)
+				int desiredHeight = (int)(SCREEN_WIDTH * 9 / 16);
+				if (SCREEN_HEIGHT != desiredHeight) {
+					// Če višina ni pravilna, prilagodi velikost okna
+					SDL_SetWindowSize(window, SCREEN_WIDTH, desiredHeight);
+					SCREEN_HEIGHT = desiredHeight;
+				}
+
+				// Izračunaj scale faktor
+				scale_x = (float)SCREEN_WIDTH / original_width;
+				scale_y = (float)SCREEN_HEIGHT / original_height;
+
+				std::cout << "Window resized to: " << SCREEN_WIDTH << "x" << SCREEN_HEIGHT << std::endl;
+				std::cout << "Scale factor: " << scale_x << ", " << scale_y << std::endl;
+			}
+		}
 		mouse.update(event, camera);
 	}
 }
 
 // Update game logic
+
 void Game::update(Clock* clock) {
 	for (Line& line : layout1->lines) {
 		collision(*player, line);
@@ -110,12 +139,16 @@ void Game::update(Clock* clock) {
 		key = new Key(WORLD_WIDTH, WORLD_HEIGHT, layout1);
 	}
 	player->update(clock);
-	for (Npc& npc : npc) {
-		npc.movement(clock, layout1, player);
-		npc.update(clock, layout1);
-		npc.fov->contact = collision(player, npc.fov);
+	for (Npc& npcs : npc) {
+		npcs.movement(clock, layout1, player);
+		npcs.update(clock, layout1);
+		npcs.fov->contact = collision(player, npcs.fov);
+        for(Npc& npcs_ : npc){
+            if(&npcs != &npcs_)
+                collision(&npcs, &npcs_);
+        }
 	}
-	camera->update(player, WORLD_WIDTH, WORLD_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT);
+	camera->update(player, WORLD_WIDTH, WORLD_HEIGHT, original_width, original_height);
 	// BULLETS
 	static bool wasMousePressed = false;
 	static unsigned int last_shot_time = 0;
@@ -139,24 +172,27 @@ void Game::update(Clock* clock) {
 }
 // Render
 void Game::render() {
-	SDL_SetRenderDrawColor(renderer, 0, 166, 152, 151);	 // background
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);	 // Črna barva za ozadje
 	SDL_RenderClear(renderer);
+
+	// Nastavi skaliranje na rendererju
+	SDL_RenderSetScale(renderer, scale_x, scale_y);
+
+	// Risanje objektov
 	map->render(renderer, camera);
 	float cameraX = camera->x;
 	float cameraY = camera->y;
 	for (Line& line : layout1->lines)
 		line.render(renderer, cameraX, cameraY);
-	for (Bullet& bullets : bullets) {
-		bullets.render(renderer, cameraX, cameraY);
-	}
+	for (Bullet& bullet : bullets)
+		bullet.render(renderer, cameraX, cameraY);
 	for (Npc& npc : npc)
 		npc.render(renderer, camera);
-	player->render(renderer, mouse, SCREEN_WIDTH / 2.0, SCREEN_HEIGHT / 2.0);
+	player->render(renderer, mouse, original_width / 2.0, original_height / 2.0, camera);
 	key->render(renderer, camera);
 
 	SDL_RenderPresent(renderer);
 }
-
 // cleanup
 void Game::cleanup() {
 	if (renderer) {

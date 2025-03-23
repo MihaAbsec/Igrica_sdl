@@ -11,6 +11,7 @@
 #include "Mouse.h"
 
 class Player : public GameObject {
+    int lives;
 	// GUN
 	float gunX, gunY;
 
@@ -35,7 +36,7 @@ class Player : public GameObject {
 	Player(float, float, int, int, float);
 	void handleInput(SDL_Event& event, Clock* clock);
 	void update(Clock*);
-	void render(SDL_Renderer* renderer, Mouse, int, int);
+	void render(SDL_Renderer* renderer, Mouse, int, int, Camera*);
 	float getGunX() const {
 		return gunX;
 	}
@@ -43,6 +44,8 @@ class Player : public GameObject {
 		return gunY;
 	}
 	void bulletSpawnFix(Mouse);
+    void operator--();
+    int getLives();
 };
 
 #endif	// SQUARE_H

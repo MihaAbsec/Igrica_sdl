@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "include/Game.h"
+
 int Mouse::x = 0;
 int Mouse::y = 0;
 int Mouse::worldX = 0;
@@ -15,11 +17,13 @@ void Mouse::update(SDL_Event& event, Camera* camera) {
 	lastButtons = buttons;
 
 	if (event.type == SDL_MOUSEMOTION) {
+		// Fizične koordinate miške
 		x = event.motion.x;
 		y = event.motion.y;
 
-		worldX = x + camera->x;
-		worldY = y + camera->y;
+		// Preslikaj fizične koordinate na logične koordinate z uporabo Game::scale_x in Game::scale_y
+		worldX = (x / Game::scale_x) + camera->x;
+		worldY = (y / Game::scale_y) + camera->y;
 
 		dx = event.motion.xrel;
 		dy = event.motion.yrel;
@@ -28,9 +32,11 @@ void Mouse::update(SDL_Event& event, Camera* camera) {
 	if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP) {
 		buttons = SDL_GetMouseState(&x, &y);
 
-		worldX = x + camera->x;
-		worldY = y + camera->y;
+		// Preslikaj fizične koordinate na logične koordinate z uporabo Game::scale_x in Game::scale_y
+		worldX = (x / Game::scale_x) + camera->x;
+		worldY = (y / Game::scale_y) + camera->y;
 	}
+
 	std::cout << worldX << " " << worldY << " " << buttons << " " << lastButtons << " " << '\r';
 	std::cout << std::flush;
 }

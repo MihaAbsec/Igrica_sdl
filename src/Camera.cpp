@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "include/Game.h"
 #include "include/Player.h"
 
 Camera::Camera(float startX, float startY) {
@@ -10,6 +11,7 @@ Camera::Camera(float startX, float startY) {
 }
 
 void Camera::update(Player* player, float worldWidth, float worldHeight, int screenWidth, int screenHeight) {
-	x = player->getX() - screenWidth / 2.0f;
-	y = player->getY() - screenHeight / 2.0f;
+    // Upoštevaj skaliranje pri izračunu pozicije kamere
+    x = player->getX() - (screenWidth / 2 );
+    y = player->getY() - (screenHeight / 2);
 }

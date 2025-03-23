@@ -1,8 +1,8 @@
 #include "include/Map.h"
 
-#include <cstdlib>	   
-#include <ctime>	   
-#include <filesystem>  
+#include <cstdlib>
+#include <ctime>
+#include <filesystem>
 #include <iostream>
 
 Map::Map(const std::string& blockTexturePath, int worldWidth, int worldHeight, int blockSize)
@@ -64,14 +64,14 @@ void Map::render(SDL_Renderer* renderer, Camera* camera) {
 		blockTexture = loadTexture("assets/block.png", renderer);
 		if (!blockTexture) {
 			std::cerr << "Error: Failed to load block texture. Cannot render map.\n";
-			return;	
+			return;
 		}
 	}
 
 	for (const auto& block : floorBlocks) {
 		SDL_Rect destRect = {
-			static_cast<int>(block.x - camera->x),  
-			static_cast<int>(block.y - camera->y),  
+			static_cast<int>(block.x - camera->x),
+			static_cast<int>(block.y - camera->y),
 			blockSize,
 			blockSize};
 		SDL_RenderCopy(renderer, blockTexture, nullptr, &destRect);

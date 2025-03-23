@@ -18,7 +18,10 @@ add_executable(mygame
     src/Key.cpp
     src/NpcFov.cpp
     src/Camera.cpp
-    src/Map.cpp)
+    src/Map.cpp
+    src/GameObject.cpp
+    src/StartMenu.cpp
+)
 
 # Specify the include directory for Square.h
 target_include_directories(mygame PRIVATE ${SDL2_INCLUDE_DIRS} include)

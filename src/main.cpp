@@ -2,7 +2,7 @@
 #include "include/Clock.h"
 
 int main(int argc, char* argv[]) {
-	Game* game = new Game(800, 600);
+	Game* game = new Game(1067, 600);
     Clock *clock = new Clock;
 	game->innit();
 
