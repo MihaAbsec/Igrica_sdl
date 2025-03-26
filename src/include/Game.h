@@ -31,7 +31,7 @@ class Game {
 	bool running;
 
 	void render();
-	void handleEvents(Clock*);
+	void handleEvents(Clock* clock);
 	void update(Clock*);
 
 	SDL_Renderer* renderer;
@@ -41,6 +41,12 @@ class Game {
 	int original_height;  // Prvotna velikost okna
 	int SCREEN_WIDTH, SCREEN_HEIGHT;
 	const int WORLD_WIDTH = 1920, WORLD_HEIGHT = 1920;
+
+	void setGameState(GameState state);
+	GameState getGameState() const;
+	bool isRunning() const;
+	SDL_Renderer* getRenderer() const;
+    void setRunning(bool);
 
    protected:
 	SDL_Window* window;
@@ -53,6 +59,7 @@ class Game {
 	Layout1* layout1;
 	Camera* camera;
 	Map* map;
+	GameState gameState;
 };
 
 #endif	// GAME_H

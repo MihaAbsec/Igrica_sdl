@@ -29,6 +29,7 @@ target_link_libraries(mygame ${SDL2_LIBRARIES})
 
 # Copy assets folder to build directory
 file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/maps DESTINATION ${CMAKE_BINARY_DIR})
 
 #SDL2_IMAGE
 include_directories(/usr/include/SDL2)

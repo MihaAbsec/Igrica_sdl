@@ -2,23 +2,21 @@
 #ifndef STARTMENU_H
 #define STARTMENU_H
 
-#include "SDL2/SDL.h"
+#include "SDL.h"
 #include "SDL_image.h"
-#include <string>
 
 class StartMenu {
-public:
-    StartMenu(SDL_Renderer* renderer, int screenWidth, int screenHeight);
-    ~StartMenu();
-    void render();
-    bool handleEvents(SDL_Event& event);
+   public:
+	StartMenu(SDL_Renderer* renderer, int screenWidth, int screenHeight);
+	~StartMenu();
+	bool handleEvents(SDL_Event& event);  // Obdelaj dogodke
+	void render();						  // Prikaži meni
 
-private:
-    SDL_Renderer* renderer;
-    SDL_Texture* backgroundTexture;
-    SDL_Rect startButtonRect;
-    int screenWidth;
-    int screenHeight;
+   private:
+	SDL_Renderer* renderer;
+	SDL_Texture* backgroundTexture;	 // Ozadje menija
+	SDL_Rect startButtonRect;		 // Območje gumba "Start"
+	int screenWidth, screenHeight;
 };
 
-#endif // STARTMENU_H
+#endif	// STARTMENU_H

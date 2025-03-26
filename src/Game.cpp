@@ -24,7 +24,7 @@ Game::Game(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 	camera = new Camera(player->getX(), player->getY());
 	for (int i = 0; i < 7; ++i)
 		npc.push_back(Npc(WORLD_WIDTH, WORLD_HEIGHT, 25, 75, 0.2, layout1));
-	map = new Map("assets/block.png", WORLD_WIDTH, WORLD_HEIGHT, 32);
+	// map = new Map("assets/floor.png", "assets/wall.png", "maps/level1.txt", renderer);
 }
 
 Game::~Game() {
@@ -60,10 +60,11 @@ bool Game::innit() {
 
 	// Odstranite to vrstico
 	// SDL_RenderSetLogicalSize(renderer, original_width, original_height);
-
+	map = new Map("assets/floor.png", "assets/wall.png", "maps/level1.txt", renderer);
 	return true;
 }
 
+// V Game.cpp
 void Game::handleEvents(Clock* clock) {
 	SDL_Event event;
 	player->handleInput(event, clock);
@@ -143,10 +144,10 @@ void Game::update(Clock* clock) {
 		npcs.movement(clock, layout1, player);
 		npcs.update(clock, layout1);
 		npcs.fov->contact = collision(player, npcs.fov);
-        for(Npc& npcs_ : npc){
-            if(&npcs != &npcs_)
-                collision(&npcs, &npcs_);
-        }
+		for (Npc& npcs_ : npc) {
+			if (&npcs != &npcs_)
+				collision(&npcs, &npcs_);
+		}
 	}
 	camera->update(player, WORLD_WIDTH, WORLD_HEIGHT, original_width, original_height);
 	// BULLETS
@@ -203,4 +204,24 @@ void Game::cleanup() {
 	}
 	IMG_Quit();
 	SDL_Quit();
+}
+
+void Game::setGameState(GameState state) {
+	gameState = state;
+}
+
+GameState Game::getGameState() const {
+	return gameState;
+}
+
+bool Game::isRunning() const {
+	return running;
+}
+
+SDL_Renderer* Game::getRenderer() const {
+	return renderer;
+}
+void Game::setRunning(bool running) {
+	this->running = running;
+	std::cout << "Game running state set to: " << running << std::endl;
 }
