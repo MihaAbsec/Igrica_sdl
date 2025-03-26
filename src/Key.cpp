@@ -16,7 +16,7 @@ Key::Key(int width, int height, Layout1* layout)
 }
 
 bool Key::KeyCollision(Layout1* layout) {
-	for (Line line : layout->lines)
+	for (Wall line : layout->lines)
 		if (collision(this, line)) {
 			return true;
 		}

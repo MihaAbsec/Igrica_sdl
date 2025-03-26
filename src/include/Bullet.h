@@ -6,7 +6,7 @@
 #include <cmath>
 
 #include "GameObject.h"
-#include "Line.h"
+#include "Wall.h"
 
 class Bullet : public GameObject {
    private:

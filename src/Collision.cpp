@@ -5,11 +5,11 @@
 
 #include <iostream>
 
-#include "include/Line.h"
+#include "include/Wall.h"
 #include "include/Player.h"
 
 // PLAYER
-void collision(Player& obj1, const Line& obj2) {
+void collision(Player& obj1, const Wall& obj2) {
 	// zgornja plast
 	if (obj1.getY() + obj1.getH() > obj2.getY() && !(obj1.getoldY() + obj1.getH() > obj2.getY()))
 		if (!(obj1.getX() + obj1.getW() <= obj2.getX() || obj1.getX() >= obj2.getX() + obj2.getW()))
@@ -47,7 +47,7 @@ void collision(Npc* obj1, Npc* obj2) {
 			obj1->giveXY(obj2->getX() + obj2->getW(), obj1->getY());
 }
 // NPC
-bool collision(Npc* obj1, const Line& obj2) {
+bool collision(Npc* obj1, const Wall& obj2) {
 	/*	SDL_Rect npcRect = {
 			static_cast<int>(obj1->getX()),
 			static_cast<int>(obj1->getY()),
@@ -82,7 +82,7 @@ bool collision(Npc* obj1, const Line& obj2) {
 	return true;
 }
 
-void moveCollision(Npc* obj1, const Line* obj2) {
+void moveCollision(Npc* obj1, const Wall* obj2) {
 	// zgornja plast
 	if (obj1->getY() + obj1->getH() > obj2->getY() && !(obj1->getoldY() + obj1->getH() > obj2->getY()))
 		if (!(obj1->getX() + obj1->getW() <= obj2->getX() || obj1->getX() >= obj2->getX() + obj2->getW())) {
@@ -109,7 +109,7 @@ void moveCollision(Npc* obj1, const Line* obj2) {
 		}
 }
 // BULLET
-bool collision(Bullet* obj1, const Line* obj2) {
+bool collision(Bullet* obj1, const Wall* obj2) {
 	/*// zgornja plast
 	if (obj1.getY() + obj1.getH() > obj2.getY() && !(obj1.getoldY() + obj1.getH() > obj2.getY()))
 		if (!(obj1.getX() + obj1.getW() <= obj2.getX() || obj1.getX() >= obj2.getX() + obj2.getW())) {
@@ -152,7 +152,7 @@ bool collision(Bullet* obj1, const Line* obj2) {
 }
 
 // KEY SPAWN
-bool collision(const Key* obj1, const Line& obj2) {
+bool collision(const Key* obj1, const Wall& obj2) {
 	float keyLeft = obj1->getX();
 	float keyRight = obj1->getX() + obj1->getW();
 	float keyTop = obj1->getY();
@@ -229,7 +229,7 @@ bool collision(const Player* obj1, const NpcFov* obj2) {
 }
 // ČE JE MED PLAYERJEM IN NPC STENA (line-of-sight)
 bool lineIntersectsWall(float x1, float y1, float x2, float y2, Layout1* layout) {
-	for (const Line& wall : layout->lines) {
+	for (const Wall& wall : layout->lines) {
 		if (lineIntersectsRectangle(x1, y1, x2, y2, wall)) {
 			return true;  // If any wall blocks the line, return true
 		}
@@ -237,19 +237,19 @@ bool lineIntersectsWall(float x1, float y1, float x2, float y2, Layout1* layout)
 	return false;
 }
 
-bool lineIntersectsRectangle(float x1, float y1, float x2, float y2, const Line& wall) {
+bool lineIntersectsRectangle(float x1, float y1, float x2, float y2, const Wall& wall) {
 	float wx1 = wall.getX();
 	float wy1 = wall.getY();
 	float wx2 = wx1 + wall.getW();
 	float wy2 = wy1 + wall.getH();
 
-	return (checkLineIntersection(x1, y1, x2, y2, wx1, wy1, wx2, wy1) ||  // Top edge
-			checkLineIntersection(x1, y1, x2, y2, wx1, wy1, wx1, wy2) ||  // Left edge
-			checkLineIntersection(x1, y1, x2, y2, wx2, wy1, wx2, wy2) ||  // Right edge
-			checkLineIntersection(x1, y1, x2, y2, wx1, wy2, wx2, wy2));	  // Bottom edge
+	return (checkWallIntersection(x1, y1, x2, y2, wx1, wy1, wx2, wy1) ||  // Top edge
+			checkWallIntersection(x1, y1, x2, y2, wx1, wy1, wx1, wy2) ||  // Left edge
+			checkWallIntersection(x1, y1, x2, y2, wx2, wy1, wx2, wy2) ||  // Right edge
+			checkWallIntersection(x1, y1, x2, y2, wx1, wy2, wx2, wy2));	  // Bottom edge
 }
 
-bool checkLineIntersection(float x1, float y1, float x2, float y2,
+bool checkWallIntersection(float x1, float y1, float x2, float y2,
 						   float x3, float y3, float x4, float y4) {
 	float den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
 	if (den == 0) return false;	 // Parallel lines

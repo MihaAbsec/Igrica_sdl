@@ -5,12 +5,12 @@
 
 #include <vector>
 
-#include "Line.h"
+#include "Wall.h"
 class Game;
 
 class Layout1 {
    public:
-	std::vector<Line> lines;
+	std::vector<Wall> lines;
 
 	Layout1(float, float);
 };

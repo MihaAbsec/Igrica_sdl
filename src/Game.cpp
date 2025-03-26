@@ -10,7 +10,7 @@
 #include "include/Collision.h"
 #include "include/Key.h"
 #include "include/Layout1.h"
-#include "include/Line.h"
+#include "include/Wall.h"
 #include "include/Player.h"
 float Game::scale_x = 1.0f;
 float Game::scale_y = 1.0f;
@@ -107,7 +107,7 @@ void Game::handleEvents(Clock* clock) {
 // Update game logic
 
 void Game::update(Clock* clock) {
-	for (Line& line : layout1->lines) {
+	for (Wall& line : layout1->lines) {
 		collision(*player, line);
 		for (auto it = bullets.begin(); it != bullets.end();) {
 			if (collision(&(*it), &line)) {
@@ -183,7 +183,7 @@ void Game::render() {
 	map->render(renderer, camera);
 	float cameraX = camera->x;
 	float cameraY = camera->y;
-	for (Line& line : layout1->lines)
+	for (Wall& line : layout1->lines)
 		line.render(renderer, cameraX, cameraY);
 	for (Bullet& bullet : bullets)
 		bullet.render(renderer, cameraX, cameraY);

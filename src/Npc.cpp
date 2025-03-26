@@ -58,7 +58,7 @@ void Npc::movement(Clock *clock, Layout1 *layout, Player *player) {
 	const float movementThreshold = 0.001;
 	if (fov->contact) {
 		fov->isContact(this, player, clock, layout);
-		for (Line line : layout->lines)
+		for (Wall line : layout->lines)
 			moveCollision(this, &line);
 	}
 	if (!fov->contact || fov->access) {
@@ -119,7 +119,7 @@ void Npc::movement(Clock *clock, Layout1 *layout, Player *player) {
 }
 
 bool Npc::NpcCollision(Layout1 *layout) {
-	for (Line line : layout->lines)
+	for (Wall line : layout->lines)
 		if (collision(this, line)) {
 			return true;
 		}
