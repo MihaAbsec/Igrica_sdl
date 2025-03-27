@@ -57,6 +57,7 @@ class Game {
 	Mouse mouse;
 	std::vector<Bullet> bullets;
 	Layout1* layout1;
+    std::vector<Wall> *walls;
 	Camera* camera;
 	Map* map;
 	GameState gameState;

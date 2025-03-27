@@ -37,8 +37,8 @@ void Mouse::update(SDL_Event& event, Camera* camera) {
 		worldY = (y / Game::scale_y) + camera->y;
 	}
 
-	std::cout << worldX << " " << worldY << " " << buttons << " " << lastButtons << " " << '\r';
-	std::cout << std::flush;
+	//std::cout << worldX << " " << worldY << " " << buttons << " " << lastButtons << " " << '\r';
+	//std::cout << std::flush;
 }
 
 bool Mouse::isButtonDown(Uint8 button) {

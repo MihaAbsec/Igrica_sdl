@@ -10,8 +10,8 @@
 #include "include/Collision.h"
 #include "include/Key.h"
 #include "include/Layout1.h"
-#include "include/Wall.h"
 #include "include/Player.h"
+#include "include/Wall.h"
 float Game::scale_x = 1.0f;
 float Game::scale_y = 1.0f;
 Game::Game(int SCREEN_WIDTH, int SCREEN_HEIGHT)
@@ -25,6 +25,7 @@ Game::Game(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 	for (int i = 0; i < 7; ++i)
 		npc.push_back(Npc(WORLD_WIDTH, WORLD_HEIGHT, 25, 75, 0.2, layout1));
 	// map = new Map("assets/floor.png", "assets/wall.png", "maps/level1.txt", renderer);
+	walls = new std::vector<Wall>();
 }
 
 Game::~Game() {
@@ -60,7 +61,7 @@ bool Game::innit() {
 
 	// Odstranite to vrstico
 	// SDL_RenderSetLogicalSize(renderer, original_width, original_height);
-	map = new Map("assets/floor.png", "assets/wall.png", "maps/level1.txt", renderer);
+	map = new Map("assets/floor.png", "assets/wall.png", "maps/level1.txt", renderer, walls);
 	return true;
 }
 
@@ -96,8 +97,8 @@ void Game::handleEvents(Clock* clock) {
 				scale_x = (float)SCREEN_WIDTH / original_width;
 				scale_y = (float)SCREEN_HEIGHT / original_height;
 
-				std::cout << "Window resized to: " << SCREEN_WIDTH << "x" << SCREEN_HEIGHT << std::endl;
-				std::cout << "Scale factor: " << scale_x << ", " << scale_y << std::endl;
+				//std::cout << "Window resized to: " << SCREEN_WIDTH << "x" << SCREEN_HEIGHT << std::endl;
+				//std::cout << "Scale factor: " << scale_x << ", " << scale_y << std::endl;
 			}
 		}
 		mouse.update(event, camera);
@@ -223,5 +224,5 @@ SDL_Renderer* Game::getRenderer() const {
 }
 void Game::setRunning(bool running) {
 	this->running = running;
-	std::cout << "Game running state set to: " << running << std::endl;
+	//std::cout << "Game running state set to: " << running << std::endl;
 }

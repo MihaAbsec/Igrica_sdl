@@ -8,42 +8,46 @@
 #include <vector>
 
 #include "Camera.h"
-
-enum BlockType {
-	FLOOR = 0,
-	WALL = 1
-};
-
-struct Block {
-	int x;
-	int y;
-	BlockType type;
-	bool walkable;
-};
+#include "Wall.h"
 
 class Map {
    public:
-	// Constants for our specific world
-	static const int WORLD_SIZE = 1920;
-	static const int BLOCK_SIZE = 64;
-	static const int GRID_SIZE = WORLD_SIZE / BLOCK_SIZE;  // 60x60 grid
+	enum BlockType { FLOOR,
+					 WALL };
+
+	static constexpr int BLOCK_SIZE = 64;
+	static constexpr int GRID_SIZE = 30;
+
+	struct Block {
+		float x, y;
+		bool walkable;
+		BlockType type;
+	};
 
 	Map(const std::string& floorTexturePath,
 		const std::string& wallTexturePath,
 		const std::string& mapFilePath,
-		SDL_Renderer* renderer);
+		SDL_Renderer* renderer,
+		std::vector<Wall>* walls);
+
 	~Map();
 
-	bool loadFromFile(const std::string& filePath);
+	// Onemogočimo kopiranje, da preprečimo težave s SDL_Texture*
+	Map(const Map&) = delete;
+	Map& operator=(const Map&) = delete;
+
+	bool loadFromFile(const std::string& mapFilePath, std::vector<Wall>* walls);
 	void render(SDL_Renderer* renderer, Camera* camera);
 	bool isWalkable(int x, int y) const;
 
    private:
-	SDL_Texture* floorTexture;
-	SDL_Texture* wallTexture;
+	SDL_Texture* floorTexture = nullptr;
+	SDL_Texture* wallTexture = nullptr;
+	SDL_Renderer* renderer = nullptr;
 	std::vector<Block> blocks;
 
-	SDL_Texture* loadTexture(const std::string& filePath, SDL_Renderer* renderer);
+	SDL_Texture* loadTexture(const std::string& filePath);
 };
 
 #endif	// MAP_H
+

@@ -1,136 +1,156 @@
 #include "include/Map.h"
-
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <sstream>
+#include <SDL_image.h>  // DODAJTE TO VRSTICO
 
 Map::Map(const std::string& floorTexturePath,
-		 const std::string& wallTexturePath,
-		 const std::string& mapFilePath,
-		 SDL_Renderer* renderer)
-	: floorTexture(nullptr), wallTexture(nullptr) {
-	// Load textures
-	floorTexture = loadTexture(floorTexturePath, renderer);
-	wallTexture = loadTexture(wallTexturePath, renderer);
+         const std::string& wallTexturePath,
+         const std::string& mapFilePath,
+         SDL_Renderer* renderer,
+         std::vector<Wall>* walls)
+    : renderer(renderer), floorTexture(nullptr), wallTexture(nullptr)
+{
+    // Debug izpis
+    std::cout << "Initializing Map..." << std::endl;
+    std::cout << "Textures path - Floor: " << floorTexturePath 
+              << " | Wall: " << wallTexturePath << std::endl;
 
-	if (!floorTexture || !wallTexture) {
-		std::cerr << "Failed to load one or more textures!" << std::endl;
-	}
+    // 1. Naloži teksture
+    floorTexture = loadTexture(floorTexturePath);
+    wallTexture = loadTexture(wallTexturePath);
 
-	// Load map from file
-	if (!loadFromFile(mapFilePath)) {
-		std::cerr << "Failed to load map from file: " << mapFilePath << std::endl;
-		// Create empty map as fallback
-		blocks.resize(GRID_SIZE * GRID_SIZE);
-		for (int y = 0; y < GRID_SIZE; y++) {
-			for (int x = 0; x < GRID_SIZE; x++) {
-				Block& block = blocks[y * GRID_SIZE + x];
-				block.x = x * BLOCK_SIZE;
-				block.y = y * BLOCK_SIZE;
-				block.type = FLOOR;
-				block.walkable = true;
-			}
-		}
-	}
+    // 2. Preveri uspešnost nalaganja tekstur
+    if (!floorTexture) {
+        std::cerr << "Failed to load floor texture!" << std::endl;
+    }
+    if (!wallTexture) {
+        std::cerr << "Failed to load wall texture!" << std::endl;
+    }
+
+    // 3. Naloži mapo
+    if (walls) {
+        loadFromFile(mapFilePath, walls);
+    } else {
+        std::cerr << "WARNING: walls pointer is null!" << std::endl;
+    }
 }
 
 Map::~Map() {
-	if (floorTexture) SDL_DestroyTexture(floorTexture);
-	if (wallTexture) SDL_DestroyTexture(wallTexture);
+    if (floorTexture) SDL_DestroyTexture(floorTexture);
+    if (wallTexture) SDL_DestroyTexture(wallTexture);
 }
 
-bool Map::loadFromFile(const std::string& filePath) {
-	std::ifstream file(filePath);
-	if (!file.is_open()) {
-		std::cerr << "Could not open map file: " << filePath << std::endl;
-		return false;
-	}
+bool Map::loadFromFile(const std::string& mapFilePath, std::vector<Wall>* walls) {
+    if (!walls) {
+        std::cerr << "ERROR: walls pointer is null in loadFromFile!" << std::endl;
+        return false;
+    }
 
-	blocks.clear();
-	blocks.resize(GRID_SIZE * GRID_SIZE);
+    std::ifstream file(mapFilePath);
+    if (!file.is_open()) {
+        std::cerr << "ERROR: Could not open map file: " << mapFilePath << std::endl;
+        return false;
+    }
 
-	std::string line;
-	int y = 0;
+    walls->clear();
+    blocks.clear();  // Poskrbimo, da začnemo sveže
+    std::string line;
+    int y = 0;
 
-	while (std::getline(file, line) && y < GRID_SIZE) {
-		for (int x = 0; x < line.length() && x < GRID_SIZE; x++) {
-			Block& block = blocks[y * GRID_SIZE + x];
-			block.x = x * BLOCK_SIZE;
-			block.y = y * BLOCK_SIZE;
+    std::cout << "Loading map from: " << mapFilePath << std::endl;
 
-			if (line[x] == '0') {
-				block.type = FLOOR;
-				block.walkable = true;
-			} else if (line[x] == '1') {
-				block.type = WALL;
-				block.walkable = false;
-			} else {
-				std::cerr << "Invalid block type at (" << x << "," << y << "), defaulting to floor" << std::endl;
-				block.type = FLOOR;
-				block.walkable = true;
-			}
-		}
-		y++;
-	}
+    while (std::getline(file, line)) {
+        for (int x = 0; x < line.size(); x++) {
+            Block block;
+            block.x = x * BLOCK_SIZE;
+            block.y = y * BLOCK_SIZE;
 
-	// Fill remaining blocks if file was smaller than our grid
-	for (; y < GRID_SIZE; y++) {
-		for (int x = 0; x < GRID_SIZE; x++) {
-			Block& block = blocks[y * GRID_SIZE + x];
-			block.x = x * BLOCK_SIZE;
-			block.y = y * BLOCK_SIZE;
-			block.type = FLOOR;
-			block.walkable = true;
-		}
-	}
+            if (line[x] == '1') {  // Stena
+                block.type = WALL;
+                block.walkable = false;
+                walls->emplace_back(block.x, block.y, BLOCK_SIZE, BLOCK_SIZE);
+            } else {  // Tla
+                block.type = FLOOR;
+                block.walkable = true;
+            }
 
-	file.close();
-	return true;
+            blocks.push_back(block);
+        }
+        y++;
+    }
+
+    file.close();
+    std::cout << "Map loaded successfully. Total walls: " << walls->size() << ", Total blocks: " << blocks.size() << std::endl;
+    return true;
 }
 
-SDL_Texture* Map::loadTexture(const std::string& filePath, SDL_Renderer* renderer) {
-	if (!std::filesystem::exists(filePath)) {
-		std::cerr << "Texture file not found: " << filePath << std::endl;
-		return nullptr;
-	}
 
-	SDL_Surface* surface = IMG_Load(filePath.c_str());
-	if (!surface) {
-		std::cerr << "Failed to load image: " << IMG_GetError() << std::endl;
-		return nullptr;
-	}
+SDL_Texture* Map::loadTexture(const std::string& filePath) {
+    std::cout << "Loading texture: " << filePath << std::endl;
+    
+    if (!std::filesystem::exists(filePath)) {
+        std::cerr << "Texture file not found: " << filePath << std::endl;
+        return nullptr;
+    }
 
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-	SDL_FreeSurface(surface);
+    SDL_Surface* surface = IMG_Load(filePath.c_str());
+    if (!surface) {
+        std::cerr << "IMG_Load failed: " << IMG_GetError() << std::endl;
+        return nullptr;
+    }
 
-	if (!texture) {
-		std::cerr << "Failed to create texture: " << SDL_GetError() << std::endl;
-	}
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
 
-	return texture;
+    if (!texture) {
+        std::cerr << "SDL_CreateTextureFromSurface failed: " << SDL_GetError() << std::endl;
+    } else {
+        std::cout << "Texture loaded successfully. Size: " 
+                  << surface->w << "x" << surface->h << std::endl;
+    }
+
+    return texture;
 }
 
 void Map::render(SDL_Renderer* renderer, Camera* camera) {
-	if (!renderer || !camera) return;
+    if (!renderer || !camera) {
+        std::cerr << "ERROR: renderer or camera is null in Map::render!" << std::endl;
+        return;
+    }
 
-	for (const auto& block : blocks) {
-		SDL_Rect destRect = {
-			static_cast<int> (block.x - camera->x),
-			static_cast<int> (block.y - camera->y),
-			BLOCK_SIZE,
-			BLOCK_SIZE};
+    // Fallback rendering če teksture niso naložene
+    bool useFallback = !floorTexture || !wallTexture;
+    if (useFallback) {
+        std::cout << "Using fallback colors (textures missing)" << std::endl;
+    }
 
-		SDL_Texture* textureToUse = (block.type == WALL) ? wallTexture : floorTexture;
-		if (textureToUse) {
-			SDL_RenderCopy(renderer, textureToUse, nullptr, &destRect);
-		}
-	}
+    for (const auto& block : blocks) {
+        SDL_Rect destRect = {
+            static_cast<int>(block.x - camera->x),
+            static_cast<int>(block.y - camera->y),
+            BLOCK_SIZE,
+            BLOCK_SIZE
+        };
+
+        if (useFallback) {
+            SDL_SetRenderDrawColor(renderer,
+                block.type == WALL ? 255 : 0,  // Rdeča za stene
+                block.type == WALL ? 0 : 255,  // Zelena za tla
+                0, 255);
+            SDL_RenderFillRect(renderer, &destRect);
+        } else {
+            SDL_Texture* textureToUse = block.type == WALL ? wallTexture : floorTexture;
+            if (SDL_RenderCopy(renderer, textureToUse, nullptr, &destRect) != 0) {
+                std::cerr << "RenderCopy error: " << SDL_GetError() << std::endl;
+            }
+        }
+    }
 }
 
 bool Map::isWalkable(int x, int y) const {
-	if (x < 0 || x >= GRID_SIZE || y < 0 || y >= GRID_SIZE) {
-		return false;  // Out of bounds is not walkable
-	}
-	return blocks[y * GRID_SIZE + x].walkable;
+    if (x < 0 || x >= GRID_SIZE || y < 0 || y >= GRID_SIZE) {
+        return false;
+    }
+    return blocks[y * GRID_SIZE + x].walkable;
 }
