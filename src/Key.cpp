@@ -1,23 +1,31 @@
 #include "include/Key.h"
 
 #include <ctime>
+#include <glm/glm.hpp>
+#include <glm/gtc/constants.hpp>
 #include <iostream>
+#include <vector>
 
 #include "include/Collision.h"
 #include "include/GameObject.h"
+#include "include/Game.h"
+#include "include/Camera.h"
 
-Key::Key(int width, int height, Layout1* layout)
-	: GameObject(0, 0, 32,16), texture(nullptr) {
+Key::Key(int width, int height, std::vector<Wall>* walls, Game* game, Camera* camera)
+	: GameObject(0, 0, 32, 16), texture(nullptr) {
 	srand(time(NULL));
+	float length;
 	do {
-		x = rand() % ((width - 50) - 50) + 50;
+		x = rand() % width;
 		y = rand() % height;
-	} while (KeyCollision(layout));
+	} while (KeyCollision(walls) || spawnCollision(game, camera, this));
+	oldX = x;
+	oldY = y;
 }
 
-bool Key::KeyCollision(Layout1* layout) {
-	for (Wall line : layout->lines)
-		if (collision(this, line)) {
+bool Key::KeyCollision(std::vector<Wall>* walls) {
+	for (Wall wall : *walls)
+		if (collision(this, wall)) {
 			return true;
 		}
 	return false;
@@ -26,7 +34,7 @@ bool Key::KeyCollision(Layout1* layout) {
 void Key::render(SDL_Renderer* renderer, Camera* camera) {
 	if (!texture) {
 		SDL_Surface* surface = IMG_Load("assets/key.png");
-				texture = SDL_CreateTextureFromSurface(renderer, surface);
+		texture = SDL_CreateTextureFromSurface(renderer, surface);
 		SDL_FreeSurface(surface);
 		if (!texture) {
 			std::cerr << "Failed to create texture from surface: " << SDL_GetError() << "\n";

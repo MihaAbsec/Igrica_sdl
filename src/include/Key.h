@@ -4,16 +4,18 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL_render.h>
+#include <vector>
 
+class Game;
 #include "GameObject.h"
-#include "Layout1.h"
+#include "Wall.h"
 #include "Camera.h"
 class Key : public GameObject {
 	SDL_Texture* texture;
    public:
     ~Key();
-	Key(int width, int height, Layout1*);
-	bool KeyCollision(Layout1*);
+	Key(int width, int height, std::vector<Wall>*, Game*, Camera*);
+	bool KeyCollision(std::vector<Wall>*);
 	void render(SDL_Renderer* renderer, Camera* camera);
 };
 

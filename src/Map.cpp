@@ -12,27 +12,27 @@ Map::Map(const std::string& floorTexturePath,
     : renderer(renderer), floorTexture(nullptr), wallTexture(nullptr)
 {
     // Debug izpis
-    std::cout << "Initializing Map..." << std::endl;
+   /* std::cout << "Initializing Map..." << std::endl;
     std::cout << "Textures path - Floor: " << floorTexturePath 
               << " | Wall: " << wallTexturePath << std::endl;
-
+*/
     // 1. Naloži teksture
     floorTexture = loadTexture(floorTexturePath);
     wallTexture = loadTexture(wallTexturePath);
 
     // 2. Preveri uspešnost nalaganja tekstur
     if (!floorTexture) {
-        std::cerr << "Failed to load floor texture!" << std::endl;
+        std::cout << "Failed to load floor texture!" << std::endl;
     }
     if (!wallTexture) {
-        std::cerr << "Failed to load wall texture!" << std::endl;
+        std::cout << "Failed to load wall texture!" << std::endl;
     }
 
     // 3. Naloži mapo
     if (walls) {
         loadFromFile(mapFilePath, walls);
     } else {
-        std::cerr << "WARNING: walls pointer is null!" << std::endl;
+        std::cout << "WARNING: walls pointer is null!" << std::endl;
     }
 }
 
@@ -43,13 +43,13 @@ Map::~Map() {
 
 bool Map::loadFromFile(const std::string& mapFilePath, std::vector<Wall>* walls) {
     if (!walls) {
-        std::cerr << "ERROR: walls pointer is null in loadFromFile!" << std::endl;
+        std::cout << "ERROR: walls pointer is null in loadFromFile!" << std::endl;
         return false;
     }
 
     std::ifstream file(mapFilePath);
     if (!file.is_open()) {
-        std::cerr << "ERROR: Could not open map file: " << mapFilePath << std::endl;
+        std::cout << "ERROR: Could not open map file: " << mapFilePath << std::endl;
         return false;
     }
 
@@ -58,7 +58,7 @@ bool Map::loadFromFile(const std::string& mapFilePath, std::vector<Wall>* walls)
     std::string line;
     int y = 0;
 
-    std::cout << "Loading map from: " << mapFilePath << std::endl;
+    //std::cout << "Loading map from: " << mapFilePath << std::endl;
 
     while (std::getline(file, line)) {
         for (int x = 0; x < line.size(); x++) {
@@ -81,22 +81,22 @@ bool Map::loadFromFile(const std::string& mapFilePath, std::vector<Wall>* walls)
     }
 
     file.close();
-    std::cout << "Map loaded successfully. Total walls: " << walls->size() << ", Total blocks: " << blocks.size() << std::endl;
+    //std::cout << "Map loaded successfully. Total walls: " << walls->size() << ", Total blocks: " << blocks.size() << std::endl;
     return true;
 }
 
 
 SDL_Texture* Map::loadTexture(const std::string& filePath) {
-    std::cout << "Loading texture: " << filePath << std::endl;
+    //std::cout << "Loading texture: " << filePath << std::endl;
     
     if (!std::filesystem::exists(filePath)) {
-        std::cerr << "Texture file not found: " << filePath << std::endl;
+        std::cout << "Texture file not found: " << filePath << std::endl;
         return nullptr;
     }
 
     SDL_Surface* surface = IMG_Load(filePath.c_str());
     if (!surface) {
-        std::cerr << "IMG_Load failed: " << IMG_GetError() << std::endl;
+        std::cout << "IMG_Load failed: " << IMG_GetError() << std::endl;
         return nullptr;
     }
 
@@ -104,10 +104,10 @@ SDL_Texture* Map::loadTexture(const std::string& filePath) {
     SDL_FreeSurface(surface);
 
     if (!texture) {
-        std::cerr << "SDL_CreateTextureFromSurface failed: " << SDL_GetError() << std::endl;
+        std::cout << "SDL_CreateTextureFromSurface failed: " << SDL_GetError() << std::endl;
     } else {
-        std::cout << "Texture loaded successfully. Size: " 
-                  << surface->w << "x" << surface->h << std::endl;
+        //std::cout << "Texture loaded successfully. Size: " 
+         //         << surface->w << "x" << surface->h << std::endl;
     }
 
     return texture;
@@ -115,7 +115,7 @@ SDL_Texture* Map::loadTexture(const std::string& filePath) {
 
 void Map::render(SDL_Renderer* renderer, Camera* camera) {
     if (!renderer || !camera) {
-        std::cerr << "ERROR: renderer or camera is null in Map::render!" << std::endl;
+        std::cout << "ERROR: renderer or camera is null in Map::render!" << std::endl;
         return;
     }
 
@@ -142,7 +142,7 @@ void Map::render(SDL_Renderer* renderer, Camera* camera) {
         } else {
             SDL_Texture* textureToUse = block.type == WALL ? wallTexture : floorTexture;
             if (SDL_RenderCopy(renderer, textureToUse, nullptr, &destRect) != 0) {
-                std::cerr << "RenderCopy error: " << SDL_GetError() << std::endl;
+                std::cout << "RenderCopy error: " << SDL_GetError() << std::endl;
             }
         }
     }

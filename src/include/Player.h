@@ -9,9 +9,10 @@
 #include "Clock.h"
 #include "GameObject.h"
 #include "Mouse.h"
+#include "PlayerRadious.h"
 
 class Player : public GameObject {
-    int lives;
+    int lives = 3;
 	// GUN
 	float gunX, gunY;
 
@@ -30,6 +31,8 @@ class Player : public GameObject {
 	Uint32 lastFrameTime;	
 
    public:
+    friend PlayerRadious;
+    PlayerRadious* radious;
 	void createSprite();
 	void createSprite(SDL_Texture*&, SDL_Renderer*);
 	void shooting(bool shot);
@@ -44,8 +47,13 @@ class Player : public GameObject {
 		return gunY;
 	}
 	void bulletSpawnFix(Mouse);
-    void operator--();
+    void hit(){
+        lives--;
+    };
     int getLives();
+    void die() {
+        lives = 0;
+    }
 };
 
 #endif	// SQUARE_H

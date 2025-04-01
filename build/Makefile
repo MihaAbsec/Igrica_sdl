@@ -417,6 +417,30 @@ src/Player.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Player.cpp.s
 .PHONY : src/Player.cpp.s
 
+src/PlayerRadious.o: src/PlayerRadious.cpp.o
+.PHONY : src/PlayerRadious.o
+
+# target to build an object file
+src/PlayerRadious.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/PlayerRadious.cpp.o
+.PHONY : src/PlayerRadious.cpp.o
+
+src/PlayerRadious.i: src/PlayerRadious.cpp.i
+.PHONY : src/PlayerRadious.i
+
+# target to preprocess a source file
+src/PlayerRadious.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/PlayerRadious.cpp.i
+.PHONY : src/PlayerRadious.cpp.i
+
+src/PlayerRadious.s: src/PlayerRadious.cpp.s
+.PHONY : src/PlayerRadious.s
+
+# target to generate assembly for a file
+src/PlayerRadious.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/PlayerRadious.cpp.s
+.PHONY : src/PlayerRadious.cpp.s
+
 src/StartMenu.o: src/StartMenu.cpp.o
 .PHONY : src/StartMenu.o
 
@@ -510,6 +534,9 @@ help:
 	@echo "... src/Player.o"
 	@echo "... src/Player.i"
 	@echo "... src/Player.s"
+	@echo "... src/PlayerRadious.o"
+	@echo "... src/PlayerRadious.i"
+	@echo "... src/PlayerRadious.s"
 	@echo "... src/StartMenu.o"
 	@echo "... src/StartMenu.i"
 	@echo "... src/StartMenu.s"

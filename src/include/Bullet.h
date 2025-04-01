@@ -14,7 +14,8 @@ class Bullet : public GameObject {
 	float speed;
 
    public:
-	Bullet(float x, float y, int width, int height, float speed, int targetX, int targetY);
+    bool player;
+	Bullet(bool, float x, float y, int width, int height, float speed, int targetX, int targetY);
 	void update(float deltaTime);
 };
 

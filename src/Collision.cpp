@@ -5,8 +5,10 @@
 
 #include <iostream>
 
-#include "include/Wall.h"
 #include "include/Player.h"
+#include "include/PlayerRadious.h"
+#include "include/Wall.h"
+#include "include/Game.h"
 
 // PLAYER
 void collision(Player& obj1, const Wall& obj2) {
@@ -21,14 +23,54 @@ void collision(Player& obj1, const Wall& obj2) {
 	// leva plast
 	if (obj1.getX() + obj1.getW() > obj2.getX() && !(obj1.getoldX() + obj1.getW() > obj2.getX()))
 		if (!(obj1.getY() + obj1.getH() <= obj2.getY() || obj1.getY() >= obj2.getY() + obj2.getH()))
-			obj1.giveXY(obj2.getX() - obj1.getW(), obj1.getY());
+			obj1.giveXY(obj2.getX() - obj1.getW() - 0.5, obj1.getY());
 	// desna plast
 	if (obj1.getX() < obj2.getX() + obj2.getW() && !(obj1.getoldX() < obj2.getX() + obj2.getW()))
 		if (!(obj1.getY() + obj1.getH() <= obj2.getY() || obj1.getY() >= obj2.getY() + obj2.getH()))
-			obj1.giveXY(obj2.getX() + obj2.getW(), obj1.getY());
+			obj1.giveXY(obj2.getX() + obj2.getW() + 0.5, obj1.getY());
 }
+
+// player-npc
+bool collision(Player* obj1, const Npc* obj2) {
+	if (obj2->getStatus())
+		return 0;
+	SDL_Rect playerRect = {
+		static_cast<int>(obj1->getX()),
+		static_cast<int>(obj1->getY()),
+		obj1->getW(),
+		obj1->getH()};
+	SDL_Rect npcRect = {
+		static_cast<int>(obj2->getX()),
+		static_cast<int>(obj2->getY()),
+		obj2->getW(),
+		obj2->getH()};
+	if (SDL_HasIntersection(&playerRect, &npcRect))
+		return true;
+
+	return false;
+}
+// player->radious - key
+bool collision(PlayerRadious* obj1, const Key* obj2) {
+	SDL_Rect radiousRect = {
+		static_cast<int>(obj1->getX()),
+		static_cast<int>(obj1->getY()),
+		obj1->getW(),
+		obj1->getH()};
+	SDL_Rect keyRect = {
+		static_cast<int>(obj2->getX()),
+		static_cast<int>(obj2->getY()),
+		obj2->getW(),
+		obj2->getH()};
+	if (SDL_HasIntersection(&radiousRect, &keyRect))
+		return true;
+
+	return false;
+}
+
 // npc-npc
 void collision(Npc* obj1, Npc* obj2) {
+	float oldX = obj1->getX();
+	float oldY = obj1->getY();
 	// zgornja plast
 	if (obj1->getY() + obj1->getH() > obj2->getY() && !(obj1->getoldY() + obj1->getH() > obj2->getY()))
 		if (!(obj1->getX() + obj1->getW() <= obj2->getX() || obj1->getX() >= obj2->getX() + obj2->getW()))
@@ -45,6 +87,8 @@ void collision(Npc* obj1, Npc* obj2) {
 	if (obj1->getX() < obj2->getX() + obj2->getW() && !(obj1->getoldX() < obj2->getX() + obj2->getW()))
 		if (!(obj1->getY() + obj1->getH() <= obj2->getY() || obj1->getY() >= obj2->getY() + obj2->getH()))
 			obj1->giveXY(obj2->getX() + obj2->getW(), obj1->getY());
+	if (oldX != obj1->getX() && oldY != obj1->getX())
+		obj1->fov->access = 0;
 }
 // NPC
 bool collision(Npc* obj1, const Wall& obj2) {
@@ -98,43 +142,18 @@ void moveCollision(Npc* obj1, const Wall* obj2) {
 	// leva plast
 	if (obj1->getX() + obj1->getW() > obj2->getX() && !(obj1->getoldX() + obj1->getW() > obj2->getX()))
 		if (!(obj1->getY() + obj1->getH() <= obj2->getY() || obj1->getY() >= obj2->getY() + obj2->getH())) {
-			obj1->giveXY(obj2->getX() - obj1->getW(), obj1->getY());
+			obj1->giveXY(obj2->getX() - obj1->getW() - 0.5, obj1->getY());
 			obj1->fov->contact = 0;
 		}
 	// desna plast
 	if (obj1->getX() < obj2->getX() + obj2->getW() && !(obj1->getoldX() < obj2->getX() + obj2->getW()))
 		if (!(obj1->getY() + obj1->getH() <= obj2->getY() || obj1->getY() >= obj2->getY() + obj2->getH())) {
-			obj1->giveXY(obj2->getX() + obj2->getW(), obj1->getY());
+			obj1->giveXY(obj2->getX() + obj2->getW() + 0.5, obj1->getY());
 			obj1->fov->contact = 0;
 		}
 }
 // BULLET
 bool collision(Bullet* obj1, const Wall* obj2) {
-	/*// zgornja plast
-	if (obj1.getY() + obj1.getH() > obj2.getY() && !(obj1.getoldY() + obj1.getH() > obj2.getY()))
-		if (!(obj1.getX() + obj1.getW() <= obj2.getX() || obj1.getX() >= obj2.getX() + obj2.getW())) {
-			// std::cout << "LALA\n";
-			return 1;
-		}
-	// spodnja plast
-	if (obj1.getY() < obj2.getY() + obj2.getH() && !(obj1.getoldY() < obj2.getY() + obj2.getH()))
-		if (!(obj1.getX() + obj1.getW() <= obj2.getX() || obj1.getX() >= obj2.getX() + obj2.getW())) {
-			// std::cout << "LALA\n";
-			return 1;
-		}
-	// leva plast
-	if (obj1.getX() + obj1.getW() > obj2.getX() && !(obj1.getoldX() + obj1.getW() > obj2.getX()))
-		if (!(obj1.getY() + obj1.getH() <= obj2.getY() || obj1.getY() >= obj2.getY() + obj2.getH())) {
-			// std::cout << "LALA\n";
-			return 1;
-		}
-	// desna plast
-	if (obj1.getX() < obj2.getX() + obj2.getW() && !(obj1.getoldX() < obj2.getX() + obj2.getW()))
-		if (!(obj1.getY() + obj1.getH() <= obj2.getY() || obj1.getY() >= obj2.getY() + obj2.getH())) {
-			// std::cout << "LALA\n";
-			return 1;
-		}
-	return 0;*/
 	SDL_Rect bulletRect = {
 		static_cast<int>(obj1->getX()),
 		static_cast<int>(obj1->getY()),
@@ -228,8 +247,8 @@ bool collision(const Player* obj1, const NpcFov* obj2) {
 	return false;
 }
 // ČE JE MED PLAYERJEM IN NPC STENA (line-of-sight)
-bool lineIntersectsWall(float x1, float y1, float x2, float y2, Layout1* layout) {
-	for (const Wall& wall : layout->lines) {
+bool lineIntersectsWall(float x1, float y1, float x2, float y2, std::vector<Wall>* walls) {
+	for (const Wall& wall : *walls) {
 		if (lineIntersectsRectangle(x1, y1, x2, y2, wall)) {
 			return true;  // If any wall blocks the line, return true
 		}
@@ -261,6 +280,8 @@ bool checkWallIntersection(float x1, float y1, float x2, float y2,
 }
 
 bool collision(Bullet* obj1, const Npc* obj2) {
+	if (!obj1->player)
+		return false;
 	SDL_Rect playerRect = {
 		static_cast<int>(obj1->getX()),
 		static_cast<int>(obj1->getY()),
@@ -272,6 +293,58 @@ bool collision(Bullet* obj1, const Npc* obj2) {
 		obj2->getW(),
 		obj2->getH()};
 	if (SDL_HasIntersection(&playerRect, &fovRect))
+		return true;
+
+	return false;
+}
+bool collision(Bullet* obj1, const Player* obj2) {
+	if (obj1->player)
+		return false;
+	SDL_Rect playerRect = {
+		static_cast<int>(obj1->getX()),
+		static_cast<int>(obj1->getY()),
+		obj1->getW(),
+		obj1->getH()};
+	SDL_Rect fovRect = {
+		static_cast<int>(obj2->getX()),
+		static_cast<int>(obj2->getY()),
+		obj2->getW(),
+		obj2->getH()};
+	if (SDL_HasIntersection(&playerRect, &fovRect))
+		return true;
+
+	return false;
+}
+
+// spawn-collision
+bool spawnCollision(Game* game, Camera* camera, Npc* obj2) {
+	SDL_Rect worldRect = {
+		static_cast<int>(camera->x),
+		static_cast<int>(camera->y),
+		game->original_width,
+		game->original_height};
+	SDL_Rect fovRect = {
+		static_cast<int>(obj2->getX()),
+		static_cast<int>(obj2->getY()),
+		obj2->getW(),
+		obj2->getH()};
+	if (SDL_HasIntersection(&worldRect, &fovRect))
+		return true;
+
+	return false;
+}
+bool spawnCollision(Game* game, Camera* camera, Key* obj2) {
+	SDL_Rect worldRect = {
+		static_cast<int>(camera->x),
+		static_cast<int>(camera->y),
+		game->original_width,
+		game->original_height};
+	SDL_Rect fovRect = {
+		static_cast<int>(obj2->getX()),
+		static_cast<int>(obj2->getY()),
+		obj2->getW(),
+		obj2->getH()};
+	if (SDL_HasIntersection(&worldRect, &fovRect))
 		return true;
 
 	return false;

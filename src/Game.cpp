@@ -19,13 +19,9 @@ Game::Game(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 	original_height = SCREEN_HEIGHT;
 	original_width = SCREEN_WIDTH;
 	player = new Player((SCREEN_WIDTH - 50) / 2, (SCREEN_HEIGHT - 50) / 2, 25, 75, 1);
-	layout1 = new Layout1(WORLD_WIDTH, WORLD_HEIGHT);
-	key = new Key(SCREEN_WIDTH, SCREEN_HEIGHT, layout1);
 	camera = new Camera(player->getX(), player->getY());
-	for (int i = 0; i < 7; ++i)
-		npc.push_back(Npc(WORLD_WIDTH, WORLD_HEIGHT, 25, 75, 0.2, layout1));
-	// map = new Map("assets/floor.png", "assets/wall.png", "maps/level1.txt", renderer);
 	walls = new std::vector<Wall>();
+	npc = new std::vector<Npc>();
 }
 
 Game::~Game() {
@@ -62,6 +58,9 @@ bool Game::innit() {
 	// Odstranite to vrstico
 	// SDL_RenderSetLogicalSize(renderer, original_width, original_height);
 	map = new Map("assets/floor.png", "assets/wall.png", "maps/level1.txt", renderer, walls);
+	key = new Key(SCREEN_WIDTH, SCREEN_HEIGHT, walls, this, camera);
+	for (int i = 0; i < 14; ++i)
+		npc->push_back(Npc(WORLD_WIDTH, WORLD_HEIGHT, 25, 75, 0.2, walls, this, camera));
 	return true;
 }
 
@@ -97,8 +96,8 @@ void Game::handleEvents(Clock* clock) {
 				scale_x = (float)SCREEN_WIDTH / original_width;
 				scale_y = (float)SCREEN_HEIGHT / original_height;
 
-				//std::cout << "Window resized to: " << SCREEN_WIDTH << "x" << SCREEN_HEIGHT << std::endl;
-				//std::cout << "Scale factor: " << scale_x << ", " << scale_y << std::endl;
+				// std::cout << "Window resized to: " << SCREEN_WIDTH << "x" << SCREEN_HEIGHT << std::endl;
+				// std::cout << "Scale factor: " << scale_x << ", " << scale_y << std::endl;
 			}
 		}
 		mouse.update(event, camera);
@@ -108,10 +107,12 @@ void Game::handleEvents(Clock* clock) {
 // Update game logic
 
 void Game::update(Clock* clock) {
-	for (Wall& line : layout1->lines) {
-		collision(*player, line);
+	std::cout << npc->size() << '\n';
+	// std::cout << std::flush;
+	for (Wall& wall : *walls) {
+		collision(*player, wall);
 		for (auto it = bullets.begin(); it != bullets.end();) {
-			if (collision(&(*it), &line)) {
+			if (collision(&(*it), &wall)) {
 				it = bullets.erase(it);
 			} else {
 				++it;
@@ -121,10 +122,16 @@ void Game::update(Clock* clock) {
 	auto itB = bullets.begin();
 	while (itB != bullets.end()) {
 		bool bulletErased = false;
-		auto it = npc.begin();
-		while (it != npc.end()) {
+		auto it = npc->begin();
+		if (collision(&(*itB), player)) {
+			player->hit();
+			itB = bullets.erase(itB);
+			bulletErased = true;
+		}
+		while (it != npc->end() && !bulletErased) {
 			if (collision(&(*itB), &(*it))) {
-				it = npc.erase(it);
+				it = npc->erase(it);
+				npc->push_back(Npc(WORLD_WIDTH, WORLD_HEIGHT, 25, 75, 0.2, walls, this, camera));
 				itB = bullets.erase(itB);
 				bulletErased = true;
 				break;
@@ -138,14 +145,16 @@ void Game::update(Clock* clock) {
 	}
 	if (collision(player, key)) {
 		delete key;
-		key = new Key(WORLD_WIDTH, WORLD_HEIGHT, layout1);
+		key = new Key(WORLD_WIDTH, WORLD_HEIGHT, walls, this, camera);
 	}
 	player->update(clock);
-	for (Npc& npcs : npc) {
-		npcs.movement(clock, layout1, player);
-		npcs.update(clock, layout1);
+	for (Npc& npcs : *npc) {
+		npcs.movement(clock, walls, player, &bullets);
+		npcs.update(clock, walls);
 		npcs.fov->contact = collision(player, npcs.fov);
-		for (Npc& npcs_ : npc) {
+		if (collision(player, &npcs))
+			player->die();
+		for (Npc& npcs_ : *npc) {
 			if (&npcs != &npcs_)
 				collision(&npcs, &npcs_);
 		}
@@ -160,7 +169,7 @@ void Game::update(Clock* clock) {
 		player->shooting(1);
 		if (!wasMousePressed && clock->last_tick_time - last_shot_time >= 250) {
 			player->bulletSpawnFix(mouse);
-			bullets.push_back(Bullet(player->getGunX(), player->getGunY(), 5, 5, 1, mouse.getWorldX(), mouse.getWorldY()));
+			bullets.push_back(Bullet(1, player->getGunX(), player->getGunY(), 5, 5, 1, mouse.getWorldX(), mouse.getWorldY()));
 			last_shot_time = clock->last_tick_time;
 		}
 		wasMousePressed = true;
@@ -171,6 +180,8 @@ void Game::update(Clock* clock) {
 	}
 	for (Bullet& bullets : bullets)
 		bullets.update(clock->delta);
+	// if(player->getLives() == 0)
+	//   running = 0;
 }
 // Render
 void Game::render() {
@@ -184,19 +195,21 @@ void Game::render() {
 	map->render(renderer, camera);
 	float cameraX = camera->x;
 	float cameraY = camera->y;
-	for (Wall& line : layout1->lines)
-		line.render(renderer, cameraX, cameraY);
 	for (Bullet& bullet : bullets)
 		bullet.render(renderer, cameraX, cameraY);
-	for (Npc& npc : npc)
+	for (Npc& npc : *npc)
 		npc.render(renderer, camera);
 	player->render(renderer, mouse, original_width / 2.0, original_height / 2.0, camera);
-	key->render(renderer, camera);
+	if (player->radious->isContact(player, key, walls))
+		key->render(renderer, camera);
 
 	SDL_RenderPresent(renderer);
 }
 // cleanup
 void Game::cleanup() {
+	delete npc;
+	delete player;
+	delete walls;
 	if (renderer) {
 		SDL_DestroyRenderer(renderer);
 	}
@@ -224,5 +237,5 @@ SDL_Renderer* Game::getRenderer() const {
 }
 void Game::setRunning(bool running) {
 	this->running = running;
-	//std::cout << "Game running state set to: " << running << std::endl;
+	// std::cout << "Game running state set to: " << running << std::endl;
 }

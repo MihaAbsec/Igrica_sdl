@@ -15,11 +15,13 @@
 #include "include/Game.h"
 #include "include/GameObject.h"
 #include "include/Mouse.h"
+#include "include/PlayerRadious.h"
 using namespace std;
 // Constructor
 Player::Player(float x, float y, int sizeWidth, int sizeHeight, float speed)
 	: GameObject(x, y, sizeWidth, sizeHeight), speed(speed) {
 	lives = 3;
+    radious = new PlayerRadious;
 	createSprite();
 }
 
@@ -36,6 +38,7 @@ void Player::createSprite() {
 
 // Handle keyboard input
 void Player::handleInput(SDL_Event &event, Clock *clock) {
+    radious->update(this);
 	const Uint8 *state = SDL_GetKeyboardState(NULL);
 	glm::vec2 movement(0.0f, 0.0f);
 
@@ -104,6 +107,7 @@ void Player::update(Clock *clock) {
 void Player::render(SDL_Renderer *renderer, Mouse mouse, int centerX, int centerY, Camera *camera) {
 	// std::cout << (int)x << " " << (int)y << '\r';
 	// std::cout << std::flush;
+    //radious->render(renderer, amera); 
 	if (!agent) {
 		createSprite(agent, renderer);
 	}
@@ -156,9 +160,6 @@ void Player::createSprite(SDL_Texture *&t, SDL_Renderer *renderer) {
 	t = texture;
 }
 
-void Player::operator--(){
-    lives--;
-}
 int Player::getLives(){
     return lives;
 }

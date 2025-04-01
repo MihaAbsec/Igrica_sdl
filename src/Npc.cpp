@@ -12,21 +12,27 @@
 #include <ctime>
 #include <glm/glm.hpp>
 #include <glm/vec2.hpp>
+#include <ios>
 #include <iostream>
 #include <random>
+#include <vector>
 
 #include "include/Collision.h"
 #include "include/GameObject.h"
 #include "include/Layout1.h"
 #include "include/NpcFov.h"
 // Constructor
-Npc::Npc(int worldW, int worldH, int sizeWidth, int sizeHeight, float speed, Layout1 *layout)
+Npc::Npc(int worldW, int worldH, int sizeWidth, int sizeHeight, float speed, std::vector<Wall> *walls, Game *game, Camera *camera)
 	: GameObject(0, 0, sizeWidth, sizeHeight), speed(speed) {
+	float length;
 	do {
-		x = std::rand() % ((worldW - sizeWidth) - sizeWidth) + sizeWidth;
+		x = std::rand() % worldW;
 		y = std::rand() % worldH;
-	} while (NpcCollision(layout));
-    last_npc_time = std::rand() % 1999;
+	} while (NpcCollision(walls) || spawnCollision(game, camera, this));
+	spawnX = x;
+	spawnY = y;
+	shooter = std::rand() % 2;
+	last_npc_time = std::rand() % 1999;
 	fov = new NpcFov;
 	createSprite();
 }
@@ -34,7 +40,7 @@ Npc::Npc(int worldW, int worldH, int sizeWidth, int sizeHeight, float speed, Lay
 void Npc::createSprite() {
 	officer = nullptr;
 	for (int i = 0; i < 7; ++i) {
-		runFrames.push_back({i * 32, 64, 32, 32});
+		runFrames.push_back({i * 32, 288, 32, 32});
 		shootFrames.push_back({i * 32, 864, 32, 32});
 	}
 	for (int i = 0; i < 4; ++i)
@@ -42,8 +48,8 @@ void Npc::createSprite() {
 
 	idleFrame = {0, 0, 32, 32};
 }
-void Npc::update(Clock *clock, Layout1 *layout) {
-	fov->update(this, layout);
+void Npc::update(Clock *clock, std::vector<Wall> *walls) {
+	fov->update(this, walls);
 	if (clock->last_tick_time - lastFrameTime > 150) {
 		currentFrameRun = (currentFrameRun + 1) % runFrames.size();
 		currentFrameWalk = (currentFrameWalk + 1) % walkFrames.size();
@@ -53,18 +59,15 @@ void Npc::update(Clock *clock, Layout1 *layout) {
 }
 
 // NPC movement
-void Npc::movement(Clock *clock, Layout1 *layout, Player *player) {
+void Npc::movement(Clock *clock, std::vector<Wall> *walls, Player *player, std::vector<Bullet> *bullets) {
 	const Uint32 directionChangeInterval = 2000;
-	const float movementThreshold = 0.001;
 	if (fov->contact) {
-		fov->isContact(this, player, clock, layout);
-		for (Wall line : layout->lines)
-			moveCollision(this, &line);
+		fov->isContact(this, player, clock, walls, bullets);
+		for (Wall wall : *walls)
+			moveCollision(this, &wall);
 	}
-	if (!fov->contact || fov->access) {
-		static int count = 0;
-
-		if (clock->last_tick_time - last_npc_time >= directionChangeInterval || NpcCollision(layout)) {
+	if (!fov->contact /* || fov->access*/) {
+		if (clock->last_tick_time - last_npc_time >= directionChangeInterval || NpcCollision(walls) || fov->access) {
 			headDirection = std::rand() % 4;
 			last_npc_time = clock->last_tick_time;
 		}
@@ -97,7 +100,7 @@ void Npc::movement(Clock *clock, Layout1 *layout, Player *player) {
 			x += movement.x;
 			y += movement.y;
 
-			if (NpcCollision(layout)) {
+			if (NpcCollision(walls)) {
 				x = oldX;
 				y = oldY;
 
@@ -107,9 +110,9 @@ void Npc::movement(Clock *clock, Layout1 *layout, Player *player) {
 
 		float dx = abs(x - oldX);
 		float dy = abs(y - oldY);
-		if (dx == 0.00f && dy == 0.00f)
+		if (dx < 1.00f && dy < 1.00f)
 			count++;
-		if (count > 600) {
+		if (count > 100) {
 			move = 0;
 			if (!(dx == 0.00f && dy == 0.00f))
 				count = 0;
@@ -118,9 +121,20 @@ void Npc::movement(Clock *clock, Layout1 *layout, Player *player) {
 	}
 }
 
-bool Npc::NpcCollision(Layout1 *layout) {
-	for (Wall line : layout->lines)
-		if (collision(this, line)) {
+void Npc::shooting(Player *player, std::vector<Bullet> *bullets, Clock *clock) {
+	if (!shooter)
+		return;
+	if (clock->last_tick_time - last_shot_time >= 850) {
+		bullets->push_back(Bullet(0, getGunX(), getGunY(), 5, 5, 1,
+								  player->getX() + (player->getW() / 2),
+								  player->getY() + (player->getH() / 2)));
+		last_shot_time = clock->last_tick_time;
+	}
+}
+
+bool Npc::NpcCollision(std::vector<Wall> *walls) {
+	for (Wall wall : *walls)
+		if (collision(this, wall)) {
 			return true;
 		}
 	return false;
@@ -153,6 +167,11 @@ void Npc::render(SDL_Renderer *renderer, Camera *camera) {
 			SDL_RenderCopyEx(renderer, officer, &runFrames[currentFrameRun], &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
 		else if (!turn)
 			SDL_RenderCopy(renderer, officer, &runFrames[currentFrameRun], &destRect);
+	if (move == 3)
+		if (turn)
+			SDL_RenderCopyEx(renderer, officer, &shootFrames[currentFrameRun], &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
+		else if (!turn)
+			SDL_RenderCopy(renderer, officer, &shootFrames[currentFrameRun], &destRect);
 }
 void Npc::createSprite(SDL_Texture *&t, SDL_Renderer *renderer) {
 	SDL_Surface *surface = IMG_Load("assets/officer.png");

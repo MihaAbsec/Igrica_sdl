@@ -12,23 +12,36 @@
 #include "include/NpcFov.h"
 #include "include/Player.h"
 
-void NpcFov::update(Npc* npc, Layout1* layout) {
+void NpcFov::update(Npc* npc, std::vector<Wall>* walls) {
+	if (contact == 1) {
+		width = 400;
+		height = 500;
+	} else {
+		width = 200;
+		height = 250;
+	}
 	if (!npc->turn)
 		x = npc->x - 12.5;
 	else
 		x = npc->x - width + npc->sizeWidth + 12.5;
 	y = (npc->y + npc->sizeHeight / 2) - height / 2;
-	/*for (Line line : layout->lines)
-		FovLineCollision(this, &line);*/
 }
-void NpcFov::isContact(Npc* npc, Player* player, Clock* clock, Layout1* layout) {
-	if (lineIntersectsWall(npc->x, npc->y, player->x + 5, player->y + 5, layout)) {
+void NpcFov::isContact(Npc* npc, Player* player, Clock* clock, std::vector<Wall>* walls, std::vector<Bullet>* bullets) {
+	if (lineIntersectsWall(npc->x, npc->y, player->x + 5, player->y + 5, walls)) {
 		contact = 0;
-		return;	 
+		return;
 	}
+	if (npc->shooter) {
+		npc->move = 3;
+		npc->shooting(player, bullets, clock);
+	} else
+		npc->move = 2;
 	access = 0;
-	npc->move = 2;
-	float speed = npc->speed * 1.3;
+	float speed;
+	if (npc->shooter)
+		speed = npc->speed * 1.3;
+	else
+		speed = npc->speed * 1.8;
 
 	glm::vec2 position(npc->x, npc->y);
 	glm::vec2 target(player->x, player->y);
@@ -52,6 +65,7 @@ void NpcFov::isContact(Npc* npc, Player* player, Clock* clock, Layout1* layout) 
 void NpcFov::render(SDL_Renderer* renderer, Camera* camera) {
 	SDL_Rect rect = {static_cast<int>(x - camera->x),
 					 static_cast<int>(y - camera->y), width, height};
-	SDL_SetRenderDrawColor(renderer, 0, 173, 198, 240);
+	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(renderer, 0, 173, 198, 128);
 	SDL_RenderFillRect(renderer, &rect);
 }

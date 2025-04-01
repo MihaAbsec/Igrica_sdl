@@ -1,5 +1,5 @@
-#ifndef NPCFOV_H
-#define NPCFOV_H
+#ifndef PLAYERRADIOUS_H
+#define PLAYERRADIOUS_H
 
 #include <SDL2/SDL.h>
 #include <SDL_render.h>
@@ -11,22 +11,21 @@ class Npc;
 class Player;
 class Clock;
 class Layout1;
+class Key;
 class Camera;
 class Wall;
-class Bullet;
-class Game;
 
-class NpcFov {
+class PlayerRadious {
 	float x, y;
 	float oldX, oldY;
-	int width, height;
+	int width = 400, height = 500;
 
    public:
-	friend Npc;
+	friend Player;
 	bool contact = 0;
     bool access = 0;
-	void isContact(Npc*, Player*, Clock*, std::vector<Wall>*, std::vector<Bullet>*);
-	void update(Npc*, std::vector<Wall>*);
+    bool isContact(Player* player, Key* key, std::vector<Wall>* walls);
+	void update(Player*);
 	void render(SDL_Renderer*, Camera*);
 	float getX() const {
 		return x;
@@ -57,3 +56,4 @@ class NpcFov {
 };
 
 #endif
+

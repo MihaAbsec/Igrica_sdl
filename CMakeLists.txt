@@ -21,6 +21,7 @@ add_executable(mygame
     src/Map.cpp
     src/GameObject.cpp
     src/StartMenu.cpp
+    src/PlayerRadious.cpp
 )
 
 # Specify the include directory for Square.h
@@ -34,4 +35,4 @@ file(COPY ${CMAKE_SOURCE_DIR}/maps DESTINATION ${CMAKE_BINARY_DIR})
 #SDL2_IMAGE
 include_directories(/usr/include/SDL2)
 target_link_libraries(mygame -lSDL2 -lSDL2_image)
-#lala
+#ldda

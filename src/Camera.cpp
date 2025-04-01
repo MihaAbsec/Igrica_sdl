@@ -14,4 +14,6 @@ void Camera::update(Player* player, float worldWidth, float worldHeight, int scr
     // Upoštevaj skaliranje pri izračunu pozicije kamere
     x = player->getX() - (screenWidth / 2 );
     y = player->getY() - (screenHeight / 2);
+    //std::cout << (int)x << " " << (int)y << '\r';
+    //std::cout << std::flush;
 }
