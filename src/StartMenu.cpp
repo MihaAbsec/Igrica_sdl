@@ -1,44 +1,47 @@
-// StartMenu.cpp
 #include "include/StartMenu.h"
-#include <iostream>
 
-StartMenu::StartMenu(SDL_Renderer* renderer, int screenWidth, int screenHeight)
-	: renderer(renderer), screenWidth(screenWidth), screenHeight(screenHeight) {
-	// Naloži ozadje
-	backgroundTexture = IMG_LoadTexture(renderer, "assets/start_menu_background.jpg");
-	if (!backgroundTexture) {
-		std::cerr << "Failed to load background texture: " << IMG_GetError() << std::endl;
+StartMenu::StartMenu(SDL_Renderer* renderer, int width, int height)
+	: renderer(renderer) {
+	// Naloži ozadje menija
+	SDL_Surface* tempSurface = IMG_Load("assets/menu.png");
+	if (!tempSurface) {
+		std::cout << "Error loading menu image: " << IMG_GetError() << std::endl;
 	}
+	backgroundTexture = SDL_CreateTextureFromSurface(renderer, tempSurface);
+	SDL_FreeSurface(tempSurface);
 
-	// Nastavi območje gumba "Start"
-	startButtonRect = {screenWidth / 2 - 100, screenHeight / 2 - 50, 200, 100};
+	// Nastavi Play gumb
+	playButton = {width / 2 - 100, height / 2, 200, 80};
 }
 
 StartMenu::~StartMenu() {
-	if (backgroundTexture) {
-		SDL_DestroyTexture(backgroundTexture);
-	}
+	SDL_DestroyTexture(backgroundTexture);
 }
 
-bool StartMenu::handleEvents(SDL_Event& event) {
-	if (event.type == SDL_MOUSEBUTTONDOWN) {
-		int x, y;
-		SDL_GetMouseState(&x, &y);
-		if (x >= startButtonRect.x && x <= startButtonRect.x + startButtonRect.w &&
-			y >= startButtonRect.y && y <= startButtonRect.y + startButtonRect.h) {
-			return true;  // Kliknili smo na gumb "Start"
+void StartMenu::handleEvents(bool& startGame) {
+	SDL_Event event;
+	while (SDL_PollEvent(&event)) {
+		if (event.type == SDL_MOUSEBUTTONDOWN) {
+			int x, y;
+			SDL_GetMouseState(&x, &y);
+			if (x >= playButton.x && x <= playButton.x + playButton.w &&
+				y >= playButton.y && y <= playButton.y + playButton.h) {
+				startGame = true;  // Igra se začne
+			}
 		}
 	}
-	return false;
 }
 
 void StartMenu::render() {
 	SDL_RenderClear(renderer);
-	SDL_RenderCopy(renderer, backgroundTexture, NULL, NULL);  // Prikaži ozadje
 
-	// Nariši gumb "Start"
-	SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);  // Zelena barva
-	SDL_RenderFillRect(renderer, &startButtonRect);
+	// Nariši ozadje menija
+	SDL_RenderCopy(renderer, backgroundTexture, NULL, NULL);
+
+	// Nariši "Play" gumb (preprosta zelena škatla)
+	SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+	SDL_RenderFillRect(renderer, &playButton);
 
 	SDL_RenderPresent(renderer);
 }
+

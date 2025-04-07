@@ -1,17 +1,18 @@
-#ifndef STARTMENU_H
-#define STARTMENU_H
+#ifndef MAINSCREEN_H
+#define MAINSCREEN_H
 
 #include <SDL.h>
 #include <SDL_image.h>
 
 #include <iostream>
 
-class StartMenu {
+class MainScreen {
    public:
-	StartMenu(SDL_Renderer* renderer, int width, int height);
-	~StartMenu();
+	MainScreen(int width, int height);
+	~MainScreen();
+    bool innit();
 
-	void handleEvents(bool& startGame);
+	void handleEvents(bool& running, bool& startGame);
 	void render();
 
    private:
@@ -21,4 +22,3 @@ class StartMenu {
 };
 
 #endif
-

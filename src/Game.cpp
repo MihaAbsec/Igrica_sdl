@@ -1,5 +1,7 @@
 #include "include/Game.h"
 
+#include <SDL2/SDL_ttf.h>
+
 #include <ctime>
 #include <filesystem>
 #include <iostream>
@@ -20,6 +22,7 @@ Game::Game(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 	original_width = SCREEN_WIDTH;
 	player = new Player((SCREEN_WIDTH - 50) / 2, (SCREEN_HEIGHT - 50) / 2, 25, 75, 1);
 	camera = new Camera(player->getX(), player->getY());
+	camera->update(player, WORLD_WIDTH, WORLD_HEIGHT, original_width, original_height);
 	walls = new std::vector<Wall>();
 	npc = new std::vector<Npc>();
 }
@@ -52,6 +55,16 @@ bool Game::innit() {
 		std::cout << "Error creating renderer: %s\n", SDL_GetError();
 		SDL_DestroyWindow(window);
 		SDL_Quit();
+		return false;
+	}
+	if (TTF_Init() == -1) {
+		std::cout << "Failed to initialize SDL_ttf: " << TTF_GetError() << "\n";
+		return false;
+	}
+
+	font = TTF_OpenFont("assets/fonts/pisava.ttf", 24);	 // Zamenjaj z dejansko potjo do pisave
+	if (!font) {
+		std::cout << "Failed to load font: " << TTF_GetError() << "\n";
 		return false;
 	}
 
@@ -107,7 +120,7 @@ void Game::handleEvents(Clock* clock) {
 // Update game logic
 
 void Game::update(Clock* clock) {
-	std::cout << npc->size() << '\n';
+	updateLivesText();
 	// std::cout << std::flush;
 	for (Wall& wall : *walls) {
 		collision(*player, wall);
@@ -202,6 +215,8 @@ void Game::render() {
 	player->render(renderer, mouse, original_width / 2.0, original_height / 2.0, camera);
 	if (player->radious->isContact(player, key, walls))
 		key->render(renderer, camera);
+	if (livesTexture)
+		SDL_RenderCopy(renderer, livesTexture, NULL, &livesRect);
 
 	SDL_RenderPresent(renderer);
 }
@@ -238,4 +253,27 @@ SDL_Renderer* Game::getRenderer() const {
 void Game::setRunning(bool running) {
 	this->running = running;
 	// std::cout << "Game running state set to: " << running << std::endl;
+}
+
+void Game::updateLivesText() {
+	if (livesTexture) {
+		SDL_DestroyTexture(livesTexture);
+		livesTexture = nullptr;
+	}
+
+	SDL_Color color = {255, 255, 255};
+	std::string text = "Lives: " + std::to_string(player->getLives());
+	SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
+	if (!surface) {
+		std::cout << "Failed to render text surface: " << TTF_GetError() << "\n";
+		return;
+	}
+
+	livesTexture = SDL_CreateTextureFromSurface(renderer, surface);
+	if (!livesTexture) {
+		std::cout << "Failed to create text texture: " << SDL_GetError() << "\n";
+	}
+
+	livesRect = {10, 10, surface->w, surface->h};  // zgornji levi kot
+	SDL_FreeSurface(surface);
 }

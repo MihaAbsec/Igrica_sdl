@@ -3,9 +3,10 @@ project(mygame)
 
 set(CMAKE_CXX_STANDARD 17)
 
+# Find SDL2 and SDL2_ttf
 find_package(SDL2 REQUIRED)
+find_package(SDL2_ttf REQUIRED)  # <-- Add this line
 
-# cpp 'fajli'
 add_executable(mygame 
     src/main.cpp
     src/Player.cpp
@@ -24,15 +25,20 @@ add_executable(mygame
     src/PlayerRadious.cpp
 )
 
-# Specify the include directory for Square.h
-target_include_directories(mygame PRIVATE ${SDL2_INCLUDE_DIRS} include)
-target_link_libraries(mygame ${SDL2_LIBRARIES})
+# Include directories
+target_include_directories(mygame PRIVATE 
+    ${SDL2_INCLUDE_DIRS} 
+    ${SDL2_TTF_INCLUDE_DIRS}  # <-- Add SDL2_ttf includes
+    include
+)
 
-# Copy assets folder to build directory
+# Link libraries
+target_link_libraries(mygame 
+    ${SDL2_LIBRARIES} 
+    ${SDL2_TTF_LIBRARIES}  # <-- Link SDL2_ttf
+    SDL2_image  # <-- Use CMake target (better than -l flags)
+)
+
+# Copy assets and maps
 file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY ${CMAKE_SOURCE_DIR}/maps DESTINATION ${CMAKE_BINARY_DIR})
-
-#SDL2_IMAGE
-include_directories(/usr/include/SDL2)
-target_link_libraries(mygame -lSDL2 -lSDL2_image)
-#ldda

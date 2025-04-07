@@ -5,6 +5,8 @@
 #include <SDL_image.h>
 
 #include <vector>
+#include <SDL2/SDL_ttf.h>
+
 
 #include "Bullet.h"
 #include "Camera.h"
@@ -15,6 +17,7 @@
 #include "Mouse.h"
 #include "Npc.h"
 #include "Player.h"
+
 enum GameState {
 	START_MENU,
 	IN_GAME
@@ -37,8 +40,8 @@ class Game {
 	SDL_Renderer* renderer;
 	static float scale_x;
 	static float scale_y;
-	int original_width;	  // Prvotna velikost okna
-	int original_height;  // Prvotna velikost okna
+	int original_width;
+	int original_height;
 	int SCREEN_WIDTH, SCREEN_HEIGHT;
 	const int WORLD_WIDTH = 1920, WORLD_HEIGHT = 1920;
 
@@ -46,20 +49,25 @@ class Game {
 	GameState getGameState() const;
 	bool isRunning() const;
 	SDL_Renderer* getRenderer() const;
-    void setRunning(bool);
+	void setRunning(bool);
+    void updateLivesText();
 
    protected:
 	SDL_Window* window;
+	GameState gameState;
 
 	Player* player;
 	Key* key;
 	std::vector<Npc>* npc;
 	Mouse mouse;
 	std::vector<Bullet> bullets;
-    std::vector<Wall> *walls;
+	std::vector<Wall>* walls;
 	Camera* camera;
 	Map* map;
-	GameState gameState;
+	// Besedilo:
+	TTF_Font* font;
+	SDL_Texture* livesTexture;
+	SDL_Rect livesRect;
 };
 
 #endif	// GAME_H
