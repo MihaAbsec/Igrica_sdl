@@ -2,11 +2,10 @@
 #define GAME_H
 
 #include <SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <SDL_image.h>
 
 #include <vector>
-#include <SDL2/SDL_ttf.h>
-
 
 #include "Bullet.h"
 #include "Camera.h"
@@ -50,8 +49,11 @@ class Game {
 	bool isRunning() const;
 	SDL_Renderer* getRenderer() const;
 	void setRunning(bool);
-    void updateLivesText();
+	void updateLivesText();
+	void updateKillsText();
 
+    //leveling
+    void loadLevel(int);
    protected:
 	SDL_Window* window;
 	GameState gameState;
@@ -67,7 +69,12 @@ class Game {
 	// Besedilo:
 	TTF_Font* font;
 	SDL_Texture* livesTexture;
+	SDL_Texture* killsTexture;
 	SDL_Rect livesRect;
+	SDL_Rect killsRect;
+	// Leveling
+	int keysCollected = 0;
+	int currentLevel = 1;
 };
 
 #endif	// GAME_H

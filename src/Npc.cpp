@@ -140,9 +140,11 @@ bool Npc::NpcCollision(std::vector<Wall> *walls) {
 	return false;
 }
 void Npc::render(SDL_Renderer *renderer, Camera *camera) {
+    if (!renderer || !camera) return;
 	// fov->render(renderer, camera);
 	if (!officer) {
 		createSprite(officer, renderer);
+		if (!officer) return;
 	}
 	// SDL_Rect destRect = {static_cast<int>(x) - 28, static_cast<int>(y) - 3, 80, 80};
 	// SDL_Rect hitBox = {static_cast<int>(x), static_cast<int>(y), sizeWidth, sizeHeight};
@@ -152,6 +154,9 @@ void Npc::render(SDL_Renderer *renderer, Camera *camera) {
 		static_cast<int>(y - camera->y) - 3,
 		80,
 		80};
+	if (destRect.w <= 0 || destRect.h <= 0) {
+		return;	 // Skip rendering invalid rectangles
+	}
 	if (!move)
 		if (turn)
 			SDL_RenderCopyEx(renderer, officer, &idleFrame, &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);

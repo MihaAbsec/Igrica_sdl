@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(mygame)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 17)
 
 # Find SDL2 and SDL2_ttf
@@ -42,3 +43,4 @@ target_link_libraries(mygame
 # Copy assets and maps
 file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY ${CMAKE_SOURCE_DIR}/maps DESTINATION ${CMAKE_BINARY_DIR})
+#GDB Lal

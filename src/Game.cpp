@@ -20,7 +20,7 @@ Game::Game(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 	: SCREEN_WIDTH(SCREEN_WIDTH), SCREEN_HEIGHT(SCREEN_HEIGHT), window(nullptr), renderer(nullptr), running(true) {
 	original_height = SCREEN_HEIGHT;
 	original_width = SCREEN_WIDTH;
-	player = new Player((SCREEN_WIDTH - 50) / 2, (SCREEN_HEIGHT - 50) / 2, 25, 75, 1);
+	player = new Player(192, 192, 25, 75, 1);
 	camera = new Camera(player->getX(), player->getY());
 	camera->update(player, WORLD_WIDTH, WORLD_HEIGHT, original_width, original_height);
 	walls = new std::vector<Wall>();
@@ -70,7 +70,9 @@ bool Game::innit() {
 
 	// Odstranite to vrstico
 	// SDL_RenderSetLogicalSize(renderer, original_width, original_height);
-	map = new Map("assets/floor.png", "assets/wall.png", "maps/level1.txt", renderer, walls);
+	map = new Map("assets/floor.png", "assets/wall1.png", "maps/level1.txt", renderer, walls);
+	// map = new Map("assets/floor.png", "assets/wall2.png", "maps/level2.txt", renderer, walls);
+	// map = new Map("assets/floor.png", "assets/wall3.png", "maps/level3.txt", renderer, walls);
 	key = new Key(SCREEN_WIDTH, SCREEN_HEIGHT, walls, this, camera);
 	for (int i = 0; i < 14; ++i)
 		npc->push_back(Npc(WORLD_WIDTH, WORLD_HEIGHT, 25, 75, 0.2, walls, this, camera));
@@ -121,6 +123,7 @@ void Game::handleEvents(Clock* clock) {
 
 void Game::update(Clock* clock) {
 	updateLivesText();
+	updateKillsText();
 	// std::cout << std::flush;
 	for (Wall& wall : *walls) {
 		collision(*player, wall);
@@ -144,6 +147,7 @@ void Game::update(Clock* clock) {
 		while (it != npc->end() && !bulletErased) {
 			if (collision(&(*itB), &(*it))) {
 				it = npc->erase(it);
+				player->plusKill();
 				npc->push_back(Npc(WORLD_WIDTH, WORLD_HEIGHT, 25, 75, 0.2, walls, this, camera));
 				itB = bullets.erase(itB);
 				bulletErased = true;
@@ -156,9 +160,19 @@ void Game::update(Clock* clock) {
 			++itB;
 		}
 	}
+
+    //ključi in leveli
 	if (collision(player, key)) {
 		delete key;
 		key = new Key(WORLD_WIDTH, WORLD_HEIGHT, walls, this, camera);
+		keysCollected++;
+		if (keysCollected >= 3) {
+			keysCollected = 0;
+			currentLevel++;
+			if (currentLevel > 3)
+				currentLevel = 1;
+			loadLevel(currentLevel);
+		}
 	}
 	player->update(clock);
 	for (Npc& npcs : *npc) {
@@ -215,8 +229,8 @@ void Game::render() {
 	player->render(renderer, mouse, original_width / 2.0, original_height / 2.0, camera);
 	if (player->radious->isContact(player, key, walls))
 		key->render(renderer, camera);
-	if (livesTexture)
-		SDL_RenderCopy(renderer, livesTexture, NULL, &livesRect);
+	SDL_RenderCopy(renderer, livesTexture, NULL, &livesRect);
+	SDL_RenderCopy(renderer, killsTexture, NULL, &killsRect);
 
 	SDL_RenderPresent(renderer);
 }
@@ -276,4 +290,52 @@ void Game::updateLivesText() {
 
 	livesRect = {10, 10, surface->w, surface->h};  // zgornji levi kot
 	SDL_FreeSurface(surface);
+}
+void Game::updateKillsText() {
+	if (killsTexture) {
+		SDL_DestroyTexture(killsTexture);
+		killsTexture = nullptr;
+	}
+
+	SDL_Color color = {255, 255, 255};
+	std::string text = "Kills: " + std::to_string(player->getKills());
+	SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
+	if (!surface) {
+		std::cout << "Failed to render text surface: " << TTF_GetError() << "\n";
+		return;
+	}
+
+	killsTexture = SDL_CreateTextureFromSurface(renderer, surface);
+	if (!killsTexture) {
+		std::cout << "Failed to create text texture: " << SDL_GetError() << "\n";
+	}
+
+	killsRect = {10, 40, surface->w, surface->h};  // zgornji levi kot
+	SDL_FreeSurface(surface);
+}
+
+void Game::loadLevel(int level) {
+	// Počisti stare stene in NPC-je
+	walls->clear();
+	npc->clear();
+
+	// Naloži novo mapo glede na level
+	std::string levelFile = "maps/level" + std::to_string(level) + ".txt";
+    std::string levelWall = "assets/wall" + std::to_string(level) + ".png";
+	delete map;	 // Izbriši staro mapo
+	map = new Map("assets/floor.png", levelWall, levelFile, renderer, walls);
+
+	// Ponastavi igralca in kamero
+	player->giveXY(192, 192);
+    player->giveLives();
+	camera->update(player, WORLD_WIDTH, WORLD_HEIGHT, original_width, original_height);
+
+	// Ustvari nove NPC-je
+	for (int i = 0; i < 14; ++i) {
+		npc->push_back(Npc(WORLD_WIDTH, WORLD_HEIGHT, 25, 75, 0.2, walls, this, camera));
+	}
+
+	// Ustvari nov ključ
+	delete key;
+	key = new Key(WORLD_WIDTH, WORLD_HEIGHT, walls, this, camera);
 }

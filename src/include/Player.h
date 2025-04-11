@@ -13,6 +13,7 @@
 
 class Player : public GameObject {
     int lives = 3;
+    int kills = 0;
 	// GUN
 	float gunX, gunY;
 
@@ -51,8 +52,15 @@ class Player : public GameObject {
         lives--;
     };
     int getLives();
+    void plusKill(){
+        kills++;
+    }
+    int getKills();
     void die() {
         lives = 0;
+    }
+    void giveLives(){
+        lives = 3;
     }
 };
 

@@ -35,10 +35,10 @@ bool collision(Player* obj1, const Npc* obj2) {
 	if (obj2->getStatus())
 		return 0;
 	SDL_Rect playerRect = {
-		static_cast<int>(obj1->getX()),
-		static_cast<int>(obj1->getY()),
-		obj1->getW(),
-		obj1->getH()};
+		static_cast<int>(obj1->getX()+obj1->getW()/2),
+		static_cast<int>(obj1->getY()+obj1->getH()/2),
+		1,
+		1};
 	SDL_Rect npcRect = {
 		static_cast<int>(obj2->getX()),
 		static_cast<int>(obj2->getY()),

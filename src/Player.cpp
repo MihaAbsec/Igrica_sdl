@@ -163,3 +163,7 @@ void Player::createSprite(SDL_Texture *&t, SDL_Renderer *renderer) {
 int Player::getLives(){
     return lives;
 }
+
+int Player::getKills(){
+    return kills;
+}
