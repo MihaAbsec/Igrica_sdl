@@ -22,7 +22,7 @@ add_executable(mygame
     src/Camera.cpp
     src/Map.cpp
     src/GameObject.cpp
-    src/StartMenu.cpp
+    src/Menu.cpp
     src/PlayerRadious.cpp
 )
 
@@ -43,4 +43,4 @@ target_link_libraries(mygame
 # Copy assets and maps
 file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY ${CMAKE_SOURCE_DIR}/maps DESTINATION ${CMAKE_BINARY_DIR})
-#GDB Lal
+#GDB LALA 

@@ -1,5 +1,4 @@
 #include "include/MainScreen.h"
-#include "include/StartMenu.h"
 
 MainScreen::MainScreen(int width, int height) {
 	// Naloži ozadje

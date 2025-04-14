@@ -321,6 +321,30 @@ src/Map.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Map.cpp.s
 .PHONY : src/Map.cpp.s
 
+src/Menu.o: src/Menu.cpp.o
+.PHONY : src/Menu.o
+
+# target to build an object file
+src/Menu.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Menu.cpp.o
+.PHONY : src/Menu.cpp.o
+
+src/Menu.i: src/Menu.cpp.i
+.PHONY : src/Menu.i
+
+# target to preprocess a source file
+src/Menu.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Menu.cpp.i
+.PHONY : src/Menu.cpp.i
+
+src/Menu.s: src/Menu.cpp.s
+.PHONY : src/Menu.s
+
+# target to generate assembly for a file
+src/Menu.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Menu.cpp.s
+.PHONY : src/Menu.cpp.s
+
 src/Mouse.o: src/Mouse.cpp.o
 .PHONY : src/Mouse.o
 
@@ -441,30 +465,6 @@ src/PlayerRadious.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/PlayerRadious.cpp.s
 .PHONY : src/PlayerRadious.cpp.s
 
-src/StartMenu.o: src/StartMenu.cpp.o
-.PHONY : src/StartMenu.o
-
-# target to build an object file
-src/StartMenu.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/StartMenu.cpp.o
-.PHONY : src/StartMenu.cpp.o
-
-src/StartMenu.i: src/StartMenu.cpp.i
-.PHONY : src/StartMenu.i
-
-# target to preprocess a source file
-src/StartMenu.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/StartMenu.cpp.i
-.PHONY : src/StartMenu.cpp.i
-
-src/StartMenu.s: src/StartMenu.cpp.s
-.PHONY : src/StartMenu.s
-
-# target to generate assembly for a file
-src/StartMenu.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/StartMenu.cpp.s
-.PHONY : src/StartMenu.cpp.s
-
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
 
@@ -522,6 +522,9 @@ help:
 	@echo "... src/Map.o"
 	@echo "... src/Map.i"
 	@echo "... src/Map.s"
+	@echo "... src/Menu.o"
+	@echo "... src/Menu.i"
+	@echo "... src/Menu.s"
 	@echo "... src/Mouse.o"
 	@echo "... src/Mouse.i"
 	@echo "... src/Mouse.s"
@@ -537,9 +540,6 @@ help:
 	@echo "... src/PlayerRadious.o"
 	@echo "... src/PlayerRadious.i"
 	@echo "... src/PlayerRadious.s"
-	@echo "... src/StartMenu.o"
-	@echo "... src/StartMenu.i"
-	@echo "... src/StartMenu.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

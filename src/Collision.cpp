@@ -5,10 +5,10 @@
 
 #include <iostream>
 
+#include "include/Game.h"
 #include "include/Player.h"
 #include "include/PlayerRadious.h"
 #include "include/Wall.h"
-#include "include/Game.h"
 
 // PLAYER
 void collision(Player& obj1, const Wall& obj2) {
@@ -35,8 +35,8 @@ bool collision(Player* obj1, const Npc* obj2) {
 	if (obj2->getStatus())
 		return 0;
 	SDL_Rect playerRect = {
-		static_cast<int>(obj1->getX()+obj1->getW()/2),
-		static_cast<int>(obj1->getY()+obj1->getH()/2),
+		static_cast<int>(obj1->getX() + obj1->getW() / 2),
+		static_cast<int>(obj1->getY() + obj1->getH() / 2),
 		1,
 		1};
 	SDL_Rect npcRect = {
@@ -48,6 +48,26 @@ bool collision(Player* obj1, const Npc* obj2) {
 		return true;
 
 	return false;
+}
+void collision(Npc* obj1, const Player* obj2) {
+	if (!obj1->getStatus())
+		return;
+	// zgornja plast
+	if (obj1->getY() + obj1->getH() > obj2->getY() && !(obj1->getoldY() + obj1->getH() > obj2->getY()))
+		if (!(obj1->getX() + obj1->getW() <= obj2->getX() || obj1->getX() >= obj2->getX() + obj2->getW()))
+			obj1->giveXY(obj1->getX(), obj2->getY() - obj1->getH());
+	// spodnja plast
+	if (obj1->getY() < obj2->getY() + obj2->getH() && !(obj1->getoldY() < obj2->getY() + obj2->getH()))
+		if (!(obj1->getX() + obj1->getW() <= obj2->getX() || obj1->getX() >= obj2->getX() + obj2->getW()))
+			obj1->giveXY(obj1->getX(), obj2->getY() + obj2->getH());
+	// leva plast
+	if (obj1->getX() + obj1->getW() > obj2->getX() && !(obj1->getoldX() + obj1->getW() > obj2->getX()))
+		if (!(obj1->getY() + obj1->getH() <= obj2->getY() || obj1->getY() >= obj2->getY() + obj2->getH()))
+			obj1->giveXY(obj2->getX() - obj1->getW() - 0.5, obj1->getY());
+	// desna plast
+	if (obj1->getX() < obj2->getX() + obj2->getW() && !(obj1->getoldX() < obj2->getX() + obj2->getW()))
+		if (!(obj1->getY() + obj1->getH() <= obj2->getY() || obj1->getY() >= obj2->getY() + obj2->getH()))
+			obj1->giveXY(obj2->getX() + obj2->getW() + 0.5, obj1->getY());
 }
 // player->radious - key
 bool collision(PlayerRadious* obj1, const Key* obj2) {

@@ -24,7 +24,9 @@ class Player : public GameObject {
 	// sprites
 	SDL_Texture* agent;
 	SDL_Rect idleFrame;
+	SDL_Rect deadFrame;
 	SDL_Rect shootFrame;
+	SDL_Rect celebrateFrame;
 	std::vector<SDL_Rect> runFrames;
 	std::vector<SDL_Rect> shootFrames;
 	int currentFrameRun;	
@@ -40,7 +42,7 @@ class Player : public GameObject {
 	Player(float, float, int, int, float);
 	void handleInput(SDL_Event& event, Clock* clock);
 	void update(Clock*);
-	void render(SDL_Renderer* renderer, Mouse, int, int, Camera*);
+	void render(SDL_Renderer* renderer, Mouse, int, int, Camera*, Game*);
 	float getGunX() const {
 		return gunX;
 	}
@@ -49,6 +51,8 @@ class Player : public GameObject {
 	}
 	void bulletSpawnFix(Mouse);
     void hit(){
+        if(lives == 0)
+            return;
         lives--;
     };
     int getLives();
@@ -61,6 +65,9 @@ class Player : public GameObject {
     }
     void giveLives(){
         lives = 3;
+    }
+    void setKills(int n){
+        kills = n;
     }
 };
 

@@ -21,7 +21,7 @@ using namespace std;
 Player::Player(float x, float y, int sizeWidth, int sizeHeight, float speed)
 	: GameObject(x, y, sizeWidth, sizeHeight), speed(speed) {
 	lives = 3;
-    radious = new PlayerRadious;
+	radious = new PlayerRadious;
 	createSprite();
 }
 
@@ -34,11 +34,13 @@ void Player::createSprite() {
 		shootFrames.push_back({i * 32, 256, 32, 32});
 	idleFrame = {0, 0, 32, 32};
 	shootFrame = {0, 256, 32, 32};
+	deadFrame = {128, 480, 32, 32};
+	celebrateFrame = {64, 416, 32, 32};
 }
 
 // Handle keyboard input
 void Player::handleInput(SDL_Event &event, Clock *clock) {
-    radious->update(this);
+	radious->update(this);
 	const Uint8 *state = SDL_GetKeyboardState(NULL);
 	glm::vec2 movement(0.0f, 0.0f);
 
@@ -104,10 +106,10 @@ void Player::update(Clock *clock) {
 	}
 }
 // RENDERER
-void Player::render(SDL_Renderer *renderer, Mouse mouse, int centerX, int centerY, Camera *camera) {
+void Player::render(SDL_Renderer *renderer, Mouse mouse, int centerX, int centerY, Camera *camera, Game *game) {
 	// std::cout << (int)x << " " << (int)y << '\r';
 	// std::cout << std::flush;
-    //radious->render(renderer, amera); 
+	// radious->render(renderer, camera);
 	if (!agent) {
 		createSprite(agent, renderer);
 	}
@@ -119,6 +121,20 @@ void Player::render(SDL_Renderer *renderer, Mouse mouse, int centerX, int center
 	//  SDL_Rect hitBox = {centerX/* - sizeWidth / 2*/, centerY/* - sizeHeight / 2*/, sizeWidth, sizeHeight};
 	//  SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);  // White color
 	//  SDL_RenderFillRect(renderer, &hitBox);
+	if (game->gameState == GAME_OVER) {
+		if (turn)
+			SDL_RenderCopyEx(renderer, agent, &deadFrame, &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
+		if (!turn)
+			SDL_RenderCopy(renderer, agent, &deadFrame, &destRect);
+		return;
+	}
+	if (game->gameState == LEVEL_COMPLETE || game->gameState == GAME_WINNER) {
+		if (turn)
+			SDL_RenderCopyEx(renderer, agent, &celebrateFrame, &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
+		if (!turn)
+			SDL_RenderCopy(renderer, agent, &celebrateFrame, &destRect);
+		return;
+	}
 	if (speed != prevSpeed && !move) {
 		if (mouse.getWorldX() < x)
 			SDL_RenderCopyEx(renderer, agent, &shootFrame, &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
@@ -160,10 +176,10 @@ void Player::createSprite(SDL_Texture *&t, SDL_Renderer *renderer) {
 	t = texture;
 }
 
-int Player::getLives(){
-    return lives;
+int Player::getLives() {
+	return lives;
 }
 
-int Player::getKills(){
-    return kills;
+int Player::getKills() {
+	return kills;
 }

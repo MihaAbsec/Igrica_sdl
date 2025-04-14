@@ -140,8 +140,8 @@ bool Npc::NpcCollision(std::vector<Wall> *walls) {
 	return false;
 }
 void Npc::render(SDL_Renderer *renderer, Camera *camera) {
-    if (!renderer || !camera) return;
-	// fov->render(renderer, camera);
+	if (!renderer || !camera) return;
+	//	fov->render(renderer, camera);
 	if (!officer) {
 		createSprite(officer, renderer);
 		if (!officer) return;

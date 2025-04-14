@@ -1,0 +1,389 @@
+#include "include/Menu.h"
+
+#include <SDL_rect.h>
+
+#include <iostream>
+
+#include "SDL_render.h"
+#include "include/Game.h"
+
+Menu::Menu(TTF_Font* font)
+	: font(font) {}
+
+Menu::~Menu() {
+	// Počisti vse gumbe
+	for (auto texture : buttonTextures) {
+		SDL_DestroyTexture(texture);
+	}
+	buttonTextures.clear();
+	buttonRects.clear();
+
+	// Počisti ozadje
+	if (backgroundTexture) {
+		SDL_DestroyTexture(backgroundTexture);
+		backgroundTexture = nullptr;
+	}
+}
+
+void Menu::addButton(SDL_Renderer* renderer, const std::string& text, SDL_Rect rect) {
+	SDL_Color color = {255, 255, 255};
+	SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
+	if (surface) {
+		SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+		SDL_FreeSurface(surface);
+		if (texture) {
+			buttonTextures.push_back(texture);
+			buttonRects.push_back(rect);
+		}
+	}
+}
+
+void Menu::pausedRender(SDL_Renderer* renderer, Game* game) {
+	// background
+	SDL_Rect background = {300, 100, game->original_width - 600, game->original_height - 200};
+	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 128);
+	SDL_RenderFillRect(renderer, &background);
+	// "Paused" text
+	SDL_Color color = {255, 255, 255};
+	std::string text = "Paused";
+	SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
+	if (surface) {
+		SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, surface);
+		SDL_Rect textRect = {
+			static_cast<int>(game->original_width / 2 - (surface->w)),
+			static_cast<int>(game->original_height / 3 - (surface->h) / 2),
+			surface->w * 2,
+			surface->h * 2};
+		SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+		SDL_DestroyTexture(textTexture);
+		SDL_FreeSurface(surface);
+	}
+
+	// Počisti stare gumbe
+	if (!buttonTextures.empty()) {
+		for (auto texture : buttonTextures) {
+			SDL_DestroyTexture(texture);
+		}
+		buttonTextures.clear();
+		buttonRects.clear();
+	}
+	// Gumbi
+	if (!interakcija[0])
+		addButton(renderer, " Continue ", {static_cast<int>(game->original_width / 2 - 120 / 2), static_cast<int>(game->original_height / 1.8), 120, 26});
+	else
+		addButton(renderer, "  Continue  ", {static_cast<int>(game->original_width / 2 - 144 / 2), static_cast<int>(game->original_height / 1.8), 144, 26});
+	if (!interakcija[1])
+		addButton(renderer, " Restart ", {static_cast<int>(game->original_width / 2 - 108 / 2), static_cast<int>(game->original_height / 1.6), 108, 26});
+	else
+		addButton(renderer, "  Restart  ", {static_cast<int>(game->original_width / 2 - 132 / 2), static_cast<int>(game->original_height / 1.6), 132, 26});
+	if (!interakcija[2])
+		addButton(renderer, " Exit ", {static_cast<int>(game->original_width / 2 - 72 / 2), static_cast<int>(game->original_height / 1.4), 72, 26});
+	else
+		addButton(renderer, "  Exit  ", {static_cast<int>(game->original_width / 2 - 96 / 2), static_cast<int>(game->original_height / 1.4), 96, 26});
+	for (SDL_Rect& bc : buttonRects) {
+		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		SDL_RenderFillRect(renderer, &bc);
+	}
+	SDL_RenderCopy(renderer, buttonTextures[0], NULL, &buttonRects[0]);
+	SDL_RenderCopy(renderer, buttonTextures[1], NULL, &buttonRects[1]);
+	SDL_RenderCopy(renderer, buttonTextures[2], NULL, &buttonRects[2]);
+}
+
+void Menu::handleEvent_Paused(SDL_Event& event, Mouse* mouse, Game* game) {
+	interakcija = {0, 0, 0};
+	if (mouse->getButtons() == 1) {
+		for (size_t i = 0; i < buttonRects.size(); ++i) {
+			if (mouse->originalX >= buttonRects[i].x && mouse->originalX <= buttonRects[i].x + buttonRects[i].w &&
+				mouse->originalY >= buttonRects[i].y && mouse->originalY <= buttonRects[i].y + buttonRects[i].h) {
+				if (i == 0) game->gameState = IN_GAME;	// "Continue" gumb
+				if (i == 1) {
+					game->gameState = IN_GAME;
+					game->restart();
+				}  // "Restart" gumb
+				if (i == 2) {
+					game->gameState = START_MENU;  // "Exit" gumb
+				}
+			}
+		}
+		Mouse::buttons = 0;
+	} else {
+		for (size_t i = 0; i < buttonRects.size(); ++i) {
+			if (mouse->originalX >= buttonRects[i].x && mouse->originalX <= buttonRects[i].x + buttonRects[i].w &&
+				mouse->originalY >= buttonRects[i].y && mouse->originalY <= buttonRects[i].y + buttonRects[i].h) {
+				interakcija[i] = 1;
+			}
+		}
+	}
+}
+
+void Menu::startMenuRender(SDL_Renderer* renderer, Game* game) {
+	// background
+	if (!backgroundTexture) {
+		SDL_Surface* surface = IMG_Load("assets/start_menu_background.jpg");
+		if (surface) {
+			backgroundTexture = SDL_CreateTextureFromSurface(renderer, surface);
+			SDL_FreeSurface(surface);
+		}
+	}
+	if (backgroundTexture) {
+		SDL_Rect destRect = {0, 0, game->original_width, game->original_height};
+		SDL_RenderCopy(renderer, backgroundTexture, NULL, &destRect);
+	}
+	if (!buttonTextures.empty()) {
+		for (auto texture : buttonTextures) {
+			SDL_DestroyTexture(texture);
+		}
+		buttonTextures.clear();
+		buttonRects.clear();
+	}
+	SDL_Rect destRect = {0, 0, game->original_width, game->original_height};
+	SDL_RenderCopy(renderer, backgroundTexture, NULL, &destRect);
+	// gumbi
+	if (!interakcija[0])
+		addButton(renderer, " Start ", {static_cast<int>(game->original_width / 4 - 84), static_cast<int>((game->original_height) / 2), 84 * 2, 26 * 2});
+	else
+		addButton(renderer, "  Start  ", {static_cast<int>(game->original_width / 4 - 108), static_cast<int>((game->original_height) / 2), 108 * 2, 26 * 2});
+	if (!interakcija[1])
+		addButton(renderer, " Quit ", {static_cast<int>(game->original_width / 4 - 72), static_cast<int>(game->original_height / 1.5), 72 * 2, 26 * 2});
+	else
+		addButton(renderer, "  Quit  ", {static_cast<int>(game->original_width / 4 - 96), static_cast<int>(game->original_height / 1.5), 96 * 2, 26 * 2});
+	for (SDL_Rect& bc : buttonRects) {
+		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		SDL_RenderFillRect(renderer, &bc);
+	}
+	SDL_RenderCopy(renderer, buttonTextures[0], NULL, &buttonRects[0]);
+	SDL_RenderCopy(renderer, buttonTextures[1], NULL, &buttonRects[1]);
+}
+
+void Menu::handleEvent_StartMenu(SDL_Event& event, Mouse* mouse, Game* game) {
+	interakcija = {0, 0};
+	if (mouse->getButtons() == 1) {
+		for (size_t i = 0; i < buttonRects.size(); ++i) {
+			if (mouse->originalX >= buttonRects[i].x && mouse->originalX <= buttonRects[i].x + buttonRects[i].w &&
+				mouse->originalY >= buttonRects[i].y && mouse->originalY <= buttonRects[i].y + buttonRects[i].h) {
+				if (i == 0) {
+					game->gameState = IN_GAME;
+					game->reset();
+				}  // "Start" gumb
+				if (i == 1) game->setRunning(0);  // "Quit" gumb
+			}
+		}
+		Mouse::buttons = 0;
+	} else
+		for (size_t i = 0; i < buttonRects.size(); ++i) {
+			if (mouse->originalX >= buttonRects[i].x && mouse->originalX <= buttonRects[i].x + buttonRects[i].w &&
+				mouse->originalY >= buttonRects[i].y && mouse->originalY <= buttonRects[i].y + buttonRects[i].h) {
+				interakcija[i] = 1;
+			}
+		}
+}
+
+void Menu::gameOverMenu(SDL_Renderer* renderer, Game* game) {
+	// background
+	SDL_Rect background = {300, 100, game->original_width - 600, game->original_height - 200};
+	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 128);
+	SDL_RenderFillRect(renderer, &background);
+	// "Game Over" text
+	SDL_Color color = {255, 255, 255};
+	std::string text = "Game Over";
+	SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
+	if (surface) {
+		SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, surface);
+		SDL_Rect textRect = {
+			static_cast<int>(game->original_width / 2 - (surface->w)),
+			static_cast<int>(game->original_height / 3 - (surface->h) / 2),
+			surface->w * 2,
+			surface->h * 2};
+		SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+		SDL_DestroyTexture(textTexture);
+		SDL_FreeSurface(surface);
+	}
+
+	// Počisti stare gumbe
+	if (!buttonTextures.empty()) {
+		for (auto texture : buttonTextures) {
+			SDL_DestroyTexture(texture);
+		}
+		buttonTextures.clear();
+		buttonRects.clear();
+	}
+
+	// Gumbi
+	if (!interakcija[0])
+		addButton(renderer, " Restart ", {static_cast<int>(game->original_width / 2 - 108 / 2), static_cast<int>(game->original_height / 1.6), 108, 26});
+	else
+		addButton(renderer, "  Restart  ", {static_cast<int>(game->original_width / 2 - 132 / 2), static_cast<int>(game->original_height / 1.6), 132, 26});
+	if (!interakcija[1])
+		addButton(renderer, " Exit ", {static_cast<int>(game->original_width / 2 - 72 / 2), static_cast<int>(game->original_height / 1.4), 72, 26});
+	else
+		addButton(renderer, "  Exit  ", {static_cast<int>(game->original_width / 2 - 96 / 2), static_cast<int>(game->original_height / 1.4), 96, 26});
+	for (SDL_Rect& bc : buttonRects) {
+		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		SDL_RenderFillRect(renderer, &bc);
+	}
+	SDL_RenderCopy(renderer, buttonTextures[0], NULL, &buttonRects[0]);
+	SDL_RenderCopy(renderer, buttonTextures[1], NULL, &buttonRects[1]);
+}
+void Menu::handleEvent_GameOver(SDL_Event& event, Mouse* mouse, Game* game) {
+	interakcija = {0, 0};
+	if (mouse->getButtons() == 1) {
+		for (size_t i = 0; i < buttonRects.size(); ++i) {
+			if (mouse->originalX >= buttonRects[i].x && mouse->originalX <= buttonRects[i].x + buttonRects[i].w &&
+				mouse->originalY >= buttonRects[i].y && mouse->originalY <= buttonRects[i].y + buttonRects[i].h) {
+				if (i == 0) {
+					// currentState = IN_GAME;
+					game->gameState = IN_GAME;
+					game->reset();
+				}  // "Start" gumb
+				if (i == 1)	 // game->setRunning(0);  // "Quit" gumb
+					game->gameState = START_MENU;
+			}
+		}
+		Mouse::buttons = 0;
+	} else
+		for (size_t i = 0; i < buttonRects.size(); ++i) {
+			if (mouse->originalX >= buttonRects[i].x && mouse->originalX <= buttonRects[i].x + buttonRects[i].w &&
+				mouse->originalY >= buttonRects[i].y && mouse->originalY <= buttonRects[i].y + buttonRects[i].h) {
+				interakcija[i] = 1;
+			}
+		}
+}
+void Menu::levelCompleteMenu(SDL_Renderer* renderer, Game* game) {
+	// background
+	SDL_Rect background = {300, 100, game->original_width - 600, game->original_height - 200};
+	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 128);
+	SDL_RenderFillRect(renderer, &background);
+	// "Level Complete" text
+	SDL_Color color = {255, 255, 255};
+	std::string text = "Level Complete";
+	SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
+	if (surface) {
+		SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, surface);
+		SDL_Rect textRect = {
+			static_cast<int>(game->original_width / 2 - (surface->w)),
+			static_cast<int>(game->original_height / 3 - (surface->h) / 2),
+			surface->w * 2,
+			surface->h * 2};
+		SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+		SDL_DestroyTexture(textTexture);
+		SDL_FreeSurface(surface);
+	}
+
+	// Počisti stare gumbe
+	if (!buttonTextures.empty()) {
+		for (auto texture : buttonTextures) {
+			SDL_DestroyTexture(texture);
+		}
+		buttonTextures.clear();
+		buttonRects.clear();
+	}
+	// Gumbi
+	if (!interakcija[0])
+		addButton(renderer, " Next ", {static_cast<int>(game->original_width / 2 - 108 / 2), static_cast<int>(game->original_height / 1.6), 108, 26});
+	else
+		addButton(renderer, "  Next  ", {static_cast<int>(game->original_width / 2 - 132 / 2), static_cast<int>(game->original_height / 1.6), 132, 26});
+	for (SDL_Rect& bc : buttonRects) {
+		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		SDL_RenderFillRect(renderer, &bc);
+	}
+	SDL_RenderCopy(renderer, buttonTextures[0], NULL, &buttonRects[0]);
+}
+void Menu::handleEvent_LevelComplete(SDL_Event& event, Mouse* mouse, Game* game) {
+	interakcija = {0, 0};
+	if (mouse->getButtons() == 1) {
+		for (size_t i = 0; i < buttonRects.size(); ++i) {
+			if (mouse->originalX >= buttonRects[i].x && mouse->originalX <= buttonRects[i].x + buttonRects[i].w &&
+				mouse->originalY >= buttonRects[i].y && mouse->originalY <= buttonRects[i].y + buttonRects[i].h) {
+				if (i == 0) {
+					game->gameState = IN_GAME;
+					game->restart();
+				}  // "Start" gumb
+			}
+		}
+		Mouse::buttons = 0;
+	} else
+		for (size_t i = 0; i < buttonRects.size(); ++i) {
+			if (mouse->originalX >= buttonRects[i].x && mouse->originalX <= buttonRects[i].x + buttonRects[i].w &&
+				mouse->originalY >= buttonRects[i].y && mouse->originalY <= buttonRects[i].y + buttonRects[i].h) {
+				interakcija[i] = 1;
+			}
+		}
+}
+void Menu::gameWinnerMenu(SDL_Renderer* renderer, Game* game) {
+	// background
+	SDL_Rect background = {300, 100, game->original_width - 600, game->original_height - 200};
+	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 128);
+	SDL_RenderFillRect(renderer, &background);
+	// "YOU WON!" text
+	SDL_Color color = {212, 175, 55};
+	std::string text = "YOU WON!";
+	SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
+	if (surface) {
+		SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, surface);
+		SDL_Rect textRect = {
+			static_cast<int>(game->original_width / 2 - (surface->w)),
+			static_cast<int>(game->original_height / 3 - (surface->h) / 2),
+			surface->w * 2,
+			surface->h * 2};
+		SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+		SDL_DestroyTexture(textTexture);
+		SDL_FreeSurface(surface);
+	}
+
+	// Počisti stare gumbe
+	if (!buttonTextures.empty()) {
+		for (auto texture : buttonTextures) {
+			SDL_DestroyTexture(texture);
+		}
+		buttonTextures.clear();
+		buttonRects.clear();
+	}
+	// Gumbi
+	if (!interakcija[0])
+		addButton(renderer, " Restart ", {static_cast<int>(game->original_width / 2 - 108 / 2), static_cast<int>(game->original_height / 1.6), 108, 26});
+	else
+		addButton(renderer, "  Restart  ", {static_cast<int>(game->original_width / 2 - 132 / 2), static_cast<int>(game->original_height / 1.6), 132, 26});
+	if (!interakcija[1])
+		addButton(renderer, " Exit ", {static_cast<int>(game->original_width / 2 - 72 / 2), static_cast<int>(game->original_height / 1.4), 72, 26});
+	else
+		addButton(renderer, "  Exit  ", {static_cast<int>(game->original_width / 2 - 96 / 2), static_cast<int>(game->original_height / 1.4), 96, 26});
+	for (SDL_Rect& bc : buttonRects) {
+		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		SDL_RenderFillRect(renderer, &bc);
+	}
+	SDL_RenderCopy(renderer, buttonTextures[0], NULL, &buttonRects[0]);
+	SDL_RenderCopy(renderer, buttonTextures[1], NULL, &buttonRects[1]);
+}
+void Menu::handleEvent_GameWinner(SDL_Event& event, Mouse* mouse, Game* game) {
+	interakcija = {0, 0};
+	if (mouse->getButtons() == 1) {
+		for (size_t i = 0; i < buttonRects.size(); ++i) {
+			if (mouse->originalX >= buttonRects[i].x && mouse->originalX <= buttonRects[i].x + buttonRects[i].w &&
+				mouse->originalY >= buttonRects[i].y && mouse->originalY <= buttonRects[i].y + buttonRects[i].h) {
+				if (i == 0) {
+					// currentState = IN_GAME;
+					game->gameState = IN_GAME;
+					game->reset();
+				}  // "Start" gumb
+				if (i == 1)	 // game->setRunning(0);  // "Quit" gumb
+					game->gameState = START_MENU;
+			}
+		}
+		Mouse::buttons = 0;
+	} else
+		for (size_t i = 0; i < buttonRects.size(); ++i) {
+			if (mouse->originalX >= buttonRects[i].x && mouse->originalX <= buttonRects[i].x + buttonRects[i].w &&
+				mouse->originalY >= buttonRects[i].y && mouse->originalY <= buttonRects[i].y + buttonRects[i].h) {
+				interakcija[i] = 1;
+			}
+		}
+}

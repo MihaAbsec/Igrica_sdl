@@ -16,10 +16,17 @@
 #include "Mouse.h"
 #include "Npc.h"
 #include "Player.h"
+#include "SDL_rect.h"
+
+class Menu;
 
 enum GameState {
 	START_MENU,
-	IN_GAME
+	IN_GAME,
+	PAUSED,
+	GAME_OVER,
+	LEVEL_COMPLETE,
+    GAME_WINNER
 };
 
 class Game {
@@ -27,7 +34,7 @@ class Game {
 	Game(int, int);
 	~Game();
 
-	bool innit();
+	bool init();
 	void run();
 	void cleanup();
 	bool running;
@@ -49,15 +56,21 @@ class Game {
 	bool isRunning() const;
 	SDL_Renderer* getRenderer() const;
 	void setRunning(bool);
+	void renderBGtext();
 	void updateLivesText();
 	void updateKillsText();
-
-    //leveling
-    void loadLevel(int);
-   protected:
-	SDL_Window* window;
+	void updateLevelText();
+	void updateKeysText();
+	// gamestates
 	GameState gameState;
 
+	// leveling
+	void loadLevel(int);
+	void reset();
+	void restart();
+
+   protected:
+	SDL_Window* window;
 	Player* player;
 	Key* key;
 	std::vector<Npc>* npc;
@@ -68,13 +81,21 @@ class Game {
 	Map* map;
 	// Besedilo:
 	TTF_Font* font;
-	SDL_Texture* livesTexture;
-	SDL_Texture* killsTexture;
+	std::vector<SDL_Rect>* textBackground = nullptr;
+	SDL_Texture* livesTexture = nullptr;
+	SDL_Texture* killsTexture = nullptr;
+	SDL_Texture* levelTexture = nullptr;
+	SDL_Texture* keysTexture = nullptr;
 	SDL_Rect livesRect;
 	SDL_Rect killsRect;
+	SDL_Rect levelRect;
+	SDL_Rect keysRect;
 	// Leveling
 	int keysCollected = 0;
 	int currentLevel = 1;
+	int lvlKills[4] = {0, 0, 0};
+	// Vsi Menuji
+	Menu* menu;
 };
 
 #endif	// GAME_H

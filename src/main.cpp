@@ -5,7 +5,7 @@ int main(int argc, char* argv[]) {
 	Game* game = new Game(1067, 600);
 	Clock* clock = new Clock;
 
-	if (!game->innit()) {
+	if (!game->init()) {
 		return 1;
 	}
 	while (game->running) {

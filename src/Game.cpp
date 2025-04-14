@@ -7,11 +7,14 @@
 #include <iostream>
 #include <vector>
 
+#include "SDL_rect.h"
+#include "SDL_surface.h"
 #include "include/Bullet.h"
 #include "include/Clock.h"
 #include "include/Collision.h"
 #include "include/Key.h"
 #include "include/Layout1.h"
+#include "include/Menu.h"
 #include "include/Player.h"
 #include "include/Wall.h"
 float Game::scale_x = 1.0f;
@@ -25,13 +28,15 @@ Game::Game(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 	camera->update(player, WORLD_WIDTH, WORLD_HEIGHT, original_width, original_height);
 	walls = new std::vector<Wall>();
 	npc = new std::vector<Npc>();
+	textBackground = new std::vector<SDL_Rect>;
+	gameState = START_MENU;
 }
 
 Game::~Game() {
 	cleanup();
 }
 
-bool Game::innit() {
+bool Game::init() {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		std::cout << "Error initializing SDL: %s\n", SDL_GetError();
 		return false;
@@ -62,7 +67,7 @@ bool Game::innit() {
 		return false;
 	}
 
-	font = TTF_OpenFont("assets/fonts/pisava.ttf", 24);	 // Zamenjaj z dejansko potjo do pisave
+	font = TTF_OpenFont("assets/fonts/pisava.ttf", 32);	 // Zamenjaj z dejansko potjo do pisave
 	if (!font) {
 		std::cout << "Failed to load font: " << TTF_GetError() << "\n";
 		return false;
@@ -76,22 +81,35 @@ bool Game::innit() {
 	key = new Key(SCREEN_WIDTH, SCREEN_HEIGHT, walls, this, camera);
 	for (int i = 0; i < 14; ++i)
 		npc->push_back(Npc(WORLD_WIDTH, WORLD_HEIGHT, 25, 75, 0.2, walls, this, camera));
+	menu = new Menu(font);
 	return true;
 }
 
 // V Game.cpp
 void Game::handleEvents(Clock* clock) {
 	SDL_Event event;
-	player->handleInput(event, clock);
+	if (gameState == IN_GAME) {
+		player->handleInput(event, clock);
+	} else if (gameState == PAUSED)
+		menu->handleEvent_Paused(event, &mouse, this);
+	else if (gameState == START_MENU)
+		menu->handleEvent_StartMenu(event, &mouse, this);
+	else if (gameState == GAME_OVER)
+		menu->handleEvent_GameOver(event, &mouse, this);
+	else if (gameState == LEVEL_COMPLETE)
+		menu->handleEvent_LevelComplete(event, &mouse, this);
+	else if (gameState == GAME_WINNER)
+		menu->handleEvent_GameWinner(event, &mouse, this);
 
 	while (SDL_PollEvent(&event)) {
 		if (event.type == SDL_QUIT) {
 			running = false;
 		}
 		if (event.type == SDL_KEYDOWN) {
-			if (event.key.keysym.sym == SDLK_ESCAPE) {
-				running = false;
-			}
+			if (event.key.keysym.sym == SDLK_ESCAPE && gameState == IN_GAME) {
+				gameState = PAUSED;
+			} else if (event.key.keysym.sym == SDLK_ESCAPE && gameState == PAUSED)
+				gameState = IN_GAME;
 		}
 		if (event.type == SDL_WINDOWEVENT) {
 			if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
@@ -122,115 +140,139 @@ void Game::handleEvents(Clock* clock) {
 // Update game logic
 
 void Game::update(Clock* clock) {
-	updateLivesText();
-	updateKillsText();
-	// std::cout << std::flush;
-	for (Wall& wall : *walls) {
-		collision(*player, wall);
-		for (auto it = bullets.begin(); it != bullets.end();) {
-			if (collision(&(*it), &wall)) {
-				it = bullets.erase(it);
-			} else {
-				++it;
+	if (gameState == IN_GAME) {
+		if (!player->getLives())
+			gameState = GAME_OVER;
+		for (Wall& wall : *walls) {
+			collision(*player, wall);
+			for (auto it = bullets.begin(); it != bullets.end();) {
+				if (collision(&(*it), &wall)) {
+					it = bullets.erase(it);
+				} else {
+					++it;
+				}
 			}
 		}
-	}
-	auto itB = bullets.begin();
-	while (itB != bullets.end()) {
-		bool bulletErased = false;
-		auto it = npc->begin();
-		if (collision(&(*itB), player)) {
-			player->hit();
-			itB = bullets.erase(itB);
-			bulletErased = true;
-		}
-		while (it != npc->end() && !bulletErased) {
-			if (collision(&(*itB), &(*it))) {
-				it = npc->erase(it);
-				player->plusKill();
-				npc->push_back(Npc(WORLD_WIDTH, WORLD_HEIGHT, 25, 75, 0.2, walls, this, camera));
+		auto itB = bullets.begin();
+		while (itB != bullets.end()) {
+			bool bulletErased = false;
+			auto it = npc->begin();
+			if (collision(&(*itB), player)) {
+				player->hit();
 				itB = bullets.erase(itB);
 				bulletErased = true;
-				break;
-			} else {
-				++it;
+			}
+			while (it != npc->end() && !bulletErased) {
+				if (collision(&(*itB), &(*it))) {
+					it = npc->erase(it);
+					player->plusKill();
+					npc->push_back(Npc(WORLD_WIDTH, WORLD_HEIGHT, 25, 75, 0.2, walls, this, camera));
+					itB = bullets.erase(itB);
+					bulletErased = true;
+					break;
+				} else {
+					++it;
+				}
+			}
+			if (!bulletErased) {
+				++itB;
 			}
 		}
-		if (!bulletErased) {
-			++itB;
-		}
-	}
 
-    //ključi in leveli
-	if (collision(player, key)) {
-		delete key;
-		key = new Key(WORLD_WIDTH, WORLD_HEIGHT, walls, this, camera);
-		keysCollected++;
-		if (keysCollected >= 3) {
-			keysCollected = 0;
-			currentLevel++;
-			if (currentLevel > 3)
-				currentLevel = 1;
-			loadLevel(currentLevel);
+		// ključi in leveli
+		key->timeOfRend(clock);
+		if (collision(player, key)) {
+			keysCollected++;
+			delete key;
+			key = new Key(WORLD_WIDTH, WORLD_HEIGHT, walls, this, camera);
+			if (keysCollected >= 3) {
+				lvlKills[currentLevel] = player->getKills();
+				currentLevel++;
+				if (currentLevel > 3)
+					gameState = GAME_WINNER;
+				else
+					gameState = LEVEL_COMPLETE;
+				player->setKills(lvlKills[currentLevel - 1]);
+			} else {
+				key->nextKey();
+			}
 		}
-	}
-	player->update(clock);
-	for (Npc& npcs : *npc) {
-		npcs.movement(clock, walls, player, &bullets);
-		npcs.update(clock, walls);
-		npcs.fov->contact = collision(player, npcs.fov);
-		if (collision(player, &npcs))
-			player->die();
-		for (Npc& npcs_ : *npc) {
-			if (&npcs != &npcs_)
-				collision(&npcs, &npcs_);
+		player->update(clock);
+		for (Npc& npcs : *npc) {
+			npcs.movement(clock, walls, player, &bullets);
+			npcs.update(clock, walls);
+			npcs.fov->contact = collision(player, npcs.fov);
+			collision(&npcs, player);
+			if (collision(player, &npcs))
+				player->die();
+			for (Npc& npcs_ : *npc) {
+				if (&npcs != &npcs_)
+					collision(&npcs, &npcs_);
+			}
 		}
-	}
-	camera->update(player, WORLD_WIDTH, WORLD_HEIGHT, original_width, original_height);
-	// BULLETS
-	static bool wasMousePressed = false;
-	static unsigned int last_shot_time = 0;
-	if (mouse.getButtons() == 4)
-		player->shooting(1);
-	if (mouse.getButtons() == 1 || mouse.getButtons() == 5) {
-		player->shooting(1);
-		if (!wasMousePressed && clock->last_tick_time - last_shot_time >= 250) {
-			player->bulletSpawnFix(mouse);
-			bullets.push_back(Bullet(1, player->getGunX(), player->getGunY(), 5, 5, 1, mouse.getWorldX(), mouse.getWorldY()));
-			last_shot_time = clock->last_tick_time;
+		camera->update(player, WORLD_WIDTH, WORLD_HEIGHT, original_width, original_height);
+		// BULLETS  streljanje
+		static bool wasMousePressed = false;
+		static unsigned int last_shot_time = 0;
+		if (mouse.getButtons() == 4)
+			player->shooting(1);
+		if (mouse.getButtons() == 1 || mouse.getButtons() == 5) {
+			player->shooting(1);
+			if (!wasMousePressed && clock->last_tick_time - last_shot_time >= 250) {
+				player->bulletSpawnFix(mouse);
+				bullets.push_back(Bullet(1, player->getGunX(), player->getGunY(), 5, 5, 1, mouse.getWorldX(), mouse.getWorldY()));
+				last_shot_time = clock->last_tick_time;
+			}
+			wasMousePressed = true;
+		} else {
+			if (clock->last_tick_time - last_shot_time >= 350)
+				player->shooting(0);
+			wasMousePressed = false;
 		}
-		wasMousePressed = true;
-	} else {
-		if (clock->last_tick_time - last_shot_time >= 350)
-			player->shooting(0);
-		wasMousePressed = false;
+		for (Bullet& bullets : bullets)
+			bullets.update(clock->delta);
+		textBackground->clear();
+		updateLivesText();
+		updateKillsText();
+		updateLevelText();
+		updateKeysText();
 	}
-	for (Bullet& bullets : bullets)
-		bullets.update(clock->delta);
-	// if(player->getLives() == 0)
-	//   running = 0;
 }
 // Render
 void Game::render() {
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);	 // Črna barva za ozadje
 	SDL_RenderClear(renderer);
 
 	// Nastavi skaliranje na rendererju
 	SDL_RenderSetScale(renderer, scale_x, scale_y);
-
-	// Risanje objektov
-	map->render(renderer, camera);
-	float cameraX = camera->x;
-	float cameraY = camera->y;
-	for (Bullet& bullet : bullets)
-		bullet.render(renderer, cameraX, cameraY);
-	for (Npc& npc : *npc)
-		npc.render(renderer, camera);
-	player->render(renderer, mouse, original_width / 2.0, original_height / 2.0, camera);
-	if (player->radious->isContact(player, key, walls))
-		key->render(renderer, camera);
-	SDL_RenderCopy(renderer, livesTexture, NULL, &livesRect);
-	SDL_RenderCopy(renderer, killsTexture, NULL, &killsRect);
+	if (gameState == START_MENU) {
+		menu->startMenuRender(renderer, this);
+	} else {
+		// Risanje objektov
+		map->render(renderer, camera);
+		float cameraX = camera->x;
+		float cameraY = camera->y;
+		for (Bullet& bullet : bullets)
+			bullet.render(renderer, cameraX, cameraY);
+		for (Npc& npc : *npc)
+			npc.render(renderer, camera);
+		if (player->radious->isContact(player, key, walls))
+			key->render(renderer, camera);
+		key->klicajRender(renderer, player, camera, font);
+		renderBGtext();
+		SDL_RenderCopy(renderer, livesTexture, NULL, &livesRect);
+		SDL_RenderCopy(renderer, killsTexture, NULL, &killsRect);
+		SDL_RenderCopy(renderer, levelTexture, NULL, &levelRect);
+		SDL_RenderCopy(renderer, keysTexture, NULL, &keysRect);
+		if (gameState == GAME_OVER)
+			menu->gameOverMenu(renderer, this);
+		if (gameState == LEVEL_COMPLETE)
+			menu->levelCompleteMenu(renderer, this);
+		if (gameState == GAME_WINNER)
+			menu->gameWinnerMenu(renderer, this);
+		player->render(renderer, mouse, original_width / 2.0, original_height / 2.0, camera, this);
+		if (gameState == PAUSED)
+			menu->pausedRender(renderer, this);
+	}
 
 	SDL_RenderPresent(renderer);
 }
@@ -239,17 +281,74 @@ void Game::cleanup() {
 	delete npc;
 	delete player;
 	delete walls;
+
+	// Clean up textures
+	if (livesTexture) {
+		SDL_DestroyTexture(livesTexture);
+		livesTexture = nullptr;
+	}
+	if (killsTexture) {
+		SDL_DestroyTexture(killsTexture);
+		killsTexture = nullptr;
+	}
+	if (keysTexture) {
+		SDL_DestroyTexture(keysTexture);
+		keysTexture = nullptr;
+	}
+	if (map) {
+		delete map;
+		map = nullptr;
+	}
+	if (menu) {
+		delete menu;
+		menu = nullptr;
+	}
+
+	// Clean up font
+	if (font) {
+		TTF_CloseFont(font);
+		font = nullptr;
+	}
+
+	// Clean up text background
+	if (textBackground) {
+		delete textBackground;
+		textBackground = nullptr;
+	}
+
 	if (renderer) {
 		SDL_DestroyRenderer(renderer);
+		renderer = nullptr;
 	}
 	if (window) {
 		SDL_DestroyWindow(window);
+		window = nullptr;
 	}
 	IMG_Quit();
+	TTF_Quit();
 	SDL_Quit();
 }
 
 void Game::setGameState(GameState state) {
+	// Clean up textures when changing states
+	if (gameState != state) {
+		if (livesTexture) {
+			SDL_DestroyTexture(livesTexture);
+			livesTexture = nullptr;
+		}
+		if (killsTexture) {
+			SDL_DestroyTexture(killsTexture);
+			killsTexture = nullptr;
+		}
+		if (levelTexture) {
+			SDL_DestroyTexture(levelTexture);
+			levelTexture = nullptr;
+		}
+		if (keysTexture) {
+			SDL_DestroyTexture(keysTexture);
+			keysTexture = nullptr;
+		}
+	}
 	gameState = state;
 }
 
@@ -275,21 +374,29 @@ void Game::updateLivesText() {
 		livesTexture = nullptr;
 	}
 
-	SDL_Color color = {255, 255, 255};
-	std::string text = "Lives: " + std::to_string(player->getLives());
-	SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
+	SDL_Color color = {255, 50, 50};
+	std::string text = " ";
+	for (int i = 0; i < player->getLives(); i++)
+		text += "_ ";
+	SDL_Surface* surface = TTF_RenderUTF8_Blended(font, text.c_str(), color);
 	if (!surface) {
 		std::cout << "Failed to render text surface: " << TTF_GetError() << "\n";
 		return;
 	}
 
 	livesTexture = SDL_CreateTextureFromSurface(renderer, surface);
+	SDL_FreeSurface(surface);
 	if (!livesTexture) {
 		std::cout << "Failed to create text texture: " << SDL_GetError() << "\n";
+		SDL_FreeSurface(surface);
+		return;
 	}
 
-	livesRect = {10, 10, surface->w, surface->h};  // zgornji levi kot
-	SDL_FreeSurface(surface);
+	livesRect = {8, 0, static_cast<int>(surface->w * 1.5), static_cast<int>(surface->h * 1.5)};	 // zgornji levi kot
+	// ozadje
+
+	SDL_Rect rect = {8, 8, 132, surface->h + 4};
+	textBackground->push_back(rect);
 }
 void Game::updateKillsText() {
 	if (killsTexture) {
@@ -298,36 +405,110 @@ void Game::updateKillsText() {
 	}
 
 	SDL_Color color = {255, 255, 255};
-	std::string text = "Kills: " + std::to_string(player->getKills());
-	SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
+	std::string text = "€   " + std::to_string(player->getKills());
+	SDL_Surface* surface = TTF_RenderUTF8_Blended(font, text.c_str(), color);
 	if (!surface) {
 		std::cout << "Failed to render text surface: " << TTF_GetError() << "\n";
 		return;
 	}
 
 	killsTexture = SDL_CreateTextureFromSurface(renderer, surface);
+	SDL_FreeSurface(surface);
 	if (!killsTexture) {
 		std::cout << "Failed to create text texture: " << SDL_GetError() << "\n";
+		SDL_FreeSurface(surface);
+		return;
 	}
 
-	killsRect = {10, 40, surface->w, surface->h};  // zgornji levi kot
+	killsRect = {26, 40, surface->w, surface->h};  // zgornji levi kot
+	SDL_Rect rect = {8, 38, static_cast<int>(surface->w * 1.5), surface->h + 4};
+	textBackground->push_back(rect);
+}
+void Game::updateLevelText() {
+	if (levelTexture) {
+		SDL_DestroyTexture(levelTexture);
+		levelTexture = nullptr;
+	}
+
+	SDL_Color color = {255, 255, 255};
+	std::string text = "Level: " + std::to_string(currentLevel) + "/3";
+	SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
+	if (!surface) {
+		std::cout << "Failed to render text surface: " << TTF_GetError() << "\n";
+		return;
+	}
+
+	levelTexture = SDL_CreateTextureFromSurface(renderer, surface);
 	SDL_FreeSurface(surface);
+	if (!levelTexture) {
+		std::cout << "Failed to create text texture: " << SDL_GetError() << "\n";
+		SDL_FreeSurface(surface);
+		return;
+	}
+
+	levelRect = {original_width / 2 - surface->w / 2, 10, surface->w, surface->h};	// zgornji levi kot
+	SDL_Rect rect = {original_width / 2 - surface->w / 2 - 3, 10, surface->w + 4, surface->h + 4};
+
+	textBackground->push_back(rect);
+}
+
+void Game::updateKeysText() {
+	if (keysTexture) {
+		SDL_DestroyTexture(keysTexture);
+		keysTexture = nullptr;
+	}
+
+	SDL_Color color = {212, 175, 55};
+	std::string text = " ";
+	for (int i = 0; i < keysCollected; i++) {
+		text += "© ";
+	}
+	SDL_Surface* surface = TTF_RenderUTF8_Blended(font, text.c_str(), color);
+	if (!surface) {
+		std::cout << "Failed to render text surface: " << TTF_GetError() << "\n";
+		return;
+	}
+
+	keysTexture = SDL_CreateTextureFromSurface(renderer, surface);
+	SDL_FreeSurface(surface);
+	if (!keysTexture) {
+		std::cout << "Failed to create text texture: " << SDL_GetError() << "\n";
+		SDL_FreeSurface(surface);
+		return;
+	}
+
+	keysRect = {11, original_height - surface->h - 18,
+				static_cast<int>(surface->w * 1.5),
+				static_cast<int>(surface->h * 1.5)};
+	SDL_Rect rect = {10, original_height - 10 - surface->h,
+					 static_cast<int>(surface->w * 1.5), surface->h + 4};
+
+	textBackground->push_back(rect);
+}
+
+void Game::renderBGtext() {
+	for (SDL_Rect& bc : *textBackground) {
+		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 128);
+		SDL_RenderFillRect(renderer, &bc);
+	}
 }
 
 void Game::loadLevel(int level) {
+	keysCollected = 0;
 	// Počisti stare stene in NPC-je
 	walls->clear();
 	npc->clear();
 
 	// Naloži novo mapo glede na level
 	std::string levelFile = "maps/level" + std::to_string(level) + ".txt";
-    std::string levelWall = "assets/wall" + std::to_string(level) + ".png";
+	std::string levelWall = "assets/wall" + std::to_string(level) + ".png";
 	delete map;	 // Izbriši staro mapo
 	map = new Map("assets/floor.png", levelWall, levelFile, renderer, walls);
 
 	// Ponastavi igralca in kamero
-	player->giveXY(192, 192);
-    player->giveLives();
+	delete player;
+	player = new Player(192, 192, 25, 75, 1);
 	camera->update(player, WORLD_WIDTH, WORLD_HEIGHT, original_width, original_height);
 
 	// Ustvari nove NPC-je
@@ -338,4 +519,17 @@ void Game::loadLevel(int level) {
 	// Ustvari nov ključ
 	delete key;
 	key = new Key(WORLD_WIDTH, WORLD_HEIGHT, walls, this, camera);
+}
+
+void Game::reset() {
+	player->setKills(0);
+	lvlKills[1] = 0;
+	lvlKills[2] = 0;
+	lvlKills[3] = 0;
+	loadLevel(1);
+}
+
+void Game::restart() {
+	loadLevel(currentLevel);
+	player->setKills(lvlKills[currentLevel - 1]);
 }

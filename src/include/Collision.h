@@ -9,9 +9,10 @@
 // player-wall
 void collision(Player& obj1, const Wall& obj2);
 bool collision(Bullet* obj1, const Player* obj2);
-//player-npc
+// player-npc
 bool collision(Player* obj1, const Npc* obj2);
-//radious - key
+void collision(Npc* obj1, const Player* obj2);
+// radious - key
 bool collision(PlayerRadious* obj1, const Key* obj2);
 // npc-npc
 void collision(Npc* obj1, Npc* obj2);
@@ -32,7 +33,7 @@ void FovWallCollision(NpcFov* obj1, const Wall* obj2);
 bool lineIntersectsWall(float, float, float, float, std::vector<Wall>*);
 bool checkWallIntersection(float, float, float, float, float, float, float, float);
 bool lineIntersectsRectangle(float, float, float, float, const Wall&);
-//spawn-collision
+// spawn-collision
 bool spawnCollision(Game*, Camera*, Npc*);
 bool spawnCollision(Game*, Camera*, Key*);
 #endif	// COLLISION_H
