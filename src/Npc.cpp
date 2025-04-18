@@ -50,11 +50,11 @@ void Npc::createSprite() {
 }
 void Npc::update(Clock *clock, std::vector<Wall> *walls) {
 	fov->update(this, walls);
-	if (clock->last_tick_time - lastFrameTime > 150) {
+	if (clock->gameTimer - lastFrameTime > 150) {
 		currentFrameRun = (currentFrameRun + 1) % runFrames.size();
 		currentFrameWalk = (currentFrameWalk + 1) % walkFrames.size();
 		currentFrameShoot = (currentFrameShoot + 1) % shootFrames.size();
-		lastFrameTime = clock->last_tick_time;
+		lastFrameTime = clock->gameTimer;
 	}
 }
 
@@ -67,9 +67,9 @@ void Npc::movement(Clock *clock, std::vector<Wall> *walls, Player *player, std::
 			moveCollision(this, &wall);
 	}
 	if (!fov->contact /* || fov->access*/) {
-		if (clock->last_tick_time - last_npc_time >= directionChangeInterval || NpcCollision(walls) || fov->access) {
+		if (clock->gameTimer - last_npc_time >= directionChangeInterval || NpcCollision(walls) || fov->access) {
 			headDirection = std::rand() % 4;
-			last_npc_time = clock->last_tick_time;
+			last_npc_time = clock->gameTimer;
 		}
 
 		glm::vec2 movement(0.0f, 0.0f);
@@ -124,11 +124,11 @@ void Npc::movement(Clock *clock, std::vector<Wall> *walls, Player *player, std::
 void Npc::shooting(Player *player, std::vector<Bullet> *bullets, Clock *clock) {
 	if (!shooter)
 		return;
-	if (clock->last_tick_time - last_shot_time >= 850) {
+	if (clock->gameTimer - last_shot_time >= 850) {
 		bullets->push_back(Bullet(0, getGunX(), getGunY(), 5, 5, 1,
 								  player->getX() + (player->getW() / 2),
 								  player->getY() + (player->getH() / 2)));
-		last_shot_time = clock->last_tick_time;
+		last_shot_time = clock->gameTimer;
 	}
 }
 

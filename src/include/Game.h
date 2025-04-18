@@ -26,7 +26,7 @@ enum GameState {
 	PAUSED,
 	GAME_OVER,
 	LEVEL_COMPLETE,
-    GAME_WINNER
+	GAME_WINNER
 };
 
 class Game {
@@ -61,6 +61,7 @@ class Game {
 	void updateKillsText();
 	void updateLevelText();
 	void updateKeysText();
+	void updateTimerText(Clock*);
 	// gamestates
 	GameState gameState;
 
@@ -68,6 +69,9 @@ class Game {
 	void loadLevel(int);
 	void reset();
 	void restart();
+
+	// gameTimer
+	void gameTimer(Clock*);
 
    protected:
 	SDL_Window* window;
@@ -86,16 +90,23 @@ class Game {
 	SDL_Texture* killsTexture = nullptr;
 	SDL_Texture* levelTexture = nullptr;
 	SDL_Texture* keysTexture = nullptr;
+	SDL_Texture* timerTexture = nullptr;
 	SDL_Rect livesRect;
 	SDL_Rect killsRect;
 	SDL_Rect levelRect;
 	SDL_Rect keysRect;
+	SDL_Rect timerRect;
 	// Leveling
 	int keysCollected = 0;
 	int currentLevel = 1;
 	int lvlKills[4] = {0, 0, 0};
 	// Vsi Menuji
 	Menu* menu;
+	// Timer
+	unsigned int timer = 0;
+	unsigned int pausedTime = 0;
+    unsigned int setTimer = 0;
+    unsigned int lvlTimer[4] = {0,0,0};
 };
 
 #endif	// GAME_H

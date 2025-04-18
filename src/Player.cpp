@@ -99,10 +99,10 @@ void Player::bulletSpawnFix(Mouse mouse) {
 }
 
 void Player::update(Clock *clock) {
-	if (clock->last_tick_time - lastFrameTime > 150) {
+	if (clock->gameTimer - lastFrameTime > 150) {
 		currentFrameRun = (currentFrameRun + 1) % runFrames.size();
 		currentFrameShoot = (currentFrameShoot + 1) % shootFrames.size();
-		lastFrameTime = clock->last_tick_time;
+		lastFrameTime = clock->gameTimer;
 	}
 }
 // RENDERER

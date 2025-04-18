@@ -76,22 +76,23 @@ void Key::klicajRender(SDL_Renderer* renderer, Player* player, Camera* camera, T
 			// Če imaš SDL_ttf inicializiran, lahko narišeš tekst:
 			SDL_Color textColor = {255, 50, 50};
 			SDL_Surface* textSurface = TTF_RenderText_Solid(font, " ! ", textColor);
-			SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-			SDL_Rect textRect = {
-				static_cast<int>(indicatorX - textSurface->w / 2 - camera->x),
-				static_cast<int>(indicatorY - textSurface->h / 2 - camera->y),
-				textSurface->w * 4, textSurface->h * 2};
-			SDL_Rect boxRect = {
-				static_cast<int>(indicatorX - camera->x + 20),
-				static_cast<int>(indicatorY - camera->y - 10),
-				textSurface->w, textSurface->h * 2};
-
-			SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 128);
-			SDL_RenderFillRect(renderer, &boxRect);
-			SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
-			SDL_FreeSurface(textSurface);
-			SDL_DestroyTexture(textTexture);
+			if (textSurface) {
+				SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+				SDL_Rect textRect = {
+					static_cast<int>(indicatorX - textSurface->w / 2 - camera->x),
+					static_cast<int>(indicatorY - textSurface->h / 2 - camera->y),
+					textSurface->w * 4, textSurface->h * 2};
+				SDL_Rect boxRect = {
+					static_cast<int>(indicatorX - camera->x + 20),
+					static_cast<int>(indicatorY - camera->y - 10),
+					textSurface->w, textSurface->h * 2};
+				SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+				SDL_SetRenderDrawColor(renderer, 0, 0, 0, 128);
+				SDL_RenderFillRect(renderer, &boxRect);
+				SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+				SDL_FreeSurface(textSurface);
+				SDL_DestroyTexture(textTexture);
+			}
 		}
 	}
 }
@@ -105,10 +106,10 @@ Key::~Key() {
 void Key::timeOfRend(Clock* clock) {
 	if (rend) {
 		if (!isCounting) {
-			startTime = clock->last_tick_time;
+			startTime = clock->gameTimer;
 			isCounting = true;
 		}
-		if (clock->last_tick_time - startTime >= 2000) {
+		if (clock->gameTimer - startTime >= 2000) {
 			rend = 0;
 			isCounting = false;
 		}

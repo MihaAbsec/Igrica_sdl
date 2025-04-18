@@ -2,10 +2,13 @@
 
 #include <SDL2/SDL_ttf.h>
 
+#include <cmath>
 #include <ctime>
 #include <filesystem>
 #include <iostream>
+#include <string>
 #include <vector>
+#include <format>
 
 #include "SDL_rect.h"
 #include "SDL_surface.h"
@@ -13,6 +16,7 @@
 #include "include/Clock.h"
 #include "include/Collision.h"
 #include "include/Key.h"
+
 #include "include/Layout1.h"
 #include "include/Menu.h"
 #include "include/Player.h"
@@ -141,6 +145,7 @@ void Game::handleEvents(Clock* clock) {
 
 void Game::update(Clock* clock) {
 	if (gameState == IN_GAME) {
+		gameTimer(clock);
 		if (!player->getLives())
 			gameState = GAME_OVER;
 		for (Wall& wall : *walls) {
@@ -187,10 +192,12 @@ void Game::update(Clock* clock) {
 			key = new Key(WORLD_WIDTH, WORLD_HEIGHT, walls, this, camera);
 			if (keysCollected >= 3) {
 				lvlKills[currentLevel] = player->getKills();
+                lvlTimer[currentLevel] = timer;
 				currentLevel++;
-				if (currentLevel > 3)
+				if (currentLevel > 3) {
+					currentLevel--;
 					gameState = GAME_WINNER;
-				else
+				} else
 					gameState = LEVEL_COMPLETE;
 				player->setKills(lvlKills[currentLevel - 1]);
 			} else {
@@ -218,14 +225,14 @@ void Game::update(Clock* clock) {
 			player->shooting(1);
 		if (mouse.getButtons() == 1 || mouse.getButtons() == 5) {
 			player->shooting(1);
-			if (!wasMousePressed && clock->last_tick_time - last_shot_time >= 250) {
+			if (!wasMousePressed && clock->gameTimer - last_shot_time >= 250) {
 				player->bulletSpawnFix(mouse);
 				bullets.push_back(Bullet(1, player->getGunX(), player->getGunY(), 5, 5, 1, mouse.getWorldX(), mouse.getWorldY()));
-				last_shot_time = clock->last_tick_time;
+				last_shot_time = clock->gameTimer;
 			}
 			wasMousePressed = true;
 		} else {
-			if (clock->last_tick_time - last_shot_time >= 350)
+			if (clock->gameTimer - last_shot_time >= 350)
 				player->shooting(0);
 			wasMousePressed = false;
 		}
@@ -236,7 +243,9 @@ void Game::update(Clock* clock) {
 		updateKillsText();
 		updateLevelText();
 		updateKeysText();
-	}
+		updateTimerText(clock);
+	} else
+		pausedTime = clock->last_tick_time - timer;
 }
 // Render
 void Game::render() {
@@ -263,6 +272,7 @@ void Game::render() {
 		SDL_RenderCopy(renderer, killsTexture, NULL, &killsRect);
 		SDL_RenderCopy(renderer, levelTexture, NULL, &levelRect);
 		SDL_RenderCopy(renderer, keysTexture, NULL, &keysRect);
+		SDL_RenderCopy(renderer, timerTexture, NULL, &timerRect);
 		if (gameState == GAME_OVER)
 			menu->gameOverMenu(renderer, this);
 		if (gameState == LEVEL_COMPLETE)
@@ -392,7 +402,9 @@ void Game::updateLivesText() {
 		return;
 	}
 
-	livesRect = {8, 0, static_cast<int>(surface->w * 1.5), static_cast<int>(surface->h * 1.5)};	 // zgornji levi kot
+	livesRect = {8, 0,
+				 static_cast<int>(surface->w * 1.5),
+				 static_cast<int>(surface->h * 1.5)};  // zgornji levi kot
 	// ozadje
 
 	SDL_Rect rect = {8, 8, 132, surface->h + 4};
@@ -485,6 +497,38 @@ void Game::updateKeysText() {
 
 	textBackground->push_back(rect);
 }
+void Game::updateTimerText(Clock* clock) {
+	if (timerTexture) {
+		SDL_DestroyTexture(timerTexture);
+		timerTexture = nullptr;
+	}
+
+	SDL_Color color = {255, 255, 255};
+    int a = timer/1000;
+    int b = (timer-a*1000) / 100;
+	std::string text =  std::to_string(a) + "." + std::to_string(b);
+	SDL_Surface* surface = TTF_RenderUTF8_Blended(font, text.c_str(), color);
+	if (!surface) {
+		std::cout << "Failed to render text surface: " << TTF_GetError() << "\n";
+		return;
+	}
+
+	timerTexture = SDL_CreateTextureFromSurface(renderer, surface);
+	SDL_FreeSurface(surface);
+	if (!timerTexture) {
+		std::cout << "Failed to create text texture: " << SDL_GetError() << "\n";
+		SDL_FreeSurface(surface);
+		return;
+	}
+
+	timerRect = {original_width - 100, 10,
+				   static_cast<int>(surface->w),
+				   static_cast<int>(surface->h)};
+	SDL_Rect rect = {10, original_height - 10 - surface->h,
+					 static_cast<int>(surface->w), surface->h + 4};
+
+	textBackground->push_back(timerRect);
+}
 
 void Game::renderBGtext() {
 	for (SDL_Rect& bc : *textBackground) {
@@ -526,10 +570,24 @@ void Game::reset() {
 	lvlKills[1] = 0;
 	lvlKills[2] = 0;
 	lvlKills[3] = 0;
-	loadLevel(1);
+	currentLevel = 1;
+	setTimer = 1;
+	loadLevel(currentLevel);
 }
 
 void Game::restart() {
 	loadLevel(currentLevel);
 	player->setKills(lvlKills[currentLevel - 1]);
+    setTimer = lvlTimer[currentLevel-1];
+}
+void Game::gameTimer(Clock* clock) {
+	if (setTimer != -1) {
+		timer = setTimer;
+		clock->gameTimer = setTimer;
+		pausedTime = clock->last_tick_time-setTimer;
+        setTimer = -1;
+	} else {
+		timer = clock->last_tick_time - pausedTime;
+		clock->gameTimer = timer;
+	}
 }

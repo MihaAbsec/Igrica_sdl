@@ -373,8 +373,8 @@ void Menu::handleEvent_GameWinner(SDL_Event& event, Mouse* mouse, Game* game) {
 					// currentState = IN_GAME;
 					game->gameState = IN_GAME;
 					game->reset();
-				}  // "Start" gumb
-				if (i == 1)	 // game->setRunning(0);  // "Quit" gumb
+				}  // "restart" gumb
+				if (i == 1)	 // game->setRunning(0);  // "Exit" gumb
 					game->gameState = START_MENU;
 			}
 		}
