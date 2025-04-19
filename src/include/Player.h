@@ -10,10 +10,11 @@
 #include "GameObject.h"
 #include "Mouse.h"
 #include "PlayerRadious.h"
+#include "Replay.h"
 
 class Player : public GameObject {
-    int lives = 3;
-    int kills = 0;
+	int lives = 3;
+	int kills = 0;
 	// GUN
 	float gunX, gunY;
 
@@ -29,20 +30,21 @@ class Player : public GameObject {
 	SDL_Rect celebrateFrame;
 	std::vector<SDL_Rect> runFrames;
 	std::vector<SDL_Rect> shootFrames;
-	int currentFrameRun;	
-	int currentFrameShoot;	
-	Uint32 lastFrameTime;	
+	int currentFrameRun;
+	int currentFrameShoot;
+	Uint32 lastFrameTime;
 
    public:
-    friend PlayerRadious;
-    PlayerRadious* radious;
+	friend PlayerRadious;
+	PlayerRadious* radious;
 	void createSprite();
 	void createSprite(SDL_Texture*&, SDL_Renderer*);
 	void shooting(bool shot);
 	Player(float, float, int, int, float);
-	void handleInput(SDL_Event& event, Clock* clock);
+	void handleInput(SDL_Event& event, Clock* clock, Replay* replay);
 	void update(Clock*);
 	void render(SDL_Renderer* renderer, Mouse, int, int, Camera*, Game*);
+	void replayMovement(Replay*, Clock*, Game*);
 	float getGunX() const {
 		return gunX;
 	}
@@ -50,25 +52,25 @@ class Player : public GameObject {
 		return gunY;
 	}
 	void bulletSpawnFix(Mouse);
-    void hit(){
-        if(lives == 0)
-            return;
-        lives--;
-    };
-    int getLives();
-    void plusKill(){
-        kills++;
-    }
-    int getKills();
-    void die() {
-        lives = 0;
-    }
-    void giveLives(){
-        lives = 3;
-    }
-    void setKills(int n){
-        kills = n;
-    }
+	void hit() {
+		if (lives == 0)
+			return;
+		lives--;
+	};
+	int getLives();
+	void plusKill() {
+		kills++;
+	}
+	int getKills();
+	void die() {
+		lives = 0;
+	}
+	void giveLives() {
+		lives = 3;
+	}
+	void setKills(int n) {
+		kills = n;
+	}
 };
 
 #endif	// SQUARE_H

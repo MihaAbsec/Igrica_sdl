@@ -15,7 +15,6 @@ add_executable(mygame
     src/Collision.cpp
     src/Bullet.cpp
     src/Mouse.cpp
-    src/Layout1.cpp
     src/Npc.cpp
     src/Key.cpp
     src/NpcFov.cpp
@@ -24,6 +23,7 @@ add_executable(mygame
     src/GameObject.cpp
     src/Menu.cpp
     src/PlayerRadious.cpp
+    src/Replay.cpp
 )
 
 # Include directories
@@ -43,4 +43,5 @@ target_link_libraries(mygame
 # Copy assets and maps
 file(COPY ${CMAKE_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY ${CMAKE_SOURCE_DIR}/maps DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/saves DESTINATION ${CMAKE_BINARY_DIR})
 #GDB LALA 

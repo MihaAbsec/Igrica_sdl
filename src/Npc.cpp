@@ -19,7 +19,6 @@
 
 #include "include/Collision.h"
 #include "include/GameObject.h"
-#include "include/Layout1.h"
 #include "include/NpcFov.h"
 // Constructor
 Npc::Npc(int worldW, int worldH, int sizeWidth, int sizeHeight, float speed, std::vector<Wall> *walls, Game *game, Camera *camera)

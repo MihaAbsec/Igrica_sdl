@@ -2,13 +2,14 @@
 
 #include <SDL2/SDL_ttf.h>
 
+#include <algorithm>
 #include <cmath>
 #include <ctime>
 #include <filesystem>
+#include <format>
 #include <iostream>
 #include <string>
 #include <vector>
-#include <format>
 
 #include "SDL_rect.h"
 #include "SDL_surface.h"
@@ -16,10 +17,9 @@
 #include "include/Clock.h"
 #include "include/Collision.h"
 #include "include/Key.h"
-
-#include "include/Layout1.h"
 #include "include/Menu.h"
 #include "include/Player.h"
+#include "include/GameObject.h"
 #include "include/Wall.h"
 float Game::scale_x = 1.0f;
 float Game::scale_y = 1.0f;
@@ -33,7 +33,8 @@ Game::Game(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 	walls = new std::vector<Wall>();
 	npc = new std::vector<Npc>();
 	textBackground = new std::vector<SDL_Rect>;
-	gameState = START_MENU;
+	gameState = IN_GAME;
+	replay = new Replay(1);
 }
 
 Game::~Game() {
@@ -93,7 +94,7 @@ bool Game::init() {
 void Game::handleEvents(Clock* clock) {
 	SDL_Event event;
 	if (gameState == IN_GAME) {
-		player->handleInput(event, clock);
+		player->handleInput(event, clock, replay);
 	} else if (gameState == PAUSED)
 		menu->handleEvent_Paused(event, &mouse, this);
 	else if (gameState == START_MENU)
@@ -110,10 +111,12 @@ void Game::handleEvents(Clock* clock) {
 			running = false;
 		}
 		if (event.type == SDL_KEYDOWN) {
-			if (event.key.keysym.sym == SDLK_ESCAPE && gameState == IN_GAME) {
+			if (event.key.keysym.sym == SDLK_ESCAPE && gameState == IN_GAME)
 				gameState = PAUSED;
-			} else if (event.key.keysym.sym == SDLK_ESCAPE && gameState == PAUSED)
+			else if (event.key.keysym.sym == SDLK_ESCAPE && gameState == PAUSED)
 				gameState = IN_GAME;
+			else if (event.key.keysym.sym == SDLK_ESCAPE && gameState == REPLAY_MODE)
+				gameState = prevGameState;
 		}
 		if (event.type == SDL_WINDOWEVENT) {
 			if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
@@ -146,6 +149,7 @@ void Game::handleEvents(Clock* clock) {
 void Game::update(Clock* clock) {
 	if (gameState == IN_GAME) {
 		gameTimer(clock);
+		replay->setLvl(currentLevel);
 		if (!player->getLives())
 			gameState = GAME_OVER;
 		for (Wall& wall : *walls) {
@@ -192,7 +196,7 @@ void Game::update(Clock* clock) {
 			key = new Key(WORLD_WIDTH, WORLD_HEIGHT, walls, this, camera);
 			if (keysCollected >= 3) {
 				lvlKills[currentLevel] = player->getKills();
-                lvlTimer[currentLevel] = timer;
+				lvlTimer[currentLevel] = timer;
 				currentLevel++;
 				if (currentLevel > 3) {
 					currentLevel--;
@@ -246,6 +250,10 @@ void Game::update(Clock* clock) {
 		updateTimerText(clock);
 	} else
 		pausedTime = clock->last_tick_time - timer;
+	if (gameState == REPLAY_MODE) {
+		player->replayMovement(replay, clock, this);
+		camera->update(player, WORLD_WIDTH, WORLD_HEIGHT, original_width, original_height);
+	}
 }
 // Render
 void Game::render() {
@@ -255,7 +263,7 @@ void Game::render() {
 	SDL_RenderSetScale(renderer, scale_x, scale_y);
 	if (gameState == START_MENU) {
 		menu->startMenuRender(renderer, this);
-	} else {
+	} else if (gameState != REPLAY_MODE) {
 		// Risanje objektov
 		map->render(renderer, camera);
 		float cameraX = camera->x;
@@ -283,6 +291,12 @@ void Game::render() {
 		if (gameState == PAUSED)
 			menu->pausedRender(renderer, this);
 	}
+	if (gameState == REPLAY_MODE) {
+		map->render(renderer, camera);
+		float cameraX = camera->x;
+		float cameraY = camera->y;
+		player->render(renderer, mouse, original_width / 2.0, original_height / 2.0, camera, this);
+	}
 
 	SDL_RenderPresent(renderer);
 }
@@ -291,6 +305,9 @@ void Game::cleanup() {
 	delete npc;
 	delete player;
 	delete walls;
+	for (int i = 1; i <= 3; i++)
+		replay->emptyFile(i);
+	delete replay;
 
 	// Clean up textures
 	if (livesTexture) {
@@ -504,9 +521,9 @@ void Game::updateTimerText(Clock* clock) {
 	}
 
 	SDL_Color color = {255, 255, 255};
-    int a = timer/1000;
-    int b = (timer-a*1000) / 100;
-	std::string text =  std::to_string(a) + "." + std::to_string(b);
+	int a = timer / 1000;
+	int b = (timer - a * 1000) / 100;
+	std::string text = std::to_string(a) + "." + std::to_string(b);
 	SDL_Surface* surface = TTF_RenderUTF8_Blended(font, text.c_str(), color);
 	if (!surface) {
 		std::cout << "Failed to render text surface: " << TTF_GetError() << "\n";
@@ -522,8 +539,8 @@ void Game::updateTimerText(Clock* clock) {
 	}
 
 	timerRect = {original_width - 100, 10,
-				   static_cast<int>(surface->w),
-				   static_cast<int>(surface->h)};
+				 static_cast<int>(surface->w),
+				 static_cast<int>(surface->h)};
 	SDL_Rect rect = {10, original_height - 10 - surface->h,
 					 static_cast<int>(surface->w), surface->h + 4};
 
@@ -572,20 +589,23 @@ void Game::reset() {
 	lvlKills[3] = 0;
 	currentLevel = 1;
 	setTimer = 1;
+	for (int i = 1; i <= 3; i++)
+		replay->emptyFile(i);
 	loadLevel(currentLevel);
 }
 
 void Game::restart() {
 	loadLevel(currentLevel);
 	player->setKills(lvlKills[currentLevel - 1]);
-    setTimer = lvlTimer[currentLevel-1];
+	replay->emptyFile(currentLevel);
+	setTimer = lvlTimer[currentLevel - 1];
 }
 void Game::gameTimer(Clock* clock) {
 	if (setTimer != -1) {
 		timer = setTimer;
 		clock->gameTimer = setTimer;
-		pausedTime = clock->last_tick_time-setTimer;
-        setTimer = -1;
+		pausedTime = clock->last_tick_time - setTimer;
+		setTimer = -1;
 	} else {
 		timer = clock->last_tick_time - pausedTime;
 		clock->gameTimer = timer;

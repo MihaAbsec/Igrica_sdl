@@ -285,15 +285,21 @@ void Menu::levelCompleteMenu(SDL_Renderer* renderer, Game* game) {
 	}
 	// Gumbi
 	if (!interakcija[0])
-		addButton(renderer, " Next ", {static_cast<int>(game->original_width / 2 - 108 / 2), static_cast<int>(game->original_height / 1.6), 108, 26});
+		addButton(renderer, " Next ", {static_cast<int>(game->original_width / 2 - 72 / 2), static_cast<int>(game->original_height / 1.6), 72, 26});
 	else
-		addButton(renderer, "  Next  ", {static_cast<int>(game->original_width / 2 - 132 / 2), static_cast<int>(game->original_height / 1.6), 132, 26});
+		addButton(renderer, "  Next  ", {static_cast<int>(game->original_width / 2 - 96 / 2), static_cast<int>(game->original_height / 1.6), 96, 26});
+	if (!interakcija[1])
+		addButton(renderer, " Replay ", {static_cast<int>(game->original_width / 2 - 96 / 2), static_cast<int>(game->original_height / 1.4), 96, 26});
+	else
+		addButton(renderer, "  Replay  ", {static_cast<int>(game->original_width / 2 - 120 / 2), static_cast<int>(game->original_height / 1.4), 120, 26});
+
 	for (SDL_Rect& bc : buttonRects) {
 		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		SDL_RenderFillRect(renderer, &bc);
 	}
 	SDL_RenderCopy(renderer, buttonTextures[0], NULL, &buttonRects[0]);
+	SDL_RenderCopy(renderer, buttonTextures[1], NULL, &buttonRects[1]);
 }
 void Menu::handleEvent_LevelComplete(SDL_Event& event, Mouse* mouse, Game* game) {
 	interakcija = {0, 0};
@@ -304,7 +310,12 @@ void Menu::handleEvent_LevelComplete(SDL_Event& event, Mouse* mouse, Game* game)
 				if (i == 0) {
 					game->gameState = IN_GAME;
 					game->restart();
+					Mouse::buttons = 0;
+					return;
 				}  // "Start" gumb
+				if (i == 1)
+					game->prevGameState = game->gameState;
+				game->gameState = REPLAY_MODE;
 			}
 		}
 		Mouse::buttons = 0;
@@ -352,9 +363,15 @@ void Menu::gameWinnerMenu(SDL_Renderer* renderer, Game* game) {
 	else
 		addButton(renderer, "  Restart  ", {static_cast<int>(game->original_width / 2 - 132 / 2), static_cast<int>(game->original_height / 1.6), 132, 26});
 	if (!interakcija[1])
-		addButton(renderer, " Exit ", {static_cast<int>(game->original_width / 2 - 72 / 2), static_cast<int>(game->original_height / 1.4), 72, 26});
+		addButton(renderer, " Replay ", {static_cast<int>(game->original_width / 2 - 96 / 2), static_cast<int>(game->original_height / 1.47), 96, 26});
 	else
-		addButton(renderer, "  Exit  ", {static_cast<int>(game->original_width / 2 - 96 / 2), static_cast<int>(game->original_height / 1.4), 96, 26});
+		addButton(renderer, "  Replay  ", {static_cast<int>(game->original_width / 2 - 120 / 2), static_cast<int>(game->original_height / 1.47), 120, 26});
+
+	if (!interakcija[2])
+		addButton(renderer, " Exit ", {static_cast<int>(game->original_width / 2 - 72 / 2), static_cast<int>(game->original_height / 1.35), 72, 26});
+	else
+		addButton(renderer, "  Exit  ", {static_cast<int>(game->original_width / 2 - 96 / 2), static_cast<int>(game->original_height / 1.35), 96, 26});
+
 	for (SDL_Rect& bc : buttonRects) {
 		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -362,9 +379,10 @@ void Menu::gameWinnerMenu(SDL_Renderer* renderer, Game* game) {
 	}
 	SDL_RenderCopy(renderer, buttonTextures[0], NULL, &buttonRects[0]);
 	SDL_RenderCopy(renderer, buttonTextures[1], NULL, &buttonRects[1]);
+	SDL_RenderCopy(renderer, buttonTextures[2], NULL, &buttonRects[2]);
 }
 void Menu::handleEvent_GameWinner(SDL_Event& event, Mouse* mouse, Game* game) {
-	interakcija = {0, 0};
+	interakcija = {0, 0, 0};
 	if (mouse->getButtons() == 1) {
 		for (size_t i = 0; i < buttonRects.size(); ++i) {
 			if (mouse->originalX >= buttonRects[i].x && mouse->originalX <= buttonRects[i].x + buttonRects[i].w &&
@@ -374,7 +392,11 @@ void Menu::handleEvent_GameWinner(SDL_Event& event, Mouse* mouse, Game* game) {
 					game->gameState = IN_GAME;
 					game->reset();
 				}  // "restart" gumb
-				if (i == 1)	 // game->setRunning(0);  // "Exit" gumb
+				if (i == 1) {
+					game->prevGameState = game->gameState;
+					game->gameState = REPLAY_MODE;
+				}
+				if (i == 2)	 // game->setRunning(0);  // "Exit" gumb
 					game->gameState = START_MENU;
 			}
 		}

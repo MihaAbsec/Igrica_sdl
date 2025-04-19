@@ -273,30 +273,6 @@ src/Key.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Key.cpp.s
 .PHONY : src/Key.cpp.s
 
-src/Layout1.o: src/Layout1.cpp.o
-.PHONY : src/Layout1.o
-
-# target to build an object file
-src/Layout1.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Layout1.cpp.o
-.PHONY : src/Layout1.cpp.o
-
-src/Layout1.i: src/Layout1.cpp.i
-.PHONY : src/Layout1.i
-
-# target to preprocess a source file
-src/Layout1.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Layout1.cpp.i
-.PHONY : src/Layout1.cpp.i
-
-src/Layout1.s: src/Layout1.cpp.s
-.PHONY : src/Layout1.s
-
-# target to generate assembly for a file
-src/Layout1.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Layout1.cpp.s
-.PHONY : src/Layout1.cpp.s
-
 src/Map.o: src/Map.cpp.o
 .PHONY : src/Map.o
 
@@ -465,6 +441,30 @@ src/PlayerRadious.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/PlayerRadious.cpp.s
 .PHONY : src/PlayerRadious.cpp.s
 
+src/Replay.o: src/Replay.cpp.o
+.PHONY : src/Replay.o
+
+# target to build an object file
+src/Replay.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Replay.cpp.o
+.PHONY : src/Replay.cpp.o
+
+src/Replay.i: src/Replay.cpp.i
+.PHONY : src/Replay.i
+
+# target to preprocess a source file
+src/Replay.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Replay.cpp.i
+.PHONY : src/Replay.cpp.i
+
+src/Replay.s: src/Replay.cpp.s
+.PHONY : src/Replay.s
+
+# target to generate assembly for a file
+src/Replay.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Replay.cpp.s
+.PHONY : src/Replay.cpp.s
+
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
 
@@ -516,9 +516,6 @@ help:
 	@echo "... src/Key.o"
 	@echo "... src/Key.i"
 	@echo "... src/Key.s"
-	@echo "... src/Layout1.o"
-	@echo "... src/Layout1.i"
-	@echo "... src/Layout1.s"
 	@echo "... src/Map.o"
 	@echo "... src/Map.i"
 	@echo "... src/Map.s"
@@ -540,6 +537,9 @@ help:
 	@echo "... src/PlayerRadious.o"
 	@echo "... src/PlayerRadious.i"
 	@echo "... src/PlayerRadious.s"
+	@echo "... src/Replay.o"
+	@echo "... src/Replay.i"
+	@echo "... src/Replay.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

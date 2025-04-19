@@ -16,6 +16,7 @@
 #include "include/GameObject.h"
 #include "include/Mouse.h"
 #include "include/PlayerRadious.h"
+#include "include/Replay.h"
 using namespace std;
 // Constructor
 Player::Player(float x, float y, int sizeWidth, int sizeHeight, float speed)
@@ -39,7 +40,7 @@ void Player::createSprite() {
 }
 
 // Handle keyboard input
-void Player::handleInput(SDL_Event &event, Clock *clock) {
+void Player::handleInput(SDL_Event &event, Clock *clock, Replay *replay) {
 	radious->update(this);
 	const Uint8 *state = SDL_GetKeyboardState(NULL);
 	glm::vec2 movement(0.0f, 0.0f);
@@ -75,6 +76,7 @@ void Player::handleInput(SDL_Event &event, Clock *clock) {
 		// x -= sizeWidth/2;
 		// y -= sizeHeight/2;
 		move = 1;
+		replay->recordPositions(x, y, clock->gameTimer);
 	} else
 		move = 0;
 }
@@ -147,7 +149,7 @@ void Player::render(SDL_Renderer *renderer, Mouse mouse, int centerX, int center
 		else
 			SDL_RenderCopy(renderer, agent, &shootFrames[currentFrameShoot], &destRect);
 
-	} else if (!move) {
+	} else if (!move || game->gameState == REPLAY_MODE) {
 		if (turn)
 			SDL_RenderCopyEx(renderer, agent, &idleFrame, &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
 		if (!turn)
@@ -182,4 +184,10 @@ int Player::getLives() {
 
 int Player::getKills() {
 	return kills;
+}
+
+void Player::replayMovement(Replay *replay, Clock* clock, Game* game) {
+	Coordinates a = replay->getPositions(clock, game);
+	x = a.x;
+	y = a.y;
 }

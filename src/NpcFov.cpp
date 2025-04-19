@@ -7,7 +7,6 @@
 
 #include "include/Clock.h"
 #include "include/Collision.h"
-#include "include/Layout1.h"
 #include "include/Npc.h"
 #include "include/NpcFov.h"
 #include "include/Player.h"

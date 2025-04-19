@@ -11,12 +11,12 @@
 #include "Camera.h"
 #include "Clock.h"
 #include "Key.h"
-#include "Layout1.h"
 #include "Map.h"
 #include "Mouse.h"
 #include "Npc.h"
 #include "Player.h"
 #include "SDL_rect.h"
+#include "Replay.h"
 
 class Menu;
 
@@ -26,7 +26,8 @@ enum GameState {
 	PAUSED,
 	GAME_OVER,
 	LEVEL_COMPLETE,
-	GAME_WINNER
+	GAME_WINNER,
+    REPLAY_MODE
 };
 
 class Game {
@@ -64,6 +65,7 @@ class Game {
 	void updateTimerText(Clock*);
 	// gamestates
 	GameState gameState;
+    GameState prevGameState;
 
 	// leveling
 	void loadLevel(int);
@@ -107,6 +109,8 @@ class Game {
 	unsigned int pausedTime = 0;
     unsigned int setTimer = 0;
     unsigned int lvlTimer[4] = {0,0,0};
+    //replay
+    Replay* replay;
 };
 
 #endif	// GAME_H
