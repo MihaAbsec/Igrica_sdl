@@ -24,6 +24,8 @@ add_executable(mygame
     src/Menu.cpp
     src/PlayerRadious.cpp
     src/Replay.cpp
+    src/Saving.cpp
+    src/Saving.cpp
 )
 
 # Include directories

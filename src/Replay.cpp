@@ -16,10 +16,8 @@ Replay::Replay(int lvl) {
 	std::ofstream testFile(fileName, std::ios::binary | std::ios::app);
 	if (!testFile.is_open()) {
 		std::cerr << "Napaka pri ustvarjanju datoteke: " << fileName << std::endl;
-	} else {
-		std::cout << "Datoteka ustvarjena: " << fileName << std::endl;
+	} else
 		testFile.close();
-	}
 }
 
 void Replay::setLvl(int lvl) {
@@ -51,11 +49,13 @@ Coordinates Replay::getPositions(Clock* clock, Game* game) {
 	Coordinates a;
 	data.seekg(0, std::ios::end);
 	if (data.tellg() / sizeof(a) == dataPosition) {
-        if(game->prevGameState == LEVEL_COMPLETE)
-            game->gameState = LEVEL_COMPLETE;
-        else
-            game->gameState = GAME_WINNER;
+		/*if (game->prevGameState == LEVEL_COMPLETE)
+			game->gameState = LEVEL_COMPLETE;
+		else
+			game->gameState = GAME_WINNER;*/
+        game->gameState = game->prevGameState;
 		dataPosition = 0;
+        data.close();
 		return {192, 192};
 	}
 	if (clock->last_tick_time - replayTime >= frames) {
@@ -64,11 +64,13 @@ Coordinates Replay::getPositions(Clock* clock, Game* game) {
 		data.clear();
 		data.seekg(dataPosition * sizeof(a), std::ios::beg);
 		data.read((char*)&a, sizeof(a));
+        data.close();
 		return a;
 	}
 	data.clear();
 	data.seekg(dataPosition * sizeof(a), std::ios::beg);
 	data.read((char*)&a, sizeof(a));
+    data.close();
 	return a;
 }
 

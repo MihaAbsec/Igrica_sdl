@@ -19,15 +19,15 @@ void collision(Player& obj1, const Wall& obj2) {
 	// spodnja plast
 	if (obj1.getY() < obj2.getY() + obj2.getH() && !(obj1.getoldY() < obj2.getY() + obj2.getH()))
 		if (!(obj1.getX() + obj1.getW() <= obj2.getX() || obj1.getX() >= obj2.getX() + obj2.getW()))
-			obj1.giveXY(obj1.getX(), obj2.getY() + obj2.getH());
+			obj1.giveXY(obj1.getX(), obj2.getY() + 0.5 + obj2.getH());
 	// leva plast
 	if (obj1.getX() + obj1.getW() > obj2.getX() && !(obj1.getoldX() + obj1.getW() > obj2.getX()))
 		if (!(obj1.getY() + obj1.getH() <= obj2.getY() || obj1.getY() >= obj2.getY() + obj2.getH()))
-			obj1.giveXY(obj2.getX() - obj1.getW() - 0.5, obj1.getY());
+			obj1.giveXY(obj2.getX() - obj1.getW() - 0.6, obj1.getY());
 	// desna plast
 	if (obj1.getX() < obj2.getX() + obj2.getW() && !(obj1.getoldX() < obj2.getX() + obj2.getW()))
 		if (!(obj1.getY() + obj1.getH() <= obj2.getY() || obj1.getY() >= obj2.getY() + obj2.getH()))
-			obj1.giveXY(obj2.getX() + obj2.getW() + 0.5, obj1.getY());
+			obj1.giveXY(obj2.getX() + obj2.getW() + 0.6, obj1.getY());
 }
 
 // player-npc
@@ -156,19 +156,19 @@ void moveCollision(Npc* obj1, const Wall* obj2) {
 	// spodnja plast
 	if (obj1->getY() < obj2->getY() + obj2->getH() && !(obj1->getoldY() < obj2->getY() + obj2->getH()))
 		if (!(obj1->getX() + obj1->getW() <= obj2->getX() || obj1->getX() >= obj2->getX() + obj2->getW())) {
-			obj1->giveXY(obj1->getX(), obj2->getY() + obj2->getH());
+			obj1->giveXY(obj1->getX(), obj2->getY() + 0.5 + obj2->getH());
 			obj1->fov->contact = 0;
 		}
 	// leva plast
 	if (obj1->getX() + obj1->getW() > obj2->getX() && !(obj1->getoldX() + obj1->getW() > obj2->getX()))
 		if (!(obj1->getY() + obj1->getH() <= obj2->getY() || obj1->getY() >= obj2->getY() + obj2->getH())) {
-			obj1->giveXY(obj2->getX() - obj1->getW() - 0.5, obj1->getY());
+			obj1->giveXY(obj2->getX() - obj1->getW() - 0.6, obj1->getY());
 			obj1->fov->contact = 0;
 		}
 	// desna plast
 	if (obj1->getX() < obj2->getX() + obj2->getW() && !(obj1->getoldX() < obj2->getX() + obj2->getW()))
 		if (!(obj1->getY() + obj1->getH() <= obj2->getY() || obj1->getY() >= obj2->getY() + obj2->getH())) {
-			obj1->giveXY(obj2->getX() + obj2->getW() + 0.5, obj1->getY());
+			obj1->giveXY(obj2->getX() + obj2->getW() + 0.6, obj1->getY());
 			obj1->fov->contact = 0;
 		}
 }

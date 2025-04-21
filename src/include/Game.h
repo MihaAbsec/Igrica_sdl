@@ -15,8 +15,9 @@
 #include "Mouse.h"
 #include "Npc.h"
 #include "Player.h"
-#include "SDL_rect.h"
 #include "Replay.h"
+#include "SDL_rect.h"
+#include "Saving.h"
 
 class Menu;
 
@@ -27,7 +28,7 @@ enum GameState {
 	GAME_OVER,
 	LEVEL_COMPLETE,
 	GAME_WINNER,
-    REPLAY_MODE
+	REPLAY_MODE
 };
 
 class Game {
@@ -52,8 +53,6 @@ class Game {
 	int SCREEN_WIDTH, SCREEN_HEIGHT;
 	const int WORLD_WIDTH = 1920, WORLD_HEIGHT = 1920;
 
-	void setGameState(GameState state);
-	GameState getGameState() const;
 	bool isRunning() const;
 	SDL_Renderer* getRenderer() const;
 	void setRunning(bool);
@@ -65,15 +64,30 @@ class Game {
 	void updateTimerText(Clock*);
 	// gamestates
 	GameState gameState;
-    GameState prevGameState;
+	GameState prevGameState;
 
 	// leveling
-	void loadLevel(int);
+	void loadLevel(int, bool);
 	void reset();
 	void restart();
 
 	// gameTimer
+	// Leveling
+	int keysCollected = 0;
+	int currentLevel = 1;
+	int lvlKills[4] = {0, 0, 0, 0};
+
+	// Timer
 	void gameTimer(Clock*);
+	unsigned int timer = 0;
+	unsigned int pausedTime = 0;
+	unsigned int setTimer = 0;
+	unsigned int lvlTimer[4] = {0, 0, 0, 0};
+
+	// SAVING
+	void setGameFromSaveing();
+    void saveProgressFromMenu();
+    void emptyReplay();
 
    protected:
 	SDL_Window* window;
@@ -98,19 +112,14 @@ class Game {
 	SDL_Rect levelRect;
 	SDL_Rect keysRect;
 	SDL_Rect timerRect;
-	// Leveling
-	int keysCollected = 0;
-	int currentLevel = 1;
-	int lvlKills[4] = {0, 0, 0};
+
 	// Vsi Menuji
 	Menu* menu;
-	// Timer
-	unsigned int timer = 0;
-	unsigned int pausedTime = 0;
-    unsigned int setTimer = 0;
-    unsigned int lvlTimer[4] = {0,0,0};
-    //replay
-    Replay* replay;
+
+	// SAVES
+	Replay* replay;
+	Saving* saving;
+    bool fromSaving = 0;
 };
 
 #endif	// GAME_H

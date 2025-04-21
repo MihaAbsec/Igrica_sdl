@@ -16,10 +16,10 @@
 #include "include/Bullet.h"
 #include "include/Clock.h"
 #include "include/Collision.h"
+#include "include/GameObject.h"
 #include "include/Key.h"
 #include "include/Menu.h"
 #include "include/Player.h"
-#include "include/GameObject.h"
 #include "include/Wall.h"
 float Game::scale_x = 1.0f;
 float Game::scale_y = 1.0f;
@@ -33,8 +33,9 @@ Game::Game(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 	walls = new std::vector<Wall>();
 	npc = new std::vector<Npc>();
 	textBackground = new std::vector<SDL_Rect>;
-	gameState = IN_GAME;
+	gameState = START_MENU;
 	replay = new Replay(1);
+	saving = new Saving();
 }
 
 Game::~Game() {
@@ -150,8 +151,11 @@ void Game::update(Clock* clock) {
 	if (gameState == IN_GAME) {
 		gameTimer(clock);
 		replay->setLvl(currentLevel);
-		if (!player->getLives())
+		if (!player->getLives()) {
 			gameState = GAME_OVER;
+			if (fromSaving)
+				saving->emptyFile();
+		}
 		for (Wall& wall : *walls) {
 			collision(*player, wall);
 			for (auto it = bullets.begin(); it != bullets.end();) {
@@ -293,8 +297,6 @@ void Game::render() {
 	}
 	if (gameState == REPLAY_MODE) {
 		map->render(renderer, camera);
-		float cameraX = camera->x;
-		float cameraY = camera->y;
 		player->render(renderer, mouse, original_width / 2.0, original_height / 2.0, camera, this);
 	}
 
@@ -305,8 +307,6 @@ void Game::cleanup() {
 	delete npc;
 	delete player;
 	delete walls;
-	for (int i = 1; i <= 3; i++)
-		replay->emptyFile(i);
 	delete replay;
 
 	// Clean up textures
@@ -354,33 +354,6 @@ void Game::cleanup() {
 	IMG_Quit();
 	TTF_Quit();
 	SDL_Quit();
-}
-
-void Game::setGameState(GameState state) {
-	// Clean up textures when changing states
-	if (gameState != state) {
-		if (livesTexture) {
-			SDL_DestroyTexture(livesTexture);
-			livesTexture = nullptr;
-		}
-		if (killsTexture) {
-			SDL_DestroyTexture(killsTexture);
-			killsTexture = nullptr;
-		}
-		if (levelTexture) {
-			SDL_DestroyTexture(levelTexture);
-			levelTexture = nullptr;
-		}
-		if (keysTexture) {
-			SDL_DestroyTexture(keysTexture);
-			keysTexture = nullptr;
-		}
-	}
-	gameState = state;
-}
-
-GameState Game::getGameState() const {
-	return gameState;
 }
 
 bool Game::isRunning() const {
@@ -555,7 +528,7 @@ void Game::renderBGtext() {
 	}
 }
 
-void Game::loadLevel(int level) {
+void Game::loadLevel(int level, bool isSave) {
 	keysCollected = 0;
 	// Počisti stare stene in NPC-je
 	walls->clear();
@@ -568,8 +541,10 @@ void Game::loadLevel(int level) {
 	map = new Map("assets/floor.png", levelWall, levelFile, renderer, walls);
 
 	// Ponastavi igralca in kamero
-	delete player;
-	player = new Player(192, 192, 25, 75, 1);
+	if (isSave == false) {
+		delete player;
+		player = new Player(192, 192, 25, 75, 1);
+	}
 	camera->update(player, WORLD_WIDTH, WORLD_HEIGHT, original_width, original_height);
 
 	// Ustvari nove NPC-je
@@ -583,19 +558,19 @@ void Game::loadLevel(int level) {
 }
 
 void Game::reset() {
+	fromSaving = 0;
 	player->setKills(0);
 	lvlKills[1] = 0;
 	lvlKills[2] = 0;
 	lvlKills[3] = 0;
 	currentLevel = 1;
 	setTimer = 1;
-	for (int i = 1; i <= 3; i++)
-		replay->emptyFile(i);
-	loadLevel(currentLevel);
+	emptyReplay();
+	loadLevel(currentLevel, false);
 }
 
 void Game::restart() {
-	loadLevel(currentLevel);
+	loadLevel(currentLevel, false);
 	player->setKills(lvlKills[currentLevel - 1]);
 	replay->emptyFile(currentLevel);
 	setTimer = lvlTimer[currentLevel - 1];
@@ -610,4 +585,27 @@ void Game::gameTimer(Clock* clock) {
 		timer = clock->last_tick_time - pausedTime;
 		clock->gameTimer = timer;
 	}
+}
+
+void Game::setGameFromSaveing() {
+	fromSaving = 1;
+	Progress a = saving->getProgress();
+	currentLevel = a.currentLevel;
+	player->setPosition(a.x, a.y);
+	loadLevel(currentLevel, true);
+	player->setKills(a.kills);
+	setTimer = a.time;
+	keysCollected = a.keys;
+	player->setLives(a.lives);
+	lvlKills[currentLevel - 1] = a.prevKills;
+	lvlTimer[currentLevel - 1] = a.prevTime;
+}
+
+void Game::saveProgressFromMenu() {
+	saving->saveProgress(this, player);
+}
+
+void Game::emptyReplay() {
+	for (int i = 1; i <= 3; i++)
+		replay->emptyFile(i);
 }

@@ -45,6 +45,12 @@ class Player : public GameObject {
 	void update(Clock*);
 	void render(SDL_Renderer* renderer, Mouse, int, int, Camera*, Game*);
 	void replayMovement(Replay*, Clock*, Game*);
+	void setPosition(float newX, float newY) {
+		x = newX;
+		y = newY;
+		oldX = newX;
+		oldY = newY;
+	}
 	float getGunX() const {
 		return gunX;
 	}
@@ -70,6 +76,9 @@ class Player : public GameObject {
 	}
 	void setKills(int n) {
 		kills = n;
+	}
+	void setLives(int n) {
+		lives = n;
 	}
 };
 

@@ -137,7 +137,12 @@ void Player::render(SDL_Renderer *renderer, Mouse mouse, int centerX, int center
 			SDL_RenderCopy(renderer, agent, &celebrateFrame, &destRect);
 		return;
 	}
-	if (speed != prevSpeed && !move) {
+	if (!move || game->gameState == REPLAY_MODE) {
+		if (turn)
+			SDL_RenderCopyEx(renderer, agent, &idleFrame, &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
+		if (!turn)
+			SDL_RenderCopy(renderer, agent, &idleFrame, &destRect);
+	} else if (speed != prevSpeed && !move) {
 		if (mouse.getWorldX() < x)
 			SDL_RenderCopyEx(renderer, agent, &shootFrame, &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
 		else
@@ -149,11 +154,6 @@ void Player::render(SDL_Renderer *renderer, Mouse mouse, int centerX, int center
 		else
 			SDL_RenderCopy(renderer, agent, &shootFrames[currentFrameShoot], &destRect);
 
-	} else if (!move || game->gameState == REPLAY_MODE) {
-		if (turn)
-			SDL_RenderCopyEx(renderer, agent, &idleFrame, &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
-		if (!turn)
-			SDL_RenderCopy(renderer, agent, &idleFrame, &destRect);
 	} else if (move) {
 		if (turn)
 			SDL_RenderCopyEx(renderer, agent, &runFrames[currentFrameRun], &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
@@ -186,7 +186,7 @@ int Player::getKills() {
 	return kills;
 }
 
-void Player::replayMovement(Replay *replay, Clock* clock, Game* game) {
+void Player::replayMovement(Replay *replay, Clock *clock, Game *game) {
 	Coordinates a = replay->getPositions(clock, game);
 	x = a.x;
 	y = a.y;

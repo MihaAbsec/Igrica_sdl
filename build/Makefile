@@ -465,6 +465,30 @@ src/Replay.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Replay.cpp.s
 .PHONY : src/Replay.cpp.s
 
+src/Saving.o: src/Saving.cpp.o
+.PHONY : src/Saving.o
+
+# target to build an object file
+src/Saving.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Saving.cpp.o
+.PHONY : src/Saving.cpp.o
+
+src/Saving.i: src/Saving.cpp.i
+.PHONY : src/Saving.i
+
+# target to preprocess a source file
+src/Saving.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Saving.cpp.i
+.PHONY : src/Saving.cpp.i
+
+src/Saving.s: src/Saving.cpp.s
+.PHONY : src/Saving.s
+
+# target to generate assembly for a file
+src/Saving.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/mygame.dir/build.make CMakeFiles/mygame.dir/src/Saving.cpp.s
+.PHONY : src/Saving.cpp.s
+
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
 
@@ -540,6 +564,9 @@ help:
 	@echo "... src/Replay.o"
 	@echo "... src/Replay.i"
 	@echo "... src/Replay.s"
+	@echo "... src/Saving.o"
+	@echo "... src/Saving.i"
+	@echo "... src/Saving.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
