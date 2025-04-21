@@ -1,5 +1,6 @@
 #include "include/Saving.h"
 
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 
@@ -43,4 +44,11 @@ Progress Saving::getProgress() {
 void Saving::emptyFile() {
 	std::ofstream file(fileName, std::ios::binary);
 	file.close();
+}
+
+bool Saving::isFileEmpty() {
+	if (!std::filesystem::exists(fileName)) {
+		return true;
+	}
+	return std::filesystem::file_size(fileName) == 0;
 }

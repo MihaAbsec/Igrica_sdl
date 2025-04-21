@@ -190,4 +190,5 @@ void Player::replayMovement(Replay *replay, Clock *clock, Game *game) {
 	Coordinates a = replay->getPositions(clock, game);
 	x = a.x;
 	y = a.y;
+    std::cout << x << " " << y << '\n';
 }

@@ -153,8 +153,11 @@ void Game::update(Clock* clock) {
 		replay->setLvl(currentLevel);
 		if (!player->getLives()) {
 			gameState = GAME_OVER;
-			if (fromSaving)
+			if (fromSaving) {
 				saving->emptyFile();
+			}
+		} else if (fromSaving) {
+			saveProgressFromMenu();
 		}
 		for (Wall& wall : *walls) {
 			collision(*player, wall);
@@ -297,7 +300,10 @@ void Game::render() {
 	}
 	if (gameState == REPLAY_MODE) {
 		map->render(renderer, camera);
+		float cameraX = camera->x;
+		float cameraY = camera->y;
 		player->render(renderer, mouse, original_width / 2.0, original_height / 2.0, camera, this);
+		// key->render(renderer, camera);
 	}
 
 	SDL_RenderPresent(renderer);
@@ -530,29 +536,24 @@ void Game::renderBGtext() {
 
 void Game::loadLevel(int level, bool isSave) {
 	keysCollected = 0;
-	// Počisti stare stene in NPC-je
 	walls->clear();
 	npc->clear();
 
-	// Naloži novo mapo glede na level
 	std::string levelFile = "maps/level" + std::to_string(level) + ".txt";
 	std::string levelWall = "assets/wall" + std::to_string(level) + ".png";
 	delete map;	 // Izbriši staro mapo
 	map = new Map("assets/floor.png", levelWall, levelFile, renderer, walls);
 
-	// Ponastavi igralca in kamero
 	if (isSave == false) {
 		delete player;
 		player = new Player(192, 192, 25, 75, 1);
 	}
 	camera->update(player, WORLD_WIDTH, WORLD_HEIGHT, original_width, original_height);
 
-	// Ustvari nove NPC-je
 	for (int i = 0; i < 14; ++i) {
 		npc->push_back(Npc(WORLD_WIDTH, WORLD_HEIGHT, 25, 75, 0.2, walls, this, camera));
 	}
 
-	// Ustvari nov ključ
 	delete key;
 	key = new Key(WORLD_WIDTH, WORLD_HEIGHT, walls, this, camera);
 }
@@ -608,4 +609,11 @@ void Game::saveProgressFromMenu() {
 void Game::emptyReplay() {
 	for (int i = 1; i <= 3; i++)
 		replay->emptyFile(i);
+}
+void Game::emptySaving() {
+	saving->emptyFile();
+}
+
+bool Game::isSavingEmpty() {
+	return saving->isFileEmpty();
 }

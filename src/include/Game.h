@@ -86,8 +86,11 @@ class Game {
 
 	// SAVING
 	void setGameFromSaveing();
-    void saveProgressFromMenu();
-    void emptyReplay();
+	void saveProgressFromMenu();
+	void emptyReplay();
+    void emptySaving();
+    bool isSavingEmpty();
+	bool fromSaving = 0;
 
    protected:
 	SDL_Window* window;
@@ -119,7 +122,6 @@ class Game {
 	// SAVES
 	Replay* replay;
 	Saving* saving;
-    bool fromSaving = 0;
 };
 
 #endif	// GAME_H

@@ -87,7 +87,10 @@ void Menu::pausedRender(SDL_Renderer* renderer, Game* game) {
 		addButton(renderer, "  Exit  ", {static_cast<int>(game->original_width / 2 - 96 / 2), static_cast<int>(game->original_height / 1.3), 96, 26});
 	for (SDL_Rect& bc : buttonRects) {
 		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		if (!game->fromSaving && bc.y == static_cast<int>(game->original_height / 1.49)) {
+			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 128);
+		} else
+			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		SDL_RenderFillRect(renderer, &bc);
 	}
 	SDL_RenderCopy(renderer, buttonTextures[0], NULL, &buttonRects[0]);
@@ -108,8 +111,13 @@ void Menu::handleEvent_Paused(SDL_Event& event, Mouse* mouse, Game* game) {
 					game->restart();
 				}  // "Restart" gumb
 				if (i == 2) {
-					game->gameState = IN_GAME;
-					game->saveProgressFromMenu();
+					if (!game->fromSaving) {
+						game->fromSaving = 1;
+						game->saveProgressFromMenu();
+					} else {
+						game->fromSaving = 0;
+						game->emptySaving();
+					}
 				}
 				if (i == 3) {
 					game->gameState = START_MENU;  // "Exit" gumb
@@ -181,15 +189,18 @@ void Menu::handleEvent_StartMenu(SDL_Event& event, Mouse* mouse, Game* game) {
 				if (i == 0) {
 					game->gameState = IN_GAME;
 					game->reset();
+					Mouse::buttons = 0;
 				}  // "Start" gumb
 				if (i == 1) {
+					if (game->isSavingEmpty())
+						return;
 					game->gameState = IN_GAME;
 					game->setGameFromSaveing();
 				}  // "Continue" gumb
 				if (i == 2) game->setRunning(0);  // "Quit" gumb
+				Mouse::buttons = 0;
 			}
 		}
-		Mouse::buttons = 0;
 	} else
 		for (size_t i = 0; i < buttonRects.size(); ++i) {
 			if (mouse->originalX >= buttonRects[i].x && mouse->originalX <= buttonRects[i].x + buttonRects[i].w &&

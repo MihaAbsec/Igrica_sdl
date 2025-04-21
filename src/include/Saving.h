@@ -22,6 +22,7 @@ class Saving {
 	void saveProgress(Game*, Player*);
     Progress getProgress();
     void emptyFile();
+    bool isFileEmpty();
 
    private:
 	std::string fileName;

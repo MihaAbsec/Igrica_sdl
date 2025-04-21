@@ -9,9 +9,11 @@
 #include <vector>
 
 class Game;
+class Replay;
 #include "Camera.h"
 #include "GameObject.h"
 #include "Wall.h"
+
 class Key : public GameObject {
 	SDL_Texture* texture;
 	bool rend = 0;
@@ -24,8 +26,8 @@ class Key : public GameObject {
 	bool KeyCollision(std::vector<Wall>*);
 	void render(SDL_Renderer* renderer, Camera* camera);
 	void nextKey() {
-        isCounting = false;
-        startTime = 0;
+		isCounting = false;
+		startTime = 0;
 		rend = 1;
 	}
 	void klicajRender(SDL_Renderer*, Player*, Camera*, TTF_Font*);

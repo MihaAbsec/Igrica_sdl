@@ -3,7 +3,9 @@
 #include <SDL_ttf.h>
 
 #include <fstream>
+
 #include "Clock.h"
+#include "Key.h"
 class Game;
 struct Coordinates {
 	float x, y;
@@ -22,7 +24,7 @@ class Replay {
    private:
 	std::string fileName;
 	unsigned int delayTime = 0;
-    unsigned int replayTime = 0;
-    unsigned int dataPosition = 0;
-    int frames = 10;
+	unsigned int replayTime = 0;
+	unsigned int dataPosition = 0;
+	int frames = 10;
 };

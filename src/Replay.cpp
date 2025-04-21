@@ -6,6 +6,7 @@
 #include <fstream>
 #include <ios>
 #include <iostream>
+#include <iterator>
 #include <memory>
 #include <string>
 
@@ -44,19 +45,18 @@ Coordinates Replay::getPositions(Clock* clock, Game* game) {
 	std::ifstream data(fileName, std::ios::binary);
 	if (!data.is_open()) {
 		std::cerr << "Napaka pri odpiranju datoteke: " << fileName << std::endl;
-		return {192, 192};
+		return {0, 0};
 	}
 	Coordinates a;
 	data.seekg(0, std::ios::end);
-	if (data.tellg() / sizeof(a) == dataPosition) {
-		/*if (game->prevGameState == LEVEL_COMPLETE)
-			game->gameState = LEVEL_COMPLETE;
-		else
-			game->gameState = GAME_WINNER;*/
-        game->gameState = game->prevGameState;
+	if (data.tellg() / sizeof(a)-1 == dataPosition) {
+		game->gameState = game->prevGameState;
+		data.clear();
+		data.seekg(--dataPosition * sizeof(a), std::ios::beg);
+		data.read((char*)&a, sizeof(a));
+		data.close();
 		dataPosition = 0;
-        data.close();
-		return {192, 192};
+		return a;
 	}
 	if (clock->last_tick_time - replayTime >= frames) {
 		replayTime = clock->last_tick_time;
@@ -64,13 +64,13 @@ Coordinates Replay::getPositions(Clock* clock, Game* game) {
 		data.clear();
 		data.seekg(dataPosition * sizeof(a), std::ios::beg);
 		data.read((char*)&a, sizeof(a));
-        data.close();
+		data.close();
 		return a;
 	}
 	data.clear();
 	data.seekg(dataPosition * sizeof(a), std::ios::beg);
 	data.read((char*)&a, sizeof(a));
-    data.close();
+	data.close();
 	return a;
 }
 
