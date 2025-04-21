@@ -11,14 +11,12 @@ Menu::Menu(TTF_Font* font)
 	: font(font) {}
 
 Menu::~Menu() {
-	// Počisti vse gumbe
 	for (auto texture : buttonTextures) {
 		SDL_DestroyTexture(texture);
 	}
 	buttonTextures.clear();
 	buttonRects.clear();
 
-	// Počisti ozadje
 	if (backgroundTexture) {
 		SDL_DestroyTexture(backgroundTexture);
 		backgroundTexture = nullptr;
@@ -44,7 +42,6 @@ void Menu::pausedRender(SDL_Renderer* renderer, Game* game) {
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 128);
 	SDL_RenderFillRect(renderer, &background);
-	// "Paused" text
 	SDL_Color color = {255, 255, 255};
 	std::string text = "Paused";
 	SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
@@ -216,7 +213,6 @@ void Menu::gameOverMenu(SDL_Renderer* renderer, Game* game) {
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 128);
 	SDL_RenderFillRect(renderer, &background);
-	// "Game Over" text
 	SDL_Color color = {255, 255, 255};
 	std::string text = "Game Over";
 	SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
@@ -297,7 +293,6 @@ void Menu::levelCompleteMenu(SDL_Renderer* renderer, Game* game) {
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 128);
 	SDL_RenderFillRect(renderer, &background);
-	// "Level Complete" text
 	SDL_Color color = {255, 255, 255};
 	std::string text = "Level Complete";
 	SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
@@ -371,7 +366,6 @@ void Menu::gameWinnerMenu(SDL_Renderer* renderer, Game* game) {
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 128);
 	SDL_RenderFillRect(renderer, &background);
-	// "YOU WON!" text
 	SDL_Color color = {212, 175, 55};
 	std::string text = "YOU WON!";
 	SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
@@ -426,7 +420,8 @@ void Menu::handleEvent_GameWinner(SDL_Event& event, Mouse* mouse, Game* game) {
 			if (mouse->originalX >= buttonRects[i].x && mouse->originalX <= buttonRects[i].x + buttonRects[i].w &&
 				mouse->originalY >= buttonRects[i].y && mouse->originalY <= buttonRects[i].y + buttonRects[i].h) {
 				if (i == 0) {
-					// currentState = IN_GAME;
+					if (game->fromSaving)
+						game->emptySaving();
 					game->gameState = IN_GAME;
 					game->reset();
 				}  // "restart" gumb
@@ -434,8 +429,11 @@ void Menu::handleEvent_GameWinner(SDL_Event& event, Mouse* mouse, Game* game) {
 					game->prevGameState = game->gameState;
 					game->gameState = REPLAY_MODE;
 				}
-				if (i == 2)	 // game->setRunning(0);  // "Exit" gumb
+				if (i == 2) {
 					game->gameState = START_MENU;
+					if (game->fromSaving)
+						game->emptySaving();
+				}  // game->setRunning(0);  // "Exit" gumb
 			}
 		}
 		Mouse::buttons = 0;

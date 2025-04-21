@@ -47,33 +47,20 @@ void Key::render(SDL_Renderer* renderer, Camera* camera) {
 }
 void Key::klicajRender(SDL_Renderer* renderer, Player* player, Camera* camera, TTF_Font* font) {
 	if (rend) {
-		// Izračunaj vektor od igralca do ključa
 		glm::vec2 playerPos(player->getX(), player->getY());
 		glm::vec2 keyPos(x, y);
 		glm::vec2 direction = keyPos - playerPos;
 
-		// Normaliziraj vektor (da dobimo smer)
 		if (glm::length(direction) > 0) {
 			direction = glm::normalize(direction);
 
-			// Pozicija indikatorja (100 px od igralca v smeri ključa)
 			glm::vec2 indicatorPos = playerPos + direction * 100.0f;
 
-			// Pretvori v int za SDL (ker SDL uporablja int za koordinate)
 			int indicatorX = static_cast<int>(indicatorPos.x);
 			int indicatorY = static_cast<int>(indicatorPos.y);
 
-			// Nastavi barvo za risanje (npr. rumena)
 			SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
 
-			// Če želiš narisati samo "!", lahko uporabiš SDL_ttf za tekst
-			// Tukaj prikazujemo preprost krog kot placeholder
-			/*SDL_Rect indicatorRect = {
-				static_cast<int>(indicatorX - camera->x),
-				static_cast<int>(indicatorY - camera->y), 20, 20};
-			SDL_RenderFillRect(renderer, &indicatorRect);*/
-
-			// Če imaš SDL_ttf inicializiran, lahko narišeš tekst:
 			SDL_Color textColor = {255, 50, 50};
 			SDL_Surface* textSurface = TTF_RenderText_Solid(font, " ! ", textColor);
 			if (textSurface) {
@@ -116,4 +103,10 @@ void Key::timeOfRend(Clock* clock) {
 	} else {
 		isCounting = false;
 	}
+}
+
+void Key::replayCoordinates(Replay* replay, Clock* clock, Game* game) {
+	Coordinates a = replay->getPositions(clock, game);
+	x = a.keyX;
+	y = a.keyY;
 }

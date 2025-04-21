@@ -23,10 +23,10 @@ void Mouse::update(SDL_Event& event, Camera* camera) {
 		x = event.motion.x;
 		y = event.motion.y;
 
-        originalX = x / Game::scale_x;
-        originalY = y / Game::scale_y;
+		originalX = x / Game::scale_x;
+		originalY = y / Game::scale_y;
 
-		// Preslikaj fizične koordinate na logične koordinate z uporabo Game::scale_x in Game::scale_y
+		// Logične koordinate
 		worldX = originalX + camera->x;
 		worldY = originalY + camera->y;
 
@@ -37,13 +37,12 @@ void Mouse::update(SDL_Event& event, Camera* camera) {
 	if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP) {
 		buttons = SDL_GetMouseState(&x, &y);
 
-		// Preslikaj fizične koordinate na logične koordinate z uporabo Game::scale_x in Game::scale_y
 		worldX = (x / Game::scale_x) + camera->x;
 		worldY = (y / Game::scale_y) + camera->y;
 	}
 
-	//std::cout << worldX << " " << worldY << " " << buttons << " " << lastButtons << " " << '\r';
-	//std::cout << std::flush;
+	// std::cout << worldX << " " << worldY << " " << buttons << " " << lastButtons << " " << '\r';
+	// std::cout << std::flush;
 }
 
 bool Mouse::isButtonDown(Uint8 button) {

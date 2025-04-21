@@ -73,17 +73,13 @@ bool Game::init() {
 		return false;
 	}
 
-	font = TTF_OpenFont("assets/fonts/pisava.ttf", 32);	 // Zamenjaj z dejansko potjo do pisave
+	font = TTF_OpenFont("assets/fonts/pisava.ttf", 32);
 	if (!font) {
 		std::cout << "Failed to load font: " << TTF_GetError() << "\n";
 		return false;
 	}
 
-	// Odstranite to vrstico
-	// SDL_RenderSetLogicalSize(renderer, original_width, original_height);
 	map = new Map("assets/floor.png", "assets/wall1.png", "maps/level1.txt", renderer, walls);
-	// map = new Map("assets/floor.png", "assets/wall2.png", "maps/level2.txt", renderer, walls);
-	// map = new Map("assets/floor.png", "assets/wall3.png", "maps/level3.txt", renderer, walls);
 	key = new Key(SCREEN_WIDTH, SCREEN_HEIGHT, walls, this, camera);
 	for (int i = 0; i < 14; ++i)
 		npc->push_back(Npc(WORLD_WIDTH, WORLD_HEIGHT, 25, 75, 0.2, walls, this, camera));
@@ -91,11 +87,10 @@ bool Game::init() {
 	return true;
 }
 
-// V Game.cpp
 void Game::handleEvents(Clock* clock) {
 	SDL_Event event;
 	if (gameState == IN_GAME) {
-		player->handleInput(event, clock, replay);
+		player->handleInput(event, clock, replay, key);
 	} else if (gameState == PAUSED)
 		menu->handleEvent_Paused(event, &mouse, this);
 	else if (gameState == START_MENU)
@@ -121,19 +116,15 @@ void Game::handleEvents(Clock* clock) {
 		}
 		if (event.type == SDL_WINDOWEVENT) {
 			if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
-				// Posodobi velikost okna
 				SCREEN_WIDTH = event.window.data1;
 				SCREEN_HEIGHT = event.window.data2;
 
-				// Izračunaj želeno višino glede na širino (ohrani razmerje stranic 16:9)
 				int desiredHeight = (int)(SCREEN_WIDTH * 9 / 16);
 				if (SCREEN_HEIGHT != desiredHeight) {
-					// Če višina ni pravilna, prilagodi velikost okna
 					SDL_SetWindowSize(window, SCREEN_WIDTH, desiredHeight);
 					SCREEN_HEIGHT = desiredHeight;
 				}
 
-				// Izračunaj scale faktor
 				scale_x = (float)SCREEN_WIDTH / original_width;
 				scale_y = (float)SCREEN_HEIGHT / original_height;
 
@@ -144,8 +135,6 @@ void Game::handleEvents(Clock* clock) {
 		mouse.update(event, camera);
 	}
 }
-
-// Update game logic
 
 void Game::update(Clock* clock) {
 	if (gameState == IN_GAME) {
@@ -260,18 +249,17 @@ void Game::update(Clock* clock) {
 	if (gameState == REPLAY_MODE) {
 		player->replayMovement(replay, clock, this);
 		camera->update(player, WORLD_WIDTH, WORLD_HEIGHT, original_width, original_height);
+		key->replayCoordinates(replay, clock, this);
 	}
 }
 // Render
 void Game::render() {
 	SDL_RenderClear(renderer);
 
-	// Nastavi skaliranje na rendererju
 	SDL_RenderSetScale(renderer, scale_x, scale_y);
 	if (gameState == START_MENU) {
 		menu->startMenuRender(renderer, this);
 	} else if (gameState != REPLAY_MODE) {
-		// Risanje objektov
 		map->render(renderer, camera);
 		float cameraX = camera->x;
 		float cameraY = camera->y;
@@ -303,19 +291,17 @@ void Game::render() {
 		float cameraX = camera->x;
 		float cameraY = camera->y;
 		player->render(renderer, mouse, original_width / 2.0, original_height / 2.0, camera, this);
-		// key->render(renderer, camera);
+		key->render(renderer, camera);
 	}
 
 	SDL_RenderPresent(renderer);
 }
-// cleanup
 void Game::cleanup() {
 	delete npc;
 	delete player;
 	delete walls;
 	delete replay;
 
-	// Clean up textures
 	if (livesTexture) {
 		SDL_DestroyTexture(livesTexture);
 		livesTexture = nullptr;
@@ -337,13 +323,11 @@ void Game::cleanup() {
 		menu = nullptr;
 	}
 
-	// Clean up font
 	if (font) {
 		TTF_CloseFont(font);
 		font = nullptr;
 	}
 
-	// Clean up text background
 	if (textBackground) {
 		delete textBackground;
 		textBackground = nullptr;
@@ -371,7 +355,6 @@ SDL_Renderer* Game::getRenderer() const {
 }
 void Game::setRunning(bool running) {
 	this->running = running;
-	// std::cout << "Game running state set to: " << running << std::endl;
 }
 
 void Game::updateLivesText() {
@@ -400,9 +383,7 @@ void Game::updateLivesText() {
 
 	livesRect = {8, 0,
 				 static_cast<int>(surface->w * 1.5),
-				 static_cast<int>(surface->h * 1.5)};  // zgornji levi kot
-	// ozadje
-
+				 static_cast<int>(surface->h * 1.5)};
 	SDL_Rect rect = {8, 8, 132, surface->h + 4};
 	textBackground->push_back(rect);
 }
@@ -428,7 +409,7 @@ void Game::updateKillsText() {
 		return;
 	}
 
-	killsRect = {26, 40, surface->w, surface->h};  // zgornji levi kot
+	killsRect = {26, 40, surface->w, surface->h};
 	SDL_Rect rect = {8, 38, static_cast<int>(surface->w * 1.5), surface->h + 4};
 	textBackground->push_back(rect);
 }

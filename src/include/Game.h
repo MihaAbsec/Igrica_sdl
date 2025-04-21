@@ -71,7 +71,6 @@ class Game {
 	void reset();
 	void restart();
 
-	// gameTimer
 	// Leveling
 	int keysCollected = 0;
 	int currentLevel = 1;
@@ -88,8 +87,8 @@ class Game {
 	void setGameFromSaveing();
 	void saveProgressFromMenu();
 	void emptyReplay();
-    void emptySaving();
-    bool isSavingEmpty();
+	void emptySaving();
+	bool isSavingEmpty();
 	bool fromSaving = 0;
 
    protected:

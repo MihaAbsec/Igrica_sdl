@@ -20,7 +20,6 @@
 #include "include/Collision.h"
 #include "include/GameObject.h"
 #include "include/NpcFov.h"
-// Constructor
 Npc::Npc(int worldW, int worldH, int sizeWidth, int sizeHeight, float speed, std::vector<Wall> *walls, Game *game, Camera *camera)
 	: GameObject(0, 0, sizeWidth, sizeHeight), speed(speed) {
 	float length;
@@ -145,16 +144,22 @@ void Npc::render(SDL_Renderer *renderer, Camera *camera) {
 		createSprite(officer, renderer);
 		if (!officer) return;
 	}
-	// SDL_Rect destRect = {static_cast<int>(x) - 28, static_cast<int>(y) - 3, 80, 80};
-	// SDL_Rect hitBox = {static_cast<int>(x), static_cast<int>(y), sizeWidth, sizeHeight};
-	// SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	SDL_Rect destRect = {
 		static_cast<int>(x - camera->x) - 28,
 		static_cast<int>(y - camera->y) - 3,
 		80,
 		80};
+	if (SDL_QueryTexture(officer, NULL, NULL, NULL, NULL) != 0) {
+		if (officer) {
+			SDL_DestroyTexture(officer);
+			officer = nullptr;
+		}
+		createSprite(officer, renderer);
+		if (!officer) return;
+	}
+
 	if (destRect.w <= 0 || destRect.h <= 0) {
-		return;	 // Skip rendering invalid rectangles
+		return;
 	}
 	if (!move)
 		if (turn)

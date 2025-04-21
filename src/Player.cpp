@@ -18,7 +18,6 @@
 #include "include/PlayerRadious.h"
 #include "include/Replay.h"
 using namespace std;
-// Constructor
 Player::Player(float x, float y, int sizeWidth, int sizeHeight, float speed)
 	: GameObject(x, y, sizeWidth, sizeHeight), speed(speed) {
 	lives = 3;
@@ -39,8 +38,7 @@ void Player::createSprite() {
 	celebrateFrame = {64, 416, 32, 32};
 }
 
-// Handle keyboard input
-void Player::handleInput(SDL_Event &event, Clock *clock, Replay *replay) {
+void Player::handleInput(SDL_Event &event, Clock *clock, Replay *replay, Key *key) {
 	radious->update(this);
 	const Uint8 *state = SDL_GetKeyboardState(NULL);
 	glm::vec2 movement(0.0f, 0.0f);
@@ -64,19 +62,14 @@ void Player::handleInput(SDL_Event &event, Clock *clock, Replay *replay) {
 		oldX = x;
 		oldY = y;
 
-		// Normalize movement to avoid diagonal speed boost
 		movement = glm::normalize(movement);
 
-		// Apply speed and delta time
 		movement *= (speed * clock->delta * 0.4f);
 
-		// Update position
 		x += movement.x;
 		y += movement.y;
-		// x -= sizeWidth/2;
-		// y -= sizeHeight/2;
 		move = 1;
-		replay->recordPositions(x, y, clock->gameTimer);
+		replay->recordPositions(x, y, clock->gameTimer, key);
 	} else
 		move = 0;
 }
@@ -119,10 +112,6 @@ void Player::render(SDL_Renderer *renderer, Mouse mouse, int centerX, int center
 		static_cast<int>((x - camera->x) - 28),
 		static_cast<int>((y - camera->y) - 5),
 		80, 80};
-	// SDL_Rect destRect = {centerX - 28, centerY - 5, 80, 80};
-	//  SDL_Rect hitBox = {centerX/* - sizeWidth / 2*/, centerY/* - sizeHeight / 2*/, sizeWidth, sizeHeight};
-	//  SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);  // White color
-	//  SDL_RenderFillRect(renderer, &hitBox);
 	if (game->gameState == GAME_OVER) {
 		if (turn)
 			SDL_RenderCopyEx(renderer, agent, &deadFrame, &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
@@ -137,12 +126,11 @@ void Player::render(SDL_Renderer *renderer, Mouse mouse, int centerX, int center
 			SDL_RenderCopy(renderer, agent, &celebrateFrame, &destRect);
 		return;
 	}
-	if (!move || game->gameState == REPLAY_MODE) {
-		if (turn)
-			SDL_RenderCopyEx(renderer, agent, &idleFrame, &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
-		if (!turn)
-			SDL_RenderCopy(renderer, agent, &idleFrame, &destRect);
-	} else if (speed != prevSpeed && !move) {
+	if (game->gameState == REPLAY_MODE) {
+		SDL_RenderCopyEx(renderer, agent, &idleFrame, &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
+		return;
+	}
+	if (speed != prevSpeed && !move) {
 		if (mouse.getWorldX() < x)
 			SDL_RenderCopyEx(renderer, agent, &shootFrame, &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
 		else
@@ -153,12 +141,16 @@ void Player::render(SDL_Renderer *renderer, Mouse mouse, int centerX, int center
 			SDL_RenderCopyEx(renderer, agent, &shootFrames[currentFrameShoot], &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
 		else
 			SDL_RenderCopy(renderer, agent, &shootFrames[currentFrameShoot], &destRect);
-
 	} else if (move) {
 		if (turn)
 			SDL_RenderCopyEx(renderer, agent, &runFrames[currentFrameRun], &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
 		if (!turn)
 			SDL_RenderCopy(renderer, agent, &runFrames[currentFrameRun], &destRect);
+	} else if (!move) {
+		if (turn)
+			SDL_RenderCopyEx(renderer, agent, &idleFrame, &destRect, 0, NULL, SDL_FLIP_HORIZONTAL);
+		if (!turn)
+			SDL_RenderCopy(renderer, agent, &idleFrame, &destRect);
 	}
 }
 
@@ -190,5 +182,4 @@ void Player::replayMovement(Replay *replay, Clock *clock, Game *game) {
 	Coordinates a = replay->getPositions(clock, game);
 	x = a.x;
 	y = a.y;
-    std::cout << x << " " << y << '\n';
 }

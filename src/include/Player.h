@@ -41,7 +41,7 @@ class Player : public GameObject {
 	void createSprite(SDL_Texture*&, SDL_Renderer*);
 	void shooting(bool shot);
 	Player(float, float, int, int, float);
-	void handleInput(SDL_Event& event, Clock* clock, Replay* replay);
+	void handleInput(SDL_Event& event, Clock* clock, Replay* replay, Key* key);
 	void update(Clock*);
 	void render(SDL_Renderer* renderer, Mouse, int, int, Camera*, Game*);
 	void replayMovement(Replay*, Clock*, Game*);

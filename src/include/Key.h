@@ -32,6 +32,7 @@ class Key : public GameObject {
 	}
 	void klicajRender(SDL_Renderer*, Player*, Camera*, TTF_Font*);
 	void timeOfRend(Clock*);
+	void replayCoordinates(Replay*, Clock*, Game*);
 };
 
 #endif

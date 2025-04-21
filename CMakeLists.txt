@@ -20,7 +20,6 @@ add_executable(mygame
     src/NpcFov.cpp
     src/Camera.cpp
     src/Map.cpp
-    src/GameObject.cpp
     src/Menu.cpp
     src/PlayerRadious.cpp
     src/Replay.cpp

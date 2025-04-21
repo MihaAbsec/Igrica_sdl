@@ -13,7 +13,6 @@
 #include "include/Game.h"
 Replay::Replay(int lvl) {
 	fileName = "../saves/level" + std::to_string(lvl) + "_replay.bin";
-	// Preveri, ali je datoteka ustvarjena
 	std::ofstream testFile(fileName, std::ios::binary | std::ios::app);
 	if (!testFile.is_open()) {
 		std::cerr << "Napaka pri ustvarjanju datoteke: " << fileName << std::endl;
@@ -25,7 +24,7 @@ void Replay::setLvl(int lvl) {
 	fileName = "../saves/level" + std::to_string(lvl) + "_replay.bin";
 }
 
-void Replay::recordPositions(float x, float y, unsigned int time) {
+void Replay::recordPositions(float x, float y, unsigned int time, Key* key) {
 	std::ofstream data(fileName, std::ios::binary | std::ios::app);
 	if (!data.is_open()) {
 		std::cerr << "Napaka pri odpiranju datoteke: " << fileName << std::endl;
@@ -35,6 +34,8 @@ void Replay::recordPositions(float x, float y, unsigned int time) {
 		Coordinates a;
 		a.x = x;
 		a.y = y;
+        a.keyX = key->getX();
+        a.keyY = key->getY();
 		data.write(reinterpret_cast<const char*>(&a), sizeof(a));
 		delayTime = time;
 	}

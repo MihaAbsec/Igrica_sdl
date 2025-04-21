@@ -26,7 +26,7 @@ Bullet::Bullet(bool player, float x, float y, int width, int height, float speed
 		}
 		direction = glm::normalize(direction);
 	} else {
-		direction = glm::vec2(0, 0);  // If length is 0, set direction to zero
+		direction = glm::vec2(0, 0);
 	}
 
 	dirX = direction.x;

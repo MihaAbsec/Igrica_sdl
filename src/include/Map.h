@@ -20,7 +20,6 @@ class Map {
 
 	struct Block {
 		float x, y;
-		bool walkable;
 		BlockType type;
 	};
 
@@ -32,13 +31,11 @@ class Map {
 
 	~Map();
 
-	// Onemogočimo kopiranje, da preprečimo težave s SDL_Texture*
 	Map(const Map&) = delete;
 	Map& operator=(const Map&) = delete;
 
 	bool loadFromFile(const std::string& mapFilePath, std::vector<Wall>* walls);
 	void render(SDL_Renderer* renderer, Camera* camera);
-	bool isWalkable(int x, int y) const;
 
    private:
 	SDL_Texture* floorTexture = nullptr;
@@ -50,4 +47,3 @@ class Map {
 };
 
 #endif	// MAP_H
-

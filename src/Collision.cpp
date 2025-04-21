@@ -112,20 +112,6 @@ void collision(Npc* obj1, Npc* obj2) {
 }
 // NPC
 bool collision(Npc* obj1, const Wall& obj2) {
-	/*	SDL_Rect npcRect = {
-			static_cast<int>(obj1->getX()),
-			static_cast<int>(obj1->getY()),
-			obj1->getW(),
-			obj1->getH()};
-		SDL_Rect lineRect = {
-			static_cast<int>(obj2.getX()),
-			static_cast<int>(obj2.getY()),
-			obj2.getW(),
-			obj2.getH()};
-		if (SDL_HasIntersection(&npcRect, &lineRect))
-			return true;
-
-		return false;*/
 	float keyLeft = obj1->getX() + 10;
 	float keyRight = obj1->getX() + obj1->getW() + 10;
 	float keyTop = obj1->getY() + 10;
@@ -232,25 +218,6 @@ bool collision(Player* obj1, const Key* obj2) {
 	return false;
 }
 bool collision(const Player* obj1, const NpcFov* obj2) {
-	/*float keyLeft = obj1->getX();
-	float keyRight = obj1->getX() + obj1->getW();
-
-	float keyTop = obj1->getY();
-	float keyBottom = obj1->getY() + obj1->getH();
-
-	float lineLeft = obj2->getX();
-	float lineRight = obj2->getX() + obj2->getW();
-	float lineTop = obj2->getY();
-	float lineBottom = obj2->getY() + obj2->getH();
-
-	if (keyRight <= lineLeft ||
-		keyLeft >= lineRight ||
-		keyBottom <= lineTop ||
-		keyTop >= lineBottom) {
-		return false;
-	}
-
-	return true;*/
 	SDL_Rect playerRect = {
 		static_cast<int>(obj1->getX()),
 		static_cast<int>(obj1->getY()),
@@ -291,7 +258,7 @@ bool lineIntersectsRectangle(float x1, float y1, float x2, float y2, const Wall&
 bool checkWallIntersection(float x1, float y1, float x2, float y2,
 						   float x3, float y3, float x4, float y4) {
 	float den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
-	if (den == 0) return false;	 // Parallel lines
+	if (den == 0) return false;
 
 	float t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / den;
 	float u = ((x1 - x3) * (y1 - y2) - (y1 - y3) * (x1 - x2)) / den;
