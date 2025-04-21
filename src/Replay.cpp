@@ -12,6 +12,7 @@
 
 #include "include/Game.h"
 Replay::Replay(int lvl) {
+	dataPosition = 0;
 	fileName = "../saves/level" + std::to_string(lvl) + "_replay.bin";
 	std::ofstream testFile(fileName, std::ios::binary | std::ios::app);
 	if (!testFile.is_open()) {
@@ -21,10 +22,12 @@ Replay::Replay(int lvl) {
 }
 
 void Replay::setLvl(int lvl) {
+	dataPosition = 0;
 	fileName = "../saves/level" + std::to_string(lvl) + "_replay.bin";
 }
 
 void Replay::recordPositions(float x, float y, unsigned int time, Key* key) {
+	dataPosition = 0;
 	std::ofstream data(fileName, std::ios::binary | std::ios::app);
 	if (!data.is_open()) {
 		std::cerr << "Napaka pri odpiranju datoteke: " << fileName << std::endl;
@@ -34,8 +37,8 @@ void Replay::recordPositions(float x, float y, unsigned int time, Key* key) {
 		Coordinates a;
 		a.x = x;
 		a.y = y;
-        a.keyX = key->getX();
-        a.keyY = key->getY();
+		a.keyX = key->getX();
+		a.keyY = key->getY();
 		data.write(reinterpret_cast<const char*>(&a), sizeof(a));
 		delayTime = time;
 	}
@@ -50,7 +53,7 @@ Coordinates Replay::getPositions(Clock* clock, Game* game) {
 	}
 	Coordinates a;
 	data.seekg(0, std::ios::end);
-	if (data.tellg() / sizeof(a)-1 == dataPosition) {
+	if (data.tellg() / sizeof(a) - 1 == dataPosition) {
 		game->gameState = game->prevGameState;
 		data.clear();
 		data.seekg(--dataPosition * sizeof(a), std::ios::beg);
@@ -76,6 +79,7 @@ Coordinates Replay::getPositions(Clock* clock, Game* game) {
 }
 
 void Replay::emptyFile(int lvl) {
+	dataPosition = 0;
 	fileName = "../saves/level" + std::to_string(lvl) + "_replay.bin";
 	std::ofstream file(fileName, std::ios::binary);
 	file.close();
@@ -83,5 +87,6 @@ void Replay::emptyFile(int lvl) {
 }
 
 void Replay::removeFile() {
+	dataPosition = 0;
 	std::remove(reinterpret_cast<const char*>(fileName.c_str()));
 }
