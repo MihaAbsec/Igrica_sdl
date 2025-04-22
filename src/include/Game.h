@@ -90,6 +90,9 @@ class Game {
 	void emptySaving();
 	bool isSavingEmpty();
 	bool fromSaving = 0;
+	void resetReplayPosition() {
+		replay->resetDataPosition();
+	}
 
    protected:
 	SDL_Window* window;

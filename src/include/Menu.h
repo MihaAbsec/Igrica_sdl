@@ -24,7 +24,6 @@ class Menu {
 	void handleEvent_GameWinner(SDL_Event& event, Mouse* mouse, Game*);
 	void addButton(SDL_Renderer*, const std::string& text, SDL_Rect rect);
 
-
    private:
 	// SDL_Renderer* renderer;
 	SDL_Texture* backgroundTexture = nullptr;
@@ -32,4 +31,5 @@ class Menu {
 	std::vector<SDL_Texture*> buttonTextures;
 	std::vector<SDL_Rect> buttonRects;
 	std::vector<bool> interakcija = {0};
+	bool replayButton = 0;
 };

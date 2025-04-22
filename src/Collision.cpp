@@ -329,8 +329,8 @@ bool spawnCollision(Game* game, Camera* camera, Key* obj2) {
 	SDL_Rect fovRect = {
 		static_cast<int>(obj2->getX()),
 		static_cast<int>(obj2->getY()),
-		obj2->getW(),
-		obj2->getH()};
+		obj2->getW() + 5,
+		obj2->getH() + 5};
 	if (SDL_HasIntersection(&worldRect, &fovRect))
 		return true;
 

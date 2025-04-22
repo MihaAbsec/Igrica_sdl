@@ -167,6 +167,7 @@ void Menu::startMenuRender(SDL_Renderer* renderer, Game* game) {
 		addButton(renderer, " Quit ", {static_cast<int>(game->original_width / 4 - 72), static_cast<int>(game->original_height / 1.5), 72 * 2, 26 * 2});
 	else
 		addButton(renderer, "  Quit  ", {static_cast<int>(game->original_width / 4 - 96), static_cast<int>(game->original_height / 1.5), 96 * 2, 26 * 2});
+
 	for (SDL_Rect& bc : buttonRects) {
 		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -404,36 +405,85 @@ void Menu::gameWinnerMenu(SDL_Renderer* renderer, Game* game) {
 	else
 		addButton(renderer, "  Exit  ", {static_cast<int>(game->original_width / 2 - 96 / 2), static_cast<int>(game->original_height / 1.35), 96, 26});
 
+	if (!interakcija[3])
+		addButton(renderer, " Replay 1 ", {static_cast<int>(game->original_width / 1.5 - 120 / 2), static_cast<int>(game->original_height / 1.5), 120 / 2, 26 / 2});
+	else
+		addButton(renderer, "  Replay 1  ", {static_cast<int>(game->original_width / 1.5 - 144 / 2), static_cast<int>(game->original_height / 1.5), 144 / 2, 26 / 2});
+	if (!interakcija[4])
+		addButton(renderer, " Replay 2 ", {static_cast<int>(game->original_width / 1.5 - 120 / 2), static_cast<int>(game->original_height / 1.45 + 0.3), 120 / 2, 26 / 2});
+	else
+		addButton(renderer, "  Replay 2  ", {static_cast<int>(game->original_width / 1.5 - 144 / 2), static_cast<int>(game->original_height / 1.45 + 0.3), 144 / 2, 26 / 2});
+	if (!interakcija[5])
+		addButton(renderer, " Replay 3 ", {static_cast<int>(game->original_width / 1.5 - 120 / 2), static_cast<int>(game->original_height / 1.4), 120 / 2, 26 / 2});
+	else
+		addButton(renderer, "  Replay 3  ", {static_cast<int>(game->original_width / 1.5 - 144 / 2), static_cast<int>(game->original_height / 1.4), 144 / 2, 26 / 2});
 	for (SDL_Rect& bc : buttonRects) {
 		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		if (!replayButton &&
+			(bc.x == static_cast<int>(game->original_width / 1.5 - 120 / 2) ||
+			 bc.x == static_cast<int>(game->original_width / 1.5 - 144 / 2)))
+			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+		else
+			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		SDL_RenderFillRect(renderer, &bc);
 	}
 	SDL_RenderCopy(renderer, buttonTextures[0], NULL, &buttonRects[0]);
 	SDL_RenderCopy(renderer, buttonTextures[1], NULL, &buttonRects[1]);
 	SDL_RenderCopy(renderer, buttonTextures[2], NULL, &buttonRects[2]);
+	if (replayButton == 1) {
+		SDL_RenderCopy(renderer, buttonTextures[3], NULL, &buttonRects[3]);
+		SDL_RenderCopy(renderer, buttonTextures[4], NULL, &buttonRects[4]);
+		SDL_RenderCopy(renderer, buttonTextures[5], NULL, &buttonRects[5]);
+	}
 }
 void Menu::handleEvent_GameWinner(SDL_Event& event, Mouse* mouse, Game* game) {
-	interakcija = {0, 0, 0};
+	interakcija = {0, 0, 0, 0, 0, 0};
 	if (mouse->getButtons() == 1) {
 		for (size_t i = 0; i < buttonRects.size(); ++i) {
 			if (mouse->originalX >= buttonRects[i].x && mouse->originalX <= buttonRects[i].x + buttonRects[i].w &&
 				mouse->originalY >= buttonRects[i].y && mouse->originalY <= buttonRects[i].y + buttonRects[i].h) {
 				if (i == 0) {
+					replayButton = 0;
 					if (game->fromSaving)
 						game->emptySaving();
 					game->gameState = IN_GAME;
 					game->reset();
 				}  // "restart" gumb
 				if (i == 1) {
-					game->prevGameState = game->gameState;
-					game->gameState = REPLAY_MODE;
+					// game->prevGameState = game->gameState;
+					//  game->gameState = REPLAY_MODE;
+					replayButton = !replayButton;
 				}
 				if (i == 2) {
+					replayButton = 0;
 					game->gameState = START_MENU;
 					if (game->fromSaving)
 						game->emptySaving();
 				}  // game->setRunning(0);  // "Exit" gumb
+				if (i == 3 && replayButton) {
+					game->resetReplayPosition();
+					game->loadLevel(1, false);
+					game->currentLevel = 2;
+					game->prevGameState = game->gameState;
+					game->gameState = REPLAY_MODE;
+					replayButton = 0;
+				}
+				if (i == 4 && replayButton) {
+					game->resetReplayPosition();
+					game->loadLevel(2, false);
+					game->currentLevel = 3;
+					game->prevGameState = game->gameState;
+					game->gameState = REPLAY_MODE;
+					replayButton = 0;
+				}
+				if (i == 5 && replayButton) {
+					game->resetReplayPosition();
+					game->loadLevel(3, false);
+					game->currentLevel = 4;
+					game->prevGameState = game->gameState;
+					game->gameState = REPLAY_MODE;
+					replayButton = 0;
+				}
 			}
 		}
 		Mouse::buttons = 0;
