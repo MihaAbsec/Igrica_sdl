@@ -8,9 +8,9 @@ set(CMAKE_DEPENDS_GENERATOR "Unix Makefiles")
 set(CMAKE_MAKEFILE_DEPENDS
   "CMakeCache.txt"
   "/home/miha/Igrica/Igrica_sdl/CMakeLists.txt"
-  "CMakeFiles/4.0.0/CMakeCCompiler.cmake"
-  "CMakeFiles/4.0.0/CMakeCXXCompiler.cmake"
-  "CMakeFiles/4.0.0/CMakeSystem.cmake"
+  "CMakeFiles/4.0.1/CMakeCCompiler.cmake"
+  "CMakeFiles/4.0.1/CMakeCXXCompiler.cmake"
+  "CMakeFiles/4.0.1/CMakeSystem.cmake"
   "/usr/lib/cmake/SDL2_ttf/sdl2_ttf-config-version.cmake"
   "/usr/lib/cmake/SDL2_ttf/sdl2_ttf-config.cmake"
   "/usr/local/lib/cmake/SDL2/sdl2-config-version.cmake"

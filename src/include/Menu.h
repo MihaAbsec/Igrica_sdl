@@ -25,11 +25,10 @@ class Menu {
 	void addButton(SDL_Renderer*, const std::string& text, SDL_Rect rect);
 
    private:
-	// SDL_Renderer* renderer;
 	SDL_Texture* backgroundTexture = nullptr;
 	TTF_Font* font;
 	std::vector<SDL_Texture*> buttonTextures;
 	std::vector<SDL_Rect> buttonRects;
-	std::vector<bool> interakcija = {0};
-	bool replayButton = 0;
+	std::vector<bool> interakcija = std::vector<bool>(6, false);  // Fixed size for all cases
+	bool replayButton = false;
 };

@@ -46,7 +46,7 @@ void Replay::recordPositions(float x, float y, unsigned int time, Key* key) {
 }
 
 Coordinates Replay::getPositions(Clock* clock, Game* game) {
-	fileName = "../saves/level" + std::to_string(game->currentLevel-1) + "_replay.bin";
+	fileName = "../saves/level" + std::to_string(game->currentLevel - 1) + "_replay.bin";
 	std::ifstream data(fileName, std::ios::binary);
 	if (!data.is_open()) {
 		std::cerr << "Napaka pri odpiranju datoteke: " << fileName << std::endl;

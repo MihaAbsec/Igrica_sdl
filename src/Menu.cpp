@@ -37,6 +37,7 @@ void Menu::addButton(SDL_Renderer* renderer, const std::string& text, SDL_Rect r
 }
 
 void Menu::pausedRender(SDL_Renderer* renderer, Game* game) {
+	interakcija.resize(4, false);  // We need 4 buttons in pause menu
 	// background
 	SDL_Rect background = {300, 100, game->original_width - 600, game->original_height - 200};
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
@@ -133,6 +134,7 @@ void Menu::handleEvent_Paused(SDL_Event& event, Mouse* mouse, Game* game) {
 }
 
 void Menu::startMenuRender(SDL_Renderer* renderer, Game* game) {
+	interakcija.resize(3, false);  // We need 4 buttons in pause menu
 	// background
 	if (!backgroundTexture) {
 		SDL_Surface* surface = IMG_Load("assets/start_menu_background.jpg");
@@ -209,6 +211,7 @@ void Menu::handleEvent_StartMenu(SDL_Event& event, Mouse* mouse, Game* game) {
 }
 
 void Menu::gameOverMenu(SDL_Renderer* renderer, Game* game) {
+	interakcija.resize(3, false);  // We need 4 buttons in pause menu
 	// background
 	SDL_Rect background = {300, 100, game->original_width - 600, game->original_height - 200};
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
@@ -289,6 +292,7 @@ void Menu::handleEvent_GameOver(SDL_Event& event, Mouse* mouse, Game* game) {
 		}
 }
 void Menu::levelCompleteMenu(SDL_Renderer* renderer, Game* game) {
+	interakcija.resize(2, false);  // We need 4 buttons in pause menu
 	// background
 	SDL_Rect background = {300, 100, game->original_width - 600, game->original_height - 200};
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
@@ -362,6 +366,7 @@ void Menu::handleEvent_LevelComplete(SDL_Event& event, Mouse* mouse, Game* game)
 		}
 }
 void Menu::gameWinnerMenu(SDL_Renderer* renderer, Game* game) {
+	interakcija.resize(6, false);  // We need 4 buttons in pause menu
 	// background
 	SDL_Rect background = {300, 100, game->original_width - 600, game->original_height - 200};
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);

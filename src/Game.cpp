@@ -141,6 +141,7 @@ void Game::update(Clock* clock) {
 		gameTimer(clock);
 		replay->setLvl(currentLevel);
 		if (!player->getLives()) {
+			currentLevel++;
 			gameState = GAME_OVER;
 			if (fromSaving) {
 				saving->emptyFile();
@@ -193,7 +194,8 @@ void Game::update(Clock* clock) {
 			if (keysCollected >= 3) {
 				lvlKills[currentLevel] = player->getKills();
 				lvlTimer[currentLevel] = timer;
-				currentLevel++;
+				if (player->getLives())
+					currentLevel++;
 				if (currentLevel > 3) {
 					currentLevel--;
 					gameState = GAME_WINNER;
